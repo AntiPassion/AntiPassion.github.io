@@ -1,42 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>Hexo</title>
+  <title>林中小屋</title>
   
   
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2021-09-27T02:05:02.408Z</updated>
+  <updated>2021-09-27T02:06:26.226Z</updated>
   <id>http://example.com/</id>
   
   <author>
-    <name>John Doe</name>
+    <name>Nayon</name>
     
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title></title>
-    <link href="http://example.com/2021/09/27/test/"/>
-    <id>http://example.com/2021/09/27/test/</id>
-    <published>2021-09-27T01:27:17.083Z</published>
-    <updated>2021-09-27T02:05:02.408Z</updated>
-    
-    <content type="html"><![CDATA[<p>瓦达瓦大</p><p><img src="/images/test.assets/image-20210927100501676.png" alt="image-20210927100501676"></p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;p&gt;瓦达瓦大&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/images/test.assets/image-20210927100501676.png&quot; alt=&quot;image-20210927100501676&quot;&gt;&lt;/p&gt;
-</summary>
-      
-    
-    
-    
-    
-  </entry>
   
   <entry>
     <title>WinRM-横向移动</title>
