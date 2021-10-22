@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="baidu-site-verification" content="L6Lm9d5Crl"/>
+  
+  
+  
+  
+  <title>PE结构-导入表（2） | 林中小屋</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="首先，PE文件中的数据被载入内存后根据不同页面属性被划分成很多区块(节)，并有区块表（节表）的数据来描述这些区块，这里我们需要注意一点：一个区块中的数据仅仅知识由于属性相同而放一起，并不一定是同一种用途的内容。例如输入表、输出表等就有可能和只读常量一起被放在同一个区块中。因为他们的属性都是可读不可写的。 其次，由于不同用途的数据有可能被放入同一个区块中，因此仅仅依靠区块表是无法确定和定位的。因此还">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PE结构-导入表（2）">
+<meta property="og:url" content="http://antipassion.github.io/2021/10/13/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2)/index.html">
+<meta property="og:site_name" content="林中小屋">
+<meta property="og:description" content="首先，PE文件中的数据被载入内存后根据不同页面属性被划分成很多区块(节)，并有区块表（节表）的数据来描述这些区块，这里我们需要注意一点：一个区块中的数据仅仅知识由于属性相同而放一起，并不一定是同一种用途的内容。例如输入表、输出表等就有可能和只读常量一起被放在同一个区块中。因为他们的属性都是可读不可写的。 其次，由于不同用途的数据有可能被放入同一个区块中，因此仅仅依靠区块表是无法确定和定位的。因此还">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://antipassion.github.io/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2).assets/image-20211015152622826.png">
+<meta property="og:image" content="http://antipassion.github.io/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2).assets/image-20211015153401402.png">
+<meta property="og:image" content="http://antipassion.github.io/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2).assets/image-20211015154327762.png">
+<meta property="og:image" content="http://antipassion.github.io/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2).assets/image-20211015164516486.png">
+<meta property="og:image" content="http://antipassion.github.io/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2).assets/image-20211015193909496.png">
+<meta property="og:image" content="http://antipassion.github.io/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2).assets/image-20211015194546419.png">
+<meta property="og:image" content="http://antipassion.github.io/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2).assets/image-20211015194834185.png">
+<meta property="og:image" content="http://antipassion.github.io/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2).assets/image-20211015194759949.png">
+<meta property="article:published_time" content="2021-10-13T06:45:18.000Z">
+<meta property="article:modified_time" content="2021-10-22T09:24:00.170Z">
+<meta property="article:author" content="Nayon|1163875625@qq.com">
+<meta property="article:tag" content="PE结构">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://antipassion.github.io/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2).assets/image-20211015152622826.png">
+  
+    <link rel="alternative" href="/atom.xml" title="林中小屋" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet" />
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/avatar.png" class="js-avatar">
+            
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/"></a></h1>
+        </hgroup>
+        
+        
+            <form>
+                <input type="text" class="st-default-search-input search" id="local-search-input" placeholder="搜索一下" autocomplete="off">
+            </form>
+            <div id="local-search-result"></div>
+        
+        
+            <script type="text/javascript">
+                (function() {
+                    'use strict';
+                    function getMatchData(keyword, data) {
+                        var matchData = [];
+                        for(var i =0;i<data.length;i++){
+                            if(data[i].title.toLowerCase().indexOf(keyword)>=0) 
+                                matchData.push(data[i])
+                        }
+                        return matchData;
+                    }
+                    var $input = $('#local-search-input');
+                    var $resultContent = $('#local-search-result');
+                    $input.keyup(function(){
+                        $.ajax({
+                            url: '/search.json',
+                            dataType: "json",
+                            success: function( json ) {
+                                var str='<ul class=\"search-result-list\">';                
+                                var keyword = $input.val().trim().toLowerCase();
+                                $resultContent.innerHTML = "";
+                                if ($input.val().trim().length <= 0) {
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                }
+                                var results = getMatchData(keyword, json);
+                                if(results.length === 0){
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                } 
+                                for(var i =0; i<results.length; i++){
+                                    str += "<li><a href='"+ results[i].url +"' class='search-result-title'>"+ results[i].title +"</a></li>";
+                                }
+                                str += "</ul>";
+                                $resultContent.empty();
+                                $resultContent.append(str);
+                                $('#switch-area').hide();
+                            }
+                        });
+                    });
+                })();
+            </script>
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a  href="/archives/">主页</a></li>
+                        
+                            <li><a  href="/archives/">所有文章</a></li>
+                        
+                            <li><a  href="/Nayon">author</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mailto"  target="_blank" href="/1163875625@qq.com" title="mailto">mailto</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/PE%E7%BB%93%E6%9E%84/" style="font-size: 20px;">PE结构</a> <a href="/tags/ctf/" style="font-size: 10px;">ctf</a> <a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" style="font-size: 10px;">内网渗透</a> <a href="/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/" style="font-size: 10px;">域渗透</a>
+                    </div>
+                </section>
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank"  class="main-nav-link switch-friends-link" href="https://fk0x075.github.io/">117</a>
+                    
+                      <a target="_blank"  class="main-nav-link switch-friends-link" href="http://alikon.art/">Nagarita</a>
+                    
+                      <a target="_blank"  class="main-nav-link switch-friends-link" href="https://0range-x.github.io/">0r@nge</a>
+                    
+                    </div>
+                </section>
+                
+                
+            </div>
+        </div>
+    </header>
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页"></a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/avatar.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页"></a></h1>
+            </hgroup>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/Nayon">author</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mailto" target="_blank" href="/1163875625@qq.com" title="mailto">mailto</a>
+                    
+                </div>
+            </nav>
+        </header>
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-PE结构-导入表(2)" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a  href="/2021/10/13/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2)/" class="article-date">
+      <time datetime="2021-10-13T06:45:18.000Z" itemprop="datePublished">2021-10-13</time>
+</a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      PE结构-导入表（2）
+    </h1>
+  
+
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PE%E7%BB%93%E6%9E%84/" rel="tag">PE结构</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>首先，PE文件中的数据被载入内存后根据不同页面属性被划分成很多区块(节)，并有区块表（节表）的数据来描述这些区块，这里我们需要注意一点：<strong>一个区块中的数据仅仅知识由于属性相同而放一起，并不一定是同一种用途的内容。例如输入表、输出表等就有可能和只读常量一起被放在同一个区块中。因为他们的属性都是可读不可写的。</strong></p>
+<p>其次，由于不同用途的数据有可能被放入同一个区块中，因此仅仅依靠区块表是无法确定和定位的。因此还需要通过PE文件头中的IMAGE_OPTIONAL_READER32结构的数据目录表来指出他们的位置，我们可以由数据目录表来定位他们的位置，我们可以由数据目录表来定位的数据包括输入表、输出表、资源、重定位表和TLS等15种数据。</p>
+<h3 id="导入表"><a href="#导入表" class="headerlink" title="导入表"></a>导入表</h3><h4 id="导入表的作用"><a href="#导入表的作用" class="headerlink" title="导入表的作用"></a>导入表的作用</h4><p>当程序运行时，需要多个PE文件共同组成</p>
+<p>PE文件提供哪些功能给其他PE文件是导出表的作用</p>
+<p>PE文件需要依赖的模块以及依赖模块中的哪些函数是导出表的作用</p>
+<h4 id="什么是导出表"><a href="#什么是导出表" class="headerlink" title="什么是导出表"></a>什么是导出表</h4><p>导出表是用于记录该PE文件还需要依赖的模块以及依赖这些模块中的那些函数的一种结构</p>
+<h4 id="如何定位导入表"><a href="#如何定位导入表" class="headerlink" title="如何定位导入表"></a>如何定位导入表</h4><p><strong>定位导入表的原理</strong></p>
+<p>根据之前所学可知，导入、导出等表的起始位置和大小都存放在了IMAGE_OPTIONAL_HEADERS结构的DataDirectory数组当中。而导入表对应的下标为1</p>
+<table>
+<thead>
+<tr>
+<th align="left">宏定义</th>
+<th align="left">值</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">IMAGE_DIRECTORY_ENTRY_IMPORT</td>
+<td align="left">1</td>
+<td align="left">导入表</td>
+</tr>
+</tbody></table>
+<p>定位导入表流程</p>
+<ol>
+<li>找到扩展PE头IMAGE_OPTIONAL_HEADERS的最后一个成员DataDirectory[1]</li>
+<li>根据DataDirectory[1].VirtualAddress 得到导入表的RVA</li>
+<li>将导入表的RVA转为FOA，在文件中定位到导入表</li>
+</ol>
+<h3 id="根据流程定位导入表"><a href="#根据流程定位导入表" class="headerlink" title="根据流程定位导入表"></a>根据流程定位导入表</h3><h4 id="分析demo"><a href="#分析demo" class="headerlink" title="分析demo"></a>分析demo</h4><p>使用everEdit.exe</p>
+<h4 id="找到DataDirectory-1"><a href="#找到DataDirectory-1" class="headerlink" title="找到DataDirectory[1]"></a>找到DataDirectory[1]</h4><p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2).assets/image-20211015152622826.png" alt="image-20211015152622826"></p>
+<p>根据索引，我们找到DataDirectory[1]即第二个表导出表的数据目录</p>
+<table>
+<thead>
+<tr>
+<th>iMAGE_data_directory成员</th>
+<th>值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>VirtualAddress</td>
+<td>0x001CF47C</td>
+<td>导出表的RVA地址</td>
+</tr>
+<tr>
+<td>Size</td>
+<td>0x00000140</td>
+<td>导出表的大小</td>
+</tr>
+</tbody></table>
+<h4 id="得到导出表的RVA"><a href="#得到导出表的RVA" class="headerlink" title="得到导出表的RVA"></a>得到导出表的RVA</h4><p>导出表的RVA即0x001CF47C</p>
+<p>修改VA转FOA程序代码，求出导出表FOA</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// PE.cpp : Defines the entry point for the console application.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;malloc.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;winnt.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;math.h&gt;</span></span></span><br><span class="line"><span class="comment">//在VC6这个比较旧的环境里，没有定义64位的这个宏，需要自己定义，在VS2019中无需自己定义</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_FILE_MACHINE_AMD64  0x8664</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//VA转FOA 32位</span></span><br><span class="line"><span class="comment">//第一个参数为要转换的在内存中的地址：VA</span></span><br><span class="line"><span class="comment">//第二个参数为指向dos头的指针</span></span><br><span class="line"><span class="comment">//第三个参数为指向nt头的指针</span></span><br><span class="line"><span class="comment">//第四个参数为存储指向节指针的数组</span></span><br><span class="line"><span class="function">UINT <span class="title">VaToFoa32</span><span class="params">(UINT va, _IMAGE_DOS_HEADER *dos,_IMAGE_NT_HEADERS* nt, _IMAGE_SECTION_HEADER** sectionArr)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//得到RVA的值：RVA = VA - ImageBase</span></span><br><span class="line">    UINT rva = va - nt-&gt;OptionalHeader.ImageBase;</span><br><span class="line">    <span class="comment">//输出rva</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;rva:%X\n&quot;</span>, rva);</span><br><span class="line">    <span class="comment">//找到PE文件头后的地址 = PE文件头首地址+PE文件头大小</span></span><br><span class="line">    UINT PeEnd = (UINT)dos-&gt;e_lfanew+<span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_NT_HEADERS);</span><br><span class="line">    <span class="comment">//输出PeEnd</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;PeEnd:%X\n&quot;</span>, PeEnd);</span><br><span class="line">    <span class="comment">//判断rva是否位于PE文件头中</span></span><br><span class="line">    <span class="keyword">if</span> (rva &lt; PeEnd) &#123;</span><br><span class="line">        <span class="comment">//如果rva位于PE文件头中，则foa==rva，直接返回rva即可</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;foa:%X\n&quot;</span>, rva);        </span><br><span class="line">        <span class="keyword">return</span> rva;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">//如果rva在PE文件头外</span></span><br><span class="line">        <span class="comment">//判断rva属于哪个节</span></span><br><span class="line">        <span class="keyword">int</span> i;</span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; nt-&gt;FileHeader.NumberOfSections; i++) &#123;</span><br><span class="line">            <span class="comment">//计算内存对齐后节的大小</span></span><br><span class="line">            UINT SizeInMemory = <span class="built_in">ceil</span>((<span class="keyword">double</span>)<span class="built_in">max</span>((UINT)sectionArr[i]-&gt;Misc.VirtualSize ,(UINT)sectionArr[i]-&gt;SizeOfRawData ) / (<span class="keyword">double</span>)nt-&gt;OptionalHeader.SectionAlignment)* nt-&gt;OptionalHeader.SectionAlignment;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (rva &gt;= sectionArr[i]-&gt;VirtualAddress &amp;&amp; rva &lt; (sectionArr[i]-&gt;VirtualAddress + SizeInMemory)) &#123;</span><br><span class="line">                <span class="comment">//找到所属的节</span></span><br><span class="line">                <span class="comment">//输出内存对齐后的节的大小</span></span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;SizeInMemory:%X\n&quot;</span>, SizeInMemory);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (i &gt;= nt-&gt;FileHeader.NumberOfSections) &#123;</span><br><span class="line">            <span class="comment">//未找到</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;没有找到匹配的节\n&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">//计算差值= RVA - 节.VirtualAddress</span></span><br><span class="line">            UINT offset = rva - sectionArr[i]-&gt;VirtualAddress;</span><br><span class="line">            <span class="comment">//FOA = 节.PointerToRawData + 差值</span></span><br><span class="line">            UINT foa = sectionArr[i]-&gt;PointerToRawData + offset;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;foa:%X\n&quot;</span>, foa);</span><br><span class="line">            <span class="keyword">return</span> foa;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//VA转FOA 64位</span></span><br><span class="line"><span class="comment">//第一个参数为要转换的在内存中的地址：VA</span></span><br><span class="line"><span class="comment">//第二个参数为指向dos头的指针</span></span><br><span class="line"><span class="comment">//第三个参数为指向nt头的指针</span></span><br><span class="line"><span class="comment">//第四个参数为存储指向节指针的数组</span></span><br><span class="line"><span class="function">UINT <span class="title">VaToFoa64</span><span class="params">(UINT va, _IMAGE_DOS_HEADER* dos, _IMAGE_NT_HEADERS64* nt, _IMAGE_SECTION_HEADER** sectionArr)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//得到RVA的值：RVA = VA - ImageBase</span></span><br><span class="line">    UINT rva = va - nt-&gt;OptionalHeader.ImageBase;</span><br><span class="line">    <span class="comment">//输出rva</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;rva:%X\n&quot;</span>, rva);</span><br><span class="line">    <span class="comment">//找到PE文件头后的地址 = PE文件头首地址+PE文件头大小</span></span><br><span class="line">    UINT PeEnd = (UINT)dos-&gt;e_lfanew + <span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_NT_HEADERS64);</span><br><span class="line">    <span class="comment">//输出PeEnd</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;PeEnd:%X\n&quot;</span>, PeEnd);</span><br><span class="line">    <span class="comment">//判断rva是否位于PE文件头中</span></span><br><span class="line">    <span class="keyword">if</span> (rva &lt; PeEnd) &#123;</span><br><span class="line">        <span class="comment">//如果rva位于PE文件头中，则foa==rva，直接返回rva即可</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;foa:%X\n&quot;</span>, rva);</span><br><span class="line">        <span class="keyword">return</span> rva;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">//如果rva在PE文件头外</span></span><br><span class="line">        <span class="comment">//判断rva属于哪个节</span></span><br><span class="line">        <span class="keyword">int</span> i;</span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; nt-&gt;FileHeader.NumberOfSections; i++) &#123;</span><br><span class="line">            <span class="comment">//计算内存对齐后节的大小</span></span><br><span class="line">            UINT SizeInMemory = <span class="built_in">ceil</span>((<span class="keyword">double</span>)<span class="built_in">max</span>((UINT)sectionArr[i]-&gt;Misc.VirtualSize ,(UINT)sectionArr[i]-&gt;SizeOfRawData ) / (<span class="keyword">double</span>)nt-&gt;OptionalHeader.SectionAlignment)* nt-&gt;OptionalHeader.SectionAlignment;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (rva &gt;= sectionArr[i]-&gt;VirtualAddress &amp;&amp; rva &lt; (sectionArr[i]-&gt;VirtualAddress + SizeInMemory)) &#123;</span><br><span class="line">                <span class="comment">//找到所属的节</span></span><br><span class="line">                <span class="comment">//输出内存对齐后的节的大小</span></span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;SizeInMemory:%X\n&quot;</span>, SizeInMemory);</span><br><span class="line">				<span class="built_in">VaToFoa32</span>(nt-&gt;OptionalHeader.ImageBase +<span class="number">0x1CF47C</span>,dos,(_IMAGE_NT_HEADERS*)nt,sectionArr);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (i &gt;= nt-&gt;FileHeader.NumberOfSections) &#123;</span><br><span class="line">            <span class="comment">//未找到</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;没有找到匹配的节\n&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">//计算差值= RVA - 节.VirtualAddress</span></span><br><span class="line">            <span class="keyword">int</span> offset = rva - sectionArr[i]-&gt;VirtualAddress;</span><br><span class="line">            <span class="comment">//FOA = 节.PointerToRawData + 差值</span></span><br><span class="line">            <span class="keyword">int</span> foa = sectionArr[i]-&gt;PointerToRawData + offset;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;foa:%X\n&quot;</span>, foa);</span><br><span class="line">            <span class="keyword">return</span> foa;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//创建DOS对应的结构体指针</span></span><br><span class="line">    _IMAGE_DOS_HEADER* dos;</span><br><span class="line">    <span class="comment">//读取文件，返回文件句柄</span></span><br><span class="line">    HANDLE hFile = <span class="built_in">CreateFileA</span>(<span class="string">&quot;C:\\Users\\86156\\Desktop\\everEdit.exe&quot;</span>, GENERIC_READ, FILE_SHARE_READ, <span class="literal">NULL</span>, OPEN_EXISTING, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">//根据文件句柄创建映射</span></span><br><span class="line">    HANDLE hMap = <span class="built_in">CreateFileMappingA</span>(hFile, <span class="literal">NULL</span>, PAGE_READONLY, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">//映射内容</span></span><br><span class="line">    LPVOID pFile = <span class="built_in">MapViewOfFile</span>(hMap, FILE_MAP_READ, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">//类型转换，用结构体的方式来读取</span></span><br><span class="line">    dos = (_IMAGE_DOS_HEADER*)pFile;</span><br><span class="line">    <span class="comment">//输出dos-&gt;e_magic，以十六进制输出</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;dos-&gt;e_magic:%X\n&quot;</span>, dos-&gt;e_magic);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建指向PE文件头标志的指针</span></span><br><span class="line">    DWORD* peId;</span><br><span class="line">    <span class="comment">//让PE文件头标志指针指向其对应的地址=DOS首地址+偏移</span></span><br><span class="line">    peId = (DWORD*)((UINT)dos + dos-&gt;e_lfanew);</span><br><span class="line">    <span class="comment">//输出PE文件头标志，其值应为4550，否则不是PE文件</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;peId:%X\n&quot;</span>, *peId);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建指向可选PE头的第一个成员magic的指针</span></span><br><span class="line">    WORD* magic;</span><br><span class="line">    <span class="comment">//让magic指针指向其对应的地址=PE文件头标志地址+PE文件头标志大小+标准PE头大小</span></span><br><span class="line">    magic = (WORD*)((UINT)peId + <span class="built_in"><span class="keyword">sizeof</span></span>(DWORD) + <span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_FILE_HEADER));</span><br><span class="line">    <span class="comment">//输出magic，其值为0x10b代表32位程序，其值为0x20b代表64位程序</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;magic:%X\n&quot;</span>, *magic);</span><br><span class="line">    <span class="comment">//根据magic判断为32位程序还是64位程序</span></span><br><span class="line">    <span class="built_in"><span class="keyword">switch</span></span> (*magic) &#123;</span><br><span class="line">    <span class="keyword">case</span> IMAGE_NT_OPTIONAL_HDR32_MAGIC:</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;32位程序\n&quot;</span>);</span><br><span class="line">        <span class="comment">//确定为32位程序后，就可以使用_IMAGE_NT_HEADERS来接收数据了</span></span><br><span class="line">        <span class="comment">//创建指向PE文件头的指针</span></span><br><span class="line">        _IMAGE_NT_HEADERS* nt;</span><br><span class="line">        <span class="comment">//让PE文件头指针指向其对应的地址</span></span><br><span class="line">        nt = (_IMAGE_NT_HEADERS*)peId;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Machine:%X\n&quot;</span>, nt-&gt;FileHeader.Machine);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Magic:%X\n&quot;</span>, nt-&gt;OptionalHeader.Magic);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建一个指针数组，该指针数组用来存储所有的节表指针</span></span><br><span class="line">        <span class="comment">//这里相当于_IMAGE_SECTION_HEADER* sectionArr[nt-&gt;FileHeader.NumberOfSections],声明了一个动态数组</span></span><br><span class="line">        _IMAGE_SECTION_HEADER** sectionArr = (_IMAGE_SECTION_HEADER**) <span class="built_in">malloc</span>(<span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_SECTION_HEADER*) * nt-&gt;FileHeader.NumberOfSections);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建指向块表的指针</span></span><br><span class="line">        _IMAGE_SECTION_HEADER* sectionHeader;</span><br><span class="line">        <span class="comment">//让块表的指针指向其对应的地址</span></span><br><span class="line">        sectionHeader = (_IMAGE_SECTION_HEADER*)((UINT)nt + <span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_NT_HEADERS));</span><br><span class="line">        <span class="comment">//计数，用来计算块表地址</span></span><br><span class="line">        <span class="keyword">int</span> cnt = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">//比较 计数 和 块表的个数，即遍历所有块表</span></span><br><span class="line">        <span class="keyword">while</span>(cnt&lt; nt-&gt;FileHeader.NumberOfSections)&#123;</span><br><span class="line">            <span class="comment">//创建指向块表的指针</span></span><br><span class="line">            _IMAGE_SECTION_HEADER* section;</span><br><span class="line">            <span class="comment">//让块表的指针指向其对应的地址=第一个块表地址+计数*块表的大小</span></span><br><span class="line">            section = (_IMAGE_SECTION_HEADER*)((UINT)sectionHeader + <span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_SECTION_HEADER)*cnt);</span><br><span class="line">            <span class="comment">//将得到的块表指针存入数组</span></span><br><span class="line">            sectionArr[cnt++] = section;</span><br><span class="line">            <span class="comment">//输出块表名称</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, section-&gt;Name);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">VaToFoa32</span>(nt-&gt;OptionalHeader.ImageBase +<span class="number">0x11320</span>,dos,nt,sectionArr);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">case</span> IMAGE_NT_OPTIONAL_HDR64_MAGIC:</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;64位程序\n&quot;</span>);</span><br><span class="line">        <span class="comment">//确定为64位程序后，就可以使用_IMAGE_NT_HEADERS64来接收数据了</span></span><br><span class="line">        <span class="comment">//创建指向PE文件头的指针</span></span><br><span class="line">        _IMAGE_NT_HEADERS64* nt;</span><br><span class="line">        nt = (_IMAGE_NT_HEADERS64*)peId;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Machine:%X\n&quot;</span>, nt-&gt;FileHeader.Machine);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Magic:%X\n&quot;</span>, nt-&gt;OptionalHeader.Magic);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建一个指针数组，该指针数组用来存储所有的节表指针</span></span><br><span class="line">        <span class="comment">//这里相当于_IMAGE_SECTION_HEADER* sectionArr[nt-&gt;FileHeader.NumberOfSections],声明了一个动态数组</span></span><br><span class="line">        _IMAGE_SECTION_HEADER** sectionArr = (_IMAGE_SECTION_HEADER**)<span class="built_in">malloc</span>(<span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_SECTION_HEADER*) * nt-&gt;FileHeader.NumberOfSections);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建指向块表的指针</span></span><br><span class="line">        _IMAGE_SECTION_HEADER* sectionHeader;</span><br><span class="line">        <span class="comment">//让块表的指针指向其对应的地址，区别在于这里加上的偏移为_IMAGE_NT_HEADERS64</span></span><br><span class="line">        sectionHeader = (_IMAGE_SECTION_HEADER*)((UINT)nt + <span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_NT_HEADERS64));</span><br><span class="line">        <span class="comment">//计数，用来计算块表地址</span></span><br><span class="line">        <span class="keyword">int</span> cnt = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">//比较 计数 和 块表的个数，即遍历所有块表</span></span><br><span class="line">        <span class="keyword">while</span> (cnt &lt; nt-&gt;FileHeader.NumberOfSections) &#123;</span><br><span class="line">            <span class="comment">//创建指向块表的指针</span></span><br><span class="line">            _IMAGE_SECTION_HEADER* section;</span><br><span class="line">            <span class="comment">//让块表的指针指向其对应的地址=第一个块表地址+计数*块表的大小</span></span><br><span class="line">            section = (_IMAGE_SECTION_HEADER*)((UINT)sectionHeader + <span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_SECTION_HEADER) * cnt);</span><br><span class="line">            <span class="comment">//将得到的块表指针存入数组</span></span><br><span class="line">            sectionArr[cnt++] = section;</span><br><span class="line">            <span class="comment">//输出块表名称</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, section-&gt;Name);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;error!\n&quot;</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">	<span class="built_in">getchar</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此代码本是将VA转为FOA值，但由于VA = ImageBase + RVA，我们可以修改增加一句关键代码使其RVA转FOA</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">VaToFoa32</span>(nt-&gt;OptionalHeader.ImageBase +<span class="number">0x1CF47C</span>,dos,nt,sectionArr);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2).assets/image-20211015153401402.png" alt="image-20211015153401402"></p>
+<p>拿到导出表文件偏移FOA:0x10720</p>
+<p>完成定位</p>
+<h4 id="导入表结构"><a href="#导入表结构" class="headerlink" title="导入表结构"></a>导入表结构</h4><h4 id="导入表个数"><a href="#导入表个数" class="headerlink" title="导入表个数"></a>导入表个数</h4><p>与导出表不同，导入表通常需要包含多个模块，而不像导出表只需要提供PE文件需要提供的导出函数即可</p>
+<p>因此，导出表只有一个，但导入表可能会有多个</p>
+<p>当程序运行时，需要依赖几个模块，就有对应几个导出表</p>
+<p>导出表的结构体</p>
+<p>在C语言中，导出表的结构如下(在winnt.h中有定义)</p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2).assets/image-20211015154327762.png" alt="image-20211015154327762"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_IMPORT_DESCRIPTOR</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">union</span> &#123;</span></span><br><span class="line">        DWORD   Characteristics;            <span class="comment">// 0 for terminating null import descriptor</span></span><br><span class="line">        DWORD   OriginalFirstThunk;         <span class="comment">// RVA to original unbound IAT (PIMAGE_THUNK_DATA)</span></span><br><span class="line">    &#125; DUMMYUNIONNAME;</span><br><span class="line">    DWORD   TimeDateStamp;                  <span class="comment">// 0 if not bound,</span></span><br><span class="line">                                            <span class="comment">// -1 if bound, and real date\time stamp</span></span><br><span class="line">                                            <span class="comment">//     in IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT (new BIND)</span></span><br><span class="line">                                            <span class="comment">// O.W. date/time stamp of DLL bound to (Old BIND)</span></span><br><span class="line"></span><br><span class="line">    DWORD   ForwarderChain;                 <span class="comment">// -1 if no forwarders</span></span><br><span class="line">    DWORD   Name;</span><br><span class="line">    DWORD   FirstThunk;                     <span class="comment">// RVA to IAT (if bound this IAT has actual addresses)</span></span><br><span class="line">&#125; IMAGE_IMPORT_DESCRIPTOR;</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th align="left">成员</th>
+<th align="left">数据宽度</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Characteristics</td>
+<td align="left">DWORD</td>
+<td align="left">标志为0表示结束，没有导入描述符了</td>
+</tr>
+<tr>
+<td align="left">OriginalFirstThunk</td>
+<td align="left">DWORD</td>
+<td align="left">RVA指向IMAGE_THUNK_DATA结构数组 （桥1）</td>
+</tr>
+<tr>
+<td align="left">TimeDateStamp</td>
+<td align="left">DWORD</td>
+<td align="left">时间戳</td>
+</tr>
+<tr>
+<td align="left">ForwarderChain</td>
+<td align="left">DWORD</td>
+<td align="left">链表的前一个结构</td>
+</tr>
+<tr>
+<td align="left">Name</td>
+<td align="left">DWORD</td>
+<td align="left">RVA，指向DLL名字，该名字以‘\0’为结尾</td>
+</tr>
+<tr>
+<td align="left">FirstThunk</td>
+<td align="left">DWORD</td>
+<td align="left">RVA指向IMAGE_THUNK_DATA结构数组 （桥2）</td>
+</tr>
+</tbody></table>
+<h4 id="Characteristics"><a href="#Characteristics" class="headerlink" title="Characteristics"></a>Characteristics</h4><p>标志 为0表示结束 没有导入描述符了</p>
+<h4 id="IMAGE-THUNK-DATA"><a href="#IMAGE-THUNK-DATA" class="headerlink" title="IMAGE_THUNK_DATA"></a>IMAGE_THUNK_DATA</h4><p>在介绍OriginalFirstThunk之前，要先了解一下OriginalFirstThunk和FirstThunk所指向的<strong>结构数组</strong></p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2).assets/image-20211015164516486.png" alt="image-20211015164516486"></p>
+<p>指向的数组中每一项为一个结构，此结构名称是<strong>IMAGE_THUNK_DATA</strong></p>
+<p>数组<strong>最后以一个内容全为0的IMAGE_THUNK_DATA作为结束</strong></p>
+<p>IMAGE_THUNK_DATA实际上只是一个DWORD，但在不同的时刻却拥有不同的解释</p>
+<p>IMAGE_THUNK_DATA有<strong>两种解释</strong>：</p>
+<ul>
+<li>DWORD最高位为0，那么该数值是一个RVA，指向_IMAGE__IMPORT_BY_NAME结构，表明函数是<strong>字符串类型的函数名导入的</strong></li>
+<li>DWORD最高位为1，那么该数值的低31位就是函数的<strong>导出函数的序号</strong></li>
+</ul>
+<p>_IMAGE_IMPORT_BY_NAME结构:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_IMPORT_BY_NAME</span> &#123;</span></span><br><span class="line">    WORD    Hint;</span><br><span class="line">    BYTE    Name[<span class="number">1</span>];</span><br><span class="line">&#125; IMAGE_IMPORT_BY_NAME, *PIMAGE_IMPORT_BY_NAME;</span><br></pre></td></tr></table></figure>
+
+<p>该结构即为：”编号—名称”（Hint/Name）描述部分</p>
+<ul>
+<li>Hint：导出函数地址表的<strong>索引编号</strong>，可能为空且<strong>不一定准确</strong>，由编译器决定，一般不使用该值</li>
+<li>Name：这个是一个以”\0”结尾的字符串，表示函数名</li>
+</ul>
+<p>此时可发现，IMAGE_THUNK_DATA最终提供的数据只有两个：</p>
+<ul>
+<li>DWORD最高位为0时：需要导入函数的名称（Hint不一定准确，所以不使用）</li>
+<li>DWORD最高位为1时：需要导入的函数在导出表中的序号</li>
+</ul>
+<p>此处对应了导出表笔记中的由导出表获得导出函数所需的两种方法</p>
+<ol>
+<li>根据函数名称获取导出函数地址</li>
+<li>根据函数序号获取导出函数地址</li>
+</ol>
+<h4 id="OriginalFirstThunk"><a href="#OriginalFirstThunk" class="headerlink" title="OriginalFirstThunk"></a>OriginalFirstThunk</h4><p>因为它是指向另外数据结构的通路，因此简称为桥1。该字段指向一个包含了一系列结构的数组：IMAGE_THUNK_DATA</p>
+<p>桥1所指向的地址列表被定义为：<strong>INT</strong>（Import Name Table） 导入名称表</p>
+<h2 id="导入表的双桥结构"><a href="#导入表的双桥结构" class="headerlink" title="导入表的双桥结构"></a>导入表的双桥结构</h2><p>桥1 与 桥 2 最终的目的地都是一致的，都指向了引入函数的“编号-名称”（Hint/Name）描述部分</p>
+<p>桥1到IMAGE_THUNK_DATA的过程中，经过了：<strong>INT</strong>（Import Name Table) 导入名称表</p>
+<p>而桥2到IMAGE_THUNK_DATA的过程中，经过了: <strong>IAT</strong>（Import Address Table）导入地址表</p>
+<h4 id="PE文件加载前"><a href="#PE文件加载前" class="headerlink" title="PE文件加载前"></a>PE文件加载前</h4><p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2).assets/image-20211015193909496.png" alt="image-20211015193909496"></p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2).assets/image-20211015194546419.png" alt="image-20211015194546419"></p>
+<h4 id="PE文件载入后"><a href="#PE文件载入后" class="headerlink" title="PE文件载入后"></a>PE文件载入后</h4><p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2).assets/image-20211015194834185.png" alt="image-20211015194834185"></p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2).assets/image-20211015194759949.png" alt="image-20211015194759949"></p>
+<h4 id="加载前后对比"><a href="#加载前后对比" class="headerlink" title="加载前后对比"></a>加载前后对比</h4><ul>
+<li>在PE文件加载前: 桥1指向INT和桥2指向的IAT的数据是<strong>相同</strong>的,但是其<strong>存储的位置是不同的</strong></li>
+<li>在PE文件加载后：桥1指向的INT<strong>不变</strong>，但桥2指向的IAT的数值变成了函数相应的RVA地址</li>
+</ul>
+<p>另：函数相应的RVA地址是根据IAT中的函数名称或者导入表中的序号获得的。</p>
+<h4 id="根据结构分析导入表"><a href="#根据结构分析导入表" class="headerlink" title="根据结构分析导入表"></a>根据结构分析导入表</h4><p>回到先前得到的导入表的FOA，在16进制编辑器中跳转至FOA：0x1CDA7C位置</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a  href="/2021/10/13/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2)/">PE结构-导入表（2）</a></p>
+        <p><span>文章作者:</span><a  href="/" title="访问 Nayon 的个人博客">Nayon</a></p>
+        <p><span>发布时间:</span>2021年10月13日 - 14时45分</p>
+        <p><span>最后更新:</span>2021年10月22日 - 17时24分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2021/10/13/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2)/" title="PE结构-导入表（2）">http://antipassion.github.io/2021/10/13/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2)/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://antipassion.github.io/2021/10/13/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2)/　　作者: " title=""></span>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+    <a  href="/2021/10/14/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8(3)/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          PE结构-导出表(3)
+        
+      </div>
+    </a>
+  
+  
+    <a  href="/2021/10/12/PE%E7%BB%93%E6%9E%84-%E7%B3%BB%E7%BB%9F%E8%A7%A3%E5%AF%86%E7%AF%87(1)/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">PE结构-系统解密篇（1）</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%BC%E5%85%A5%E8%A1%A8"><span class="toc-number">1.</span> <span class="toc-text">导入表</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AF%BC%E5%85%A5%E8%A1%A8%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-number">1.1.</span> <span class="toc-text">导入表的作用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%AF%BC%E5%87%BA%E8%A1%A8"><span class="toc-number">1.2.</span> <span class="toc-text">什么是导出表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%AE%9A%E4%BD%8D%E5%AF%BC%E5%85%A5%E8%A1%A8"><span class="toc-number">1.3.</span> <span class="toc-text">如何定位导入表</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B9%E6%8D%AE%E6%B5%81%E7%A8%8B%E5%AE%9A%E4%BD%8D%E5%AF%BC%E5%85%A5%E8%A1%A8"><span class="toc-number">2.</span> <span class="toc-text">根据流程定位导入表</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%86%E6%9E%90demo"><span class="toc-number">2.1.</span> <span class="toc-text">分析demo</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%89%BE%E5%88%B0DataDirectory-1"><span class="toc-number">2.2.</span> <span class="toc-text">找到DataDirectory[1]</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BE%97%E5%88%B0%E5%AF%BC%E5%87%BA%E8%A1%A8%E7%9A%84RVA"><span class="toc-number">2.3.</span> <span class="toc-text">得到导出表的RVA</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AF%BC%E5%85%A5%E8%A1%A8%E7%BB%93%E6%9E%84"><span class="toc-number">2.4.</span> <span class="toc-text">导入表结构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AF%BC%E5%85%A5%E8%A1%A8%E4%B8%AA%E6%95%B0"><span class="toc-number">2.5.</span> <span class="toc-text">导入表个数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Characteristics"><span class="toc-number">2.6.</span> <span class="toc-text">Characteristics</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#IMAGE-THUNK-DATA"><span class="toc-number">2.7.</span> <span class="toc-text">IMAGE_THUNK_DATA</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#OriginalFirstThunk"><span class="toc-number">2.8.</span> <span class="toc-text">OriginalFirstThunk</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%BC%E5%85%A5%E8%A1%A8%E7%9A%84%E5%8F%8C%E6%A1%A5%E7%BB%93%E6%9E%84"><span class="toc-number"></span> <span class="toc-text">导入表的双桥结构</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#PE%E6%96%87%E4%BB%B6%E5%8A%A0%E8%BD%BD%E5%89%8D"><span class="toc-number">0.1.</span> <span class="toc-text">PE文件加载前</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#PE%E6%96%87%E4%BB%B6%E8%BD%BD%E5%85%A5%E5%90%8E"><span class="toc-number">0.2.</span> <span class="toc-text">PE文件载入后</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A0%E8%BD%BD%E5%89%8D%E5%90%8E%E5%AF%B9%E6%AF%94"><span class="toc-number">0.3.</span> <span class="toc-text">加载前后对比</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%B9%E6%8D%AE%E7%BB%93%E6%9E%84%E5%88%86%E6%9E%90%E5%AF%BC%E5%85%A5%E8%A1%A8"><span class="toc-number">0.4.</span> <span class="toc-text">根据结构分析导入表</span></a></li></ol></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+<div class="bdsharebuttonbox">
+	<a href="#" class="fx fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+	<a href="#" class="fx fa-weixin bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+	<a href="#" class="fx fa-qq bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+	<a href="#" class="fx fa-facebook-official bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+	<a href="#" class="fx fa-twitter bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+	<a href="#" class="fx fa-linkedin bds_linkedin" data-cmd="linkedin" title="分享到linkedin"></a>
+	<a href="#" class="fx fa-files-o bds_copy" data-cmd="copy" title="分享到复制网址"></a>
+</div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"2","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+
+
+
+    
+        <section class="changyan" id="comments">
+  <!--<div id="uyan_frame"></div>-->
+  <div id="SOHUCS"></div>
+  <script charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/changyan.js"></script>
+  <script type="text/javascript">
+    window.changyan.api.config({
+      appid: 'xxxx',
+      conf: 'xxxxxxxxx'
+    });
+  </script>
+</section>
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a  href="/2021/10/14/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8(3)/" title="上一篇: PE结构-导出表(3)">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a  href="/2021/10/12/PE%E7%BB%93%E6%9E%84-%E7%B3%BB%E7%BB%9F%E8%A7%A3%E5%AF%86%E7%AF%87(1)/" title="下一篇: PE结构-系统解密篇（1）">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2021/10/22/awd%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/">awd知识梳理</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/10/18/dll%E5%8A%AB%E6%8C%81%E5%AD%A6%E4%B9%A0/">DLL劫持学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/10/14/PE%E7%BB%93%E6%9E%84-VA%E4%B8%8EFOA%E7%9A%84%E8%BD%AC%E5%8C%96/">PE结构-VA与FOA的转化</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/10/14/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8(3)/">PE结构-导出表(3)</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/10/13/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2)/">PE结构-导入表（2）</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/10/12/PE%E7%BB%93%E6%9E%84-%E7%B3%BB%E7%BB%9F%E8%A7%A3%E5%AF%86%E7%AF%87(1)/">PE结构-系统解密篇（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/09/27/Kerberoasting%E6%94%BB%E5%87%BB/">Kerberoasting</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/09/26/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/">WinRM-横向移动</a></li></ul>
+    
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+
+    <script>
+        $(".post-list").addClass("toc-article");
+        // $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2021 Nayon|1163875625@qq.com
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank">Hexo &nbsp;&nbsp;</a><a href="https://github.com/maochunguang" target="_blank">Blog</a> by tommy
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >极客到访数: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+
+    </div>
+    
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+    <script>
+        $(document).ready(function() {
+            var backgroundnum = 1;
+            var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+            $("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+            $(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+        })
+    </script>
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'xxxxx', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?xxxxxx";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+  <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+
+
+  </div>
+</body>
+</html>
