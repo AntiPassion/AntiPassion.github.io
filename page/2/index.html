@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"antipassion.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"antipassion.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta property="og:type" content="website">
@@ -100,6 +100,7 @@
 
   <div class="site-nav-right">
     <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
     </div>
   </div>
 </div>
@@ -114,16 +115,53 @@
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
 
   </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
   </ul>
 </nav>
 
 
 
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
 
 </div>
     </header>
@@ -149,7 +187,7 @@
     <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/24/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/Nayon.png">
       <meta itemprop="name" content="Nayon|1163875625@qq.com">
       <meta itemprop="description" content="">
     </span>
@@ -177,8 +215,17 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-11-26 21:28:02" itemprop="dateModified" datetime="2021-11-26T21:28:02+08:00">2021-11-26</time>
+                <time title="修改时间：2022-01-25 16:41:30" itemprop="dateModified" datetime="2022-01-25T16:41:30+08:00">2022-01-25</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">代码审计</span></a>
+                </span>
+            </span>
 
           
 
@@ -474,7 +521,7 @@
     <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/24/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/Nayon.png">
       <meta itemprop="name" content="Nayon|1163875625@qq.com">
       <meta itemprop="description" content="">
     </span>
@@ -502,8 +549,17 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-10-28 20:20:48" itemprop="dateModified" datetime="2021-10-28T20:20:48+08:00">2021-10-28</time>
+                <time title="修改时间：2022-01-25 16:41:36" itemprop="dateModified" datetime="2022-01-25T16:41:36+08:00">2022-01-25</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">代码审计</span></a>
+                </span>
+            </span>
 
           
 
@@ -672,7 +728,7 @@
     <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/22/awd%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/Nayon.png">
       <meta itemprop="name" content="Nayon|1163875625@qq.com">
       <meta itemprop="description" content="">
     </span>
@@ -692,10 +748,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-10-22 17:02:01 / 修改时间：17:26:17" itemprop="dateCreated datePublished" datetime="2021-10-22T17:02:01+08:00">2021-10-22</time>
+              <time title="创建时间：2021-10-22 17:02:01" itemprop="dateCreated datePublished" datetime="2021-10-22T17:02:01+08:00">2021-10-22</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-25 16:43:06" itemprop="dateModified" datetime="2022-01-25T16:43:06+08:00">2022-01-25</time>
+              </span>
 
           
 
@@ -765,7 +827,7 @@
     <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/18/dll%E5%8A%AB%E6%8C%81%E5%AD%A6%E4%B9%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/Nayon.png">
       <meta itemprop="name" content="Nayon|1163875625@qq.com">
       <meta itemprop="description" content="">
     </span>
@@ -793,8 +855,17 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-10-22 17:24:45" itemprop="dateModified" datetime="2021-10-22T17:24:45+08:00">2021-10-22</time>
+                <time title="修改时间：2022-01-25 16:42:55" itemprop="dateModified" datetime="2022-01-25T16:42:55+08:00">2022-01-25</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">PE结构</span></a>
+                </span>
+            </span>
 
           
 
@@ -909,80 +980,10 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/16/%E5%88%9D%E8%AF%95%E7%99%BD%E5%8A%A0%E9%BB%91/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Nayon|1163875625@qq.com">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="林中小屋">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/10/16/%E5%88%9D%E8%AF%95%E7%99%BD%E5%8A%A0%E9%BB%91/" class="post-title-link" itemprop="url">初试白加黑（未写完)</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-10-16 20:55:35" itemprop="dateCreated datePublished" datetime="2021-10-16T20:55:35+08:00">2021-10-16</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-10-25 21:29:36" itemprop="dateModified" datetime="2021-10-25T21:29:36+08:00">2021-10-25</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>首先，解释一下什么叫<strong>白加黑</strong>：</p>
-<p>白就是此文件在杀软的白名单中，不会被杀软查杀；黑就是我们的恶意代码，由自己编写。通常黑白共同组成木马的被控端，最大限度逃避软件查杀，增强抗杀能力，且方便免杀处理。一般情况下白为exe（带有签名），黑为dll或者其他，当然黑可以分为多部分。</p>
-<h3 id="白加黑的结构"><a href="#白加黑的结构" class="headerlink" title="白加黑的结构"></a>白加黑的结构</h3><ol>
-<li>EXE（白）–load–&gt; dll （黑）</li>
-<li>EXE（白）–load–&gt; dll （黑） –load –&gt; 恶意代码</li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/14/PE%E7%BB%93%E6%9E%84-VA%E4%B8%8EFOA%E7%9A%84%E8%BD%AC%E5%8C%96/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/Nayon.png">
       <meta itemprop="name" content="Nayon|1163875625@qq.com">
       <meta itemprop="description" content="">
     </span>
@@ -1010,8 +1011,17 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-28 18:40:34" itemprop="dateModified" datetime="2021-12-28T18:40:34+08:00">2021-12-28</time>
+                <time title="修改时间：2022-01-25 16:42:15" itemprop="dateModified" datetime="2022-01-25T16:42:15+08:00">2022-01-25</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">PE结构</span></a>
+                </span>
+            </span>
 
           
 
@@ -1179,7 +1189,7 @@
     <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/14/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%87%BA%E8%A1%A8(3)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/Nayon.png">
       <meta itemprop="name" content="Nayon|1163875625@qq.com">
       <meta itemprop="description" content="">
     </span>
@@ -1207,8 +1217,17 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-28 23:31:05" itemprop="dateModified" datetime="2021-12-28T23:31:05+08:00">2021-12-28</time>
+                <time title="修改时间：2022-01-25 16:42:07" itemprop="dateModified" datetime="2022-01-25T16:42:07+08:00">2022-01-25</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">PE结构</span></a>
+                </span>
+            </span>
 
           
 
@@ -1765,7 +1784,7 @@
     <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/13/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/Nayon.png">
       <meta itemprop="name" content="Nayon|1163875625@qq.com">
       <meta itemprop="description" content="">
     </span>
@@ -1793,8 +1812,17 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-28 23:39:34" itemprop="dateModified" datetime="2021-12-28T23:39:34+08:00">2021-12-28</time>
+                <time title="修改时间：2022-01-25 16:41:58" itemprop="dateModified" datetime="2022-01-25T16:41:58+08:00">2022-01-25</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">PE结构</span></a>
+                </span>
+            </span>
 
           
 
@@ -1980,7 +2008,7 @@
     <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/12/PE%E7%BB%93%E6%9E%84-%E7%B3%BB%E7%BB%9F%E8%A7%A3%E5%AF%86%E7%AF%87(1)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/Nayon.png">
       <meta itemprop="name" content="Nayon|1163875625@qq.com">
       <meta itemprop="description" content="">
     </span>
@@ -2008,8 +2036,17 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-10-14 16:52:13" itemprop="dateModified" datetime="2021-10-14T16:52:13+08:00">2021-10-14</time>
+                <time title="修改时间：2022-01-25 16:41:44" itemprop="dateModified" datetime="2022-01-25T16:41:44+08:00">2022-01-25</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">PE结构</span></a>
+                </span>
+            </span>
 
           
 
@@ -2285,7 +2322,7 @@
     <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/09/27/Kerberoasting%E6%94%BB%E5%87%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/Nayon.png">
       <meta itemprop="name" content="Nayon|1163875625@qq.com">
       <meta itemprop="description" content="">
     </span>
@@ -2313,8 +2350,17 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-09-29 10:49:09" itemprop="dateModified" datetime="2021-09-29T10:49:09+08:00">2021-09-29</time>
+                <time title="修改时间：2022-01-25 16:42:42" itemprop="dateModified" datetime="2022-01-25T16:42:42+08:00">2022-01-25</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/" itemprop="url" rel="index"><span itemprop="name">域渗透</span></a>
+                </span>
+            </span>
 
           
 
@@ -2450,10 +2496,148 @@
   
   
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/09/26/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Nayon.png">
+      <meta itemprop="name" content="Nayon|1163875625@qq.com">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林中小屋">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/09/26/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/" class="post-title-link" itemprop="url">WinRM-横向移动</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-09-26 15:08:44" itemprop="dateCreated datePublished" datetime="2021-09-26T15:08:44+08:00">2021-09-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-25 16:40:54" itemprop="dateModified" datetime="2022-01-25T16:40:54+08:00">2022-01-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/" itemprop="url" rel="index"><span itemprop="name">域渗透</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><strong>WinRM 用于Windows远程管理，他允许管理员远程执行系统命令。通过HTTP(5985) 或 HTTPS SOAP(5986)进行执行，支持Kerberos以及NTLM身份验证以及基本身份验证。使用此服务需要管理员票据。</strong></p>
+<p>假设我们已经获得一台内网服务器的管理员权限(对端服务器允许此用户登陆即可)，并且开启了WinRM管理服务器，那么我们可以利用凭证进行内网横向移动</p>
+<p>开放端口5985的主机运行WInRM服务，可利用端口扫描工具进行探测确认。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -sS -sV --open -p5985 <span class="number">10.10</span><span class="number">.10</span><span class="number">.10</span><span class="number">-12</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926195057008.png" alt="image-20210926195057008"></p>
+<p>如果此时端口5985打开但端口5986已经被关闭，此时WinRM服务配置为仅接受HTTP连接，并加密</p>
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192658012.png" alt="image-20210926192658012"></p>
+<p>利用Poershell Invoke-Command 可通过WinRM服务执行命令。</p>
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192711834.png" alt="image-20210926192711834"></p>
+<p>同时我们还可利用 <strong>WinRM</strong> 远程执行Mimikatz来导出内存中的票据，无需将Mimikatz放入目标机器中执行。</p>
+<p>此处使用Mimikatz导出票据，前提条件是你已获得管理员权限，否则将会导出失败。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Import-Module ./Invoke-Mimikatz.ps1</span><br><span class="line">Invoke-Mimikatz -ComputerName TARGET</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192725400.png" alt="image-20210926192725400"></p>
+<p>利用导出的凭证，继续横向渗透。</p>
+<p>对于不运行 <strong>WinRM</strong> 的系统，可以利用Powershell命令进行启用配置。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Enable-PSRemoting -Force</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192736459.png" alt="image-20210926192736459"></p>
+<p>默认情况下，可能无法通过 WinRM 连接到另一个系统， 并且可能需要额外的配置。 以下配置可能帮助我们解决配置错误问题。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Winrm quickconfig</span><br><span class="line">winrm set winrm/config/client @&#123;AllowUnencrypted = &quot;true</span><br><span class="line">Set-Item WSMan:localhost\client\trustedhosts -value *</span><br></pre></td></tr></table></figure>
+
+<h2 id="WinRs"><a href="#WinRs" class="headerlink" title="WinRs"></a>WinRs</h2><p>WinRS 是一个命令行工具，它是Windows 2008及更高版本的一部分。如果启用了WinRM,此实用程序可用于远程执行主机上的命令。在CMD参数上可建立一个新的远程cmd会话。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">winrs -r:http://10.10.10.12:5985 -u:administrator -p:xxxxx &quot;cmd&quot;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192758398.png" alt="image-20210926192758398"></p>
+<p>也可对其远程执行命令而非一个cmd会话，以便对目标远程探测</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">winrs -r:http://10.10.10.12:5985 -u:administrator -p:xxxxx &quot;net localgroup administrators&quot;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192808642.png" alt="image-20210926192808642"></p>
+<p>也可利用msf 的 web_delivery模块远程无文件上线msf。此模块将生成一个将在本地托管的有效载荷，并将生成需要在目标上执行的powershell命令。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">use multi/script/web_delivery</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192818719.png" alt="image-20210926192818719"></p>
+<p><strong>利用winrs远程执行:</strong></p>
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192827384.png" alt="image-20210926192827384"></p>
+<h2 id="元破解"><a href="#元破解" class="headerlink" title="元破解"></a>元破解</h2><p>MSF 有几个模块，可用于发现开启了WinRM服务的主机、发现凭证以进行服务身份验证以及执行任意命令和代码。以下模块可以发现启用了WinRM 服务的系统机器支持的身份验证协议。</p>
+<h3 id="探测WinRM验证方式"><a href="#探测WinRM验证方式" class="headerlink" title="探测WinRM验证方式"></a>探测WinRM验证方式</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">auxiliary/scanner/winrm/winrm_auth_methods</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192845668.png" alt="image-20210926192845668"></p>
+<h3 id="探测票据有效性"><a href="#探测票据有效性" class="headerlink" title="探测票据有效性"></a>探测票据有效性</h3><p>如果已经获得服务器上的缓存票据，则这些票据可用于通过<strong>WinRM</strong>服务与其他主机进行身份验证。以下模块可检测票据是否对其他主机有效。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">auxiliary/scanner/winrm/winrm_login </span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192855464.png" alt="image-20210926192855464"></p>
+<h3 id="利用票据执行命令"><a href="#利用票据执行命令" class="headerlink" title="利用票据执行命令"></a>利用票据执行命令</h3><p>通过<strong>WinRM</strong> 服务执行任意命令。此模块需要本地管理员凭据、域和目标主机。</p>
+<p>此处未能成功执行。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">auxiliary/scanner/winrm/winrm_cmd</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192903042.png" alt="image-20210926192903042"></p>
+<p>也可利用WinRM和以下模块执行命令。该模块需要本地管理员凭证和代码将执行的主机列表。此模块可用于横向移动到域内主机。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">exploit/windows/winrm/winrm_script_exec</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192912391.png" alt="image-20210926192912391"></p>
+<h2 id="其他利用手段"><a href="#其他利用手段" class="headerlink" title="其他利用手段"></a>其他利用手段</h2><p>​    <strong>1.开启3389远程桌面控制</strong></p>
+<p>​    若开启了WinRM,可利用PeekABoo工具或直接对注册表操作开启3389端口</p>
+<p>​    <strong>2.端口复用做后门</strong></p>
+<p>​    将WInRM监听端口由5985改为80或443等常用端口，及时端口被Web服务占用也不会影响，并且不会影响web服务的执行：</p>
+<p>​    （1）配置目标WinRM服务，更改监听端口开启复用模式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">winrm set winrm/config/Listener?Address=*+Transport=HTTP @&#123;Port=&quot;80&quot;&#125;</span><br><span class="line">winrm set winrm/config/service @&#123;EnableCompatibilityHttpListener=&quot;true&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    （2）链接目标</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">winrs -r:http://192.168.1.152 -u:administrator -p:xxxx cmd</span><br></pre></td></tr></table></figure>
+
+<p>​    此方法适用于存在web服务的主机，并不会再开启新端口，较为隐蔽。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
   </nav>
 
 
@@ -2511,6 +2695,8 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Nayon|1163875625@qq.com"
+      src="/images/Nayon.png">
   <p class="site-author-name" itemprop="name">Nayon|1163875625@qq.com</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -2519,12 +2705,16 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-count">20</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -2557,7 +2747,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">Nayon|1163875625@qq.com</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
 
         
@@ -2603,7 +2793,7 @@
 <script src="/js/motion.js"></script>
 
 
-<script src="/js/schemes/muse.js"></script>
+<script src="/js/schemes/pisces.js"></script>
 
 
 <script src="/js/next-boot.js"></script>
@@ -2614,6 +2804,10 @@
   
 
 
+
+
+  
+<script src="/js/local-search.js"></script>
 
 
 
