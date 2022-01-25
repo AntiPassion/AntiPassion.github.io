@@ -6,7 +6,7 @@
   <link href="http://antipassion.github.io/atom.xml" rel="self"/>
   
   <link href="http://antipassion.github.io/"/>
-  <updated>2022-01-25T15:09:21.505Z</updated>
+  <updated>2022-01-25T13:35:33.902Z</updated>
   <id>http://antipassion.github.io/</id>
   
   <author>
@@ -15,32 +15,6 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title>about</title>
-    <link href="http://antipassion.github.io/2022/01/25/about/"/>
-    <id>http://antipassion.github.io/2022/01/25/about/</id>
-    <published>2022-01-25T15:03:13.000Z</published>
-    <updated>2022-01-25T15:09:21.505Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;ul&gt;
-&lt;li&gt;大三在读计算机专业&lt;/li&gt;
-&lt;li&gt;喜欢钻研各种技术&lt;/li&gt;
-&lt;li&gt;前Ctfer&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&quot;/images/about.assets/image-20220125230816089.png&quot;</summary>
-        
-      
-    
-    
-    
-    
-  </entry>
   
   <entry>
     <title>约束委派攻击</title>
@@ -510,6 +484,31 @@
         
     <summary type="html">&lt;h2 id=&quot;0x01-简介&quot;&gt;&lt;a href=&quot;#0x01-简介&quot; class=&quot;headerlink&quot; title=&quot;0x01 简介&quot;&gt;&lt;/a&gt;0x01 简介&lt;/h2&gt;&lt;p&gt;​    &lt;strong&gt;Kerberoasting的概念&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;​  </summary>
+        
+      
+    
+    
+    
+    <category term="域渗透" scheme="http://antipassion.github.io/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/"/>
+    
+    
+    <category term="域渗透" scheme="http://antipassion.github.io/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>WinRM-横向移动</title>
+    <link href="http://antipassion.github.io/2021/09/26/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/"/>
+    <id>http://antipassion.github.io/2021/09/26/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/</id>
+    <published>2021-09-26T07:08:44.000Z</published>
+    <updated>2022-01-25T13:37:24.193Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;&lt;strong&gt;WinRM 用于Windows远程管理，他允许管理员远程执行系统命令。通过HTTP(5985) 或 HTTPS</summary>
         
       
     
