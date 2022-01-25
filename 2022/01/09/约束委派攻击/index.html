@@ -1,12 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-  
-  <title>约束委派攻击 | 林中小屋</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"antipassion.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
   <meta name="description" content="约束委派接上述的非约束委派，由于非约束委派的不安全性，微软在windows2003中发布了约束委派的功能。约束委派在Kerberos中User不会直接发送TGT给服务，而是对发送给service1的认证信息做了限制，不允许service1代表User使用这个TGT去访问其他服务。这里包括一组名为S4U2Self（Service for User to  Self）和S4U2Proxy（Servic">
 <meta property="og:type" content="article">
 <meta property="og:title" content="约束委派攻击">
@@ -39,79 +52,193 @@
 <meta property="article:tag" content="域渗透">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://antipassion.github.io/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109233827841.png">
-  
-    <link rel="alternate" href="/atom.xml" title="林中小屋" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="/favicon.png">
-  
-  
-    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  
-  
-<link rel="stylesheet" href="/css/style.css">
 
-<meta name="generator" content="Hexo 5.4.0"></head>
+<link rel="canonical" href="http://antipassion.github.io/2022/01/09/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/">
 
-<body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">林中小屋</a>
-      </h1>
-      
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>约束委派攻击 | 林中小屋</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="林中小屋" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
-        
-          <a class="main-nav-link" href="/">Home</a>
-        
-          <a class="main-nav-link" href="/archives">Archives</a>
-        
-      </nav>
-      <nav id="sub-nav">
-        
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
-        
-        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://AntiPassion.github.io"></form>
-      </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">林中小屋</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
     </div>
   </div>
-</header>
-      <div class="outer">
-        <section id="main"><article id="post-约束委派攻击" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2022/01/09/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/" class="article-date">
-  <time datetime="2022-01-09T15:21:05.000Z" itemprop="datePublished">2022-01-09</time>
-</a>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
     
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/">域渗透</a>
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
   </div>
 
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="article-title" itemprop="name">
-      约束委派攻击
-    </h1>
-  
 
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2022/01/09/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Nayon.png">
+      <meta itemprop="name" content="Nayon">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林中小屋">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          约束委派攻击
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-09 23:21:05" itemprop="dateCreated datePublished" datetime="2022-01-09T23:21:05+08:00">2022-01-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-25 21:35:33" itemprop="dateModified" datetime="2022-01-25T21:35:33+08:00">2022-01-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/" itemprop="url" rel="index"><span itemprop="name">域渗透</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
       </header>
+
     
-    <div class="article-entry" itemprop="articleBody">
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
         <h2 id="约束委派"><a href="#约束委派" class="headerlink" title="约束委派"></a>约束委派</h2><p>接上述的非约束委派，由于非约束委派的不安全性，微软在windows2003中发布了约束委派的功能。约束委派在Kerberos中User不会直接发送TGT给服务，而是对发送给service1的认证信息做了限制，不允许service1代表User使用这个TGT去访问其他服务。这里包括一组名为S4U2Self（Service for User to  Self）和S4U2Proxy（Service for User to Proxy）的Kerberos协议扩展。</p>
 <p><strong>流程:</strong></p>
@@ -203,144 +330,206 @@
 <p>注: 此处使用的cifs服务进行的攻击，若脚本提示认证失败，最大的可能为我们的利用ST票据与攻击应该使用的ST票据不符。</p>
 <h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>摸了……..</p>
 
-      
     </div>
-    <footer class="article-footer">
-      <a data-url="http://antipassion.github.io/2022/01/09/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/" data-id="ckyu7e9pb0019xgu49vx1bnyh" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/" rel="tag">域渗透</a></li></ul>
 
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/" rel="tag"># 域渗透</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/01/06/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/" rel="prev" title="非约束委派攻击">
+      <i class="fa fa-chevron-left"></i> 非约束委派攻击
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE"><span class="nav-number">1.</span> <span class="nav-text">约束委派</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87%EF%BC%9A"><span class="nav-number">1.0.1.</span> <span class="nav-text">前期准备：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%91%E7%8E%B0%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE"><span class="nav-number">1.0.2.</span> <span class="nav-text">发现约束委派:</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E6%9F%A5%E6%89%BE%E5%9F%9F%E4%B8%AD%E9%85%8D%E7%BD%AE%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E7%94%A8%E6%88%B7"><span class="nav-number">1.0.2.0.1.</span> <span class="nav-text">查找域中配置约束委派用户</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E5%9C%A8%E5%9F%9F%E4%B8%AD%E6%9F%A5%E6%89%BE%E9%85%8D%E7%BD%AE%E4%BA%86%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E4%B8%BB%E6%9C%BA"><span class="nav-number">1.0.2.0.2.</span> <span class="nav-text">在域中查找配置了约束委派主机</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%94%BB%E5%87%BB%E5%88%A9%E7%94%A8%EF%BC%9A"><span class="nav-number">1.0.3.</span> <span class="nav-text">攻击利用：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%9F%9F%E7%94%A8%E6%88%B7%E5%AD%98%E5%9C%A8%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE"><span class="nav-number">1.0.3.1.</span> <span class="nav-text">域用户存在约束委派:</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#kekeo-exe%E7%BB%93%E5%90%88%E5%AD%98%E5%9C%A8%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E7%9A%84%E5%9F%9F%E7%94%A8%E6%88%B7%E6%98%8E%E6%96%87%E5%AF%86%E7%A0%81%E7%94%B3%E8%AF%B7%E5%8F%AF%E8%BD%AC%E5%8F%91%E7%9A%84TGT%E7%A5%A8%E6%8D%AE"><span class="nav-number">1.0.3.1.1.</span> <span class="nav-text">kekeo.exe结合存在约束委派的域用户明文密码申请可转发的TGT票据</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#kekeo-exe%E7%BB%93%E5%90%88%E5%AD%98%E5%9C%A8%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E7%9A%84%E5%9F%9F%E7%94%A8%E6%88%B7%E7%9A%84NTLM%E7%94%B3%E8%AF%B7%E5%8F%AF%E8%BD%AC%E5%8F%91%E7%9A%84TGT%E7%A5%A8%E6%8D%AE"><span class="nav-number">1.0.3.1.2.</span> <span class="nav-text">kekeo.exe结合存在约束委派的域用户的NTLM申请可转发的TGT票据</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E5%88%A9%E7%94%A8kekeo%E8%BF%9B%E8%A1%8CS4U%E4%BC%AA%E9%80%A0"><span class="nav-number">1.0.3.1.3.</span> <span class="nav-text">利用kekeo进行S4U伪造</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#PTT%E5%88%A9%E7%94%A8%E6%8B%BF%E5%88%B0%E7%9A%84TGS%E7%A5%A8%E6%8D%AE"><span class="nav-number">1.0.3.1.4.</span> <span class="nav-text">PTT利用拿到的TGS票据</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%9F%9F%E4%B8%BB%E6%9C%BA%E5%AD%98%E5%9C%A8%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE"><span class="nav-number">1.0.3.2.</span> <span class="nav-text">域主机存在约束委派:</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#kekeo-exe%E7%BB%93%E5%90%88%E5%AD%98%E5%9C%A8%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E7%9A%84%E5%9F%9F%E4%B8%BB%E6%9C%BA%E7%9A%84%E6%9C%8D%E5%8A%A1%E8%B4%A6%E6%88%B7%E7%9A%84NTLM%E7%94%B3%E8%AF%B7%E5%8F%AF%E8%BD%AC%E5%8F%91%E7%9A%84TGT"><span class="nav-number">1.0.3.2.1.</span> <span class="nav-text">kekeo.exe结合存在约束委派的域主机的服务账户的NTLM申请可转发的TGT</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E9%80%9A%E8%BF%87kekeo%E8%BF%9B%E8%A1%8CS4U%E4%BC%AA%E9%80%A0"><span class="nav-number">1.0.3.2.2.</span> <span class="nav-text">通过kekeo进行S4U伪造</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#PTT%E5%88%A9%E7%94%A8%E6%8B%BF%E5%88%B0%E7%9A%84TGS%E7%A5%A8%E6%8D%AE-1"><span class="nav-number">1.0.3.2.3.</span> <span class="nav-text">PTT利用拿到的TGS票据</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%9F%E5%A4%96%E5%88%A9%E7%94%A8"><span class="nav-number">1.0.4.</span> <span class="nav-text">域外利用</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%9F%9F%E5%A4%96%E4%BD%BF%E7%94%A8adfind%E5%8F%91%E7%8E%B0%E9%9D%9E%E7%BA%A6%E6%9D%9F-%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E4%B8%BB%E6%9C%BA%E6%88%96%E7%94%A8%E6%88%B7%E6%97%B6%EF%BC%8C%E5%8F%AF%E4%BD%BF%E7%94%A8%E5%A6%82%E4%B8%8B%E5%91%BD%E4%BB%A4"><span class="nav-number">1.0.4.1.</span> <span class="nav-text">域外使用adfind发现非约束&#x2F;约束委派主机或用户时，可使用如下命令:</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E5%9C%A8%E5%9F%9F%E5%A4%96%E6%8E%A2%E6%B5%8B%E5%AD%98%E5%9C%A8%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E7%9A%84%E5%9F%9F%E7%94%A8%E6%88%B7%E8%B4%A6%E6%88%B7"><span class="nav-number">1.0.4.1.1.</span> <span class="nav-text">在域外探测存在约束委派的域用户账户:</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E5%9C%A8%E5%9F%9F%E5%A4%96%E6%8E%A2%E6%B5%8B%E5%AD%98%E5%9C%A8%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E7%9A%84%E5%9F%9F%E4%B8%BB%E6%9C%BA"><span class="nav-number">1.0.4.1.2.</span> <span class="nav-text">在域外探测存在约束委派的域主机:</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%9F%9F%E5%A4%96%E9%80%9A%E8%BF%87getST-py%E8%BF%9B%E8%A1%8C%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB"><span class="nav-number">1.0.4.2.</span> <span class="nav-text">域外通过getST.py进行约束委派攻击</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E5%88%A9%E7%94%A8secretsdump-py-%E6%8B%96%E5%8F%96hash"><span class="nav-number">1.0.4.2.1.</span> <span class="nav-text">利用secretsdump.py 拖取hash</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">1.0.5.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Nayon"
+      src="/images/Nayon.png">
+  <p class="site-author-name" itemprop="name">Nayon</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Nayon</span>
+</div>
+<div>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<span id="busuanzi_container_site_pv" style='display:none'>
+    本站总访问量 <span id="busuanzi_value_site_pv"></span> 次
+    <span class="post-meta-divider">|</span>
+</span>
+<span id="busuanzi_container_site_uv" style='display:none'>
+    有<span id="busuanzi_value_site_uv"></span>人看过我的博客啦
+</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
     </footer>
   </div>
-  
-    
-<nav id="article-nav">
-  
-  
-    <a href="/2022/01/06/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">非约束委派攻击</div>
-    </a>
-  
-</nav>
 
   
-</article>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
 
-</section>
-        
-          <aside id="sidebar">
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">分类</h3>
-    <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/PE%E7%BB%93%E6%9E%84/">PE结构</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/ctf/">ctf</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/">域渗透</a></li></ul>
-    </div>
-  </div>
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
 
 
   
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">标签</h3>
-    <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/PE%E7%BB%93%E6%9E%84/" rel="tag">PE结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ctf/" rel="tag">ctf</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" rel="tag">代码审计</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/" rel="tag">域渗透</a></li></ul>
-    </div>
-  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">标签云</h3>
-    <div class="widget tagcloud">
-      <a href="/tags/PE%E7%BB%93%E6%9E%84/" style="font-size: 20px;">PE结构</a> <a href="/tags/ctf/" style="font-size: 10px;">ctf</a> <a href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" style="font-size: 20px;">代码审计</a> <a href="/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/" style="font-size: 15px;">域渗透</a>
-    </div>
-  </div>
 
   
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">归档</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a></li></ul>
-    </div>
-  </div>
 
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">最新文章</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/2022/01/09/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/">约束委派攻击</a>
-          </li>
-        
-          <li>
-            <a href="/2022/01/06/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/">非约束委派攻击</a>
-          </li>
-        
-          <li>
-            <a href="/2021/11/19/PE%E7%BB%93%E6%9E%84-DOS%E5%A4%B4/">PE结构-DOS头</a>
-          </li>
-        
-          <li>
-            <a href="/2021/11/16/PE%E7%BB%93%E6%9E%84-PE%E6%96%87%E4%BB%B6%E7%9A%84%E4%B8%A4%E7%A7%8D%E7%8A%B6%E6%80%81/">PE结构-PE文件的两种状态</a>
-          </li>
-        
-          <li>
-            <a href="/2021/11/12/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0/">SSTI模板注入学习</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-
-  
-</aside>
-        
-      </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2022 Nayon<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
-    </div>
-  </div>
-</footer>
-    </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
-    
-
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-
-
-  
-<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-
-  
-<script src="/fancybox/jquery.fancybox.pack.js"></script>
-
-
-
-
-<script src="/js/script.js"></script>
-
-
-
-
-  </div>
 </body>
 </html>
