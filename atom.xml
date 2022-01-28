@@ -6,7 +6,7 @@
   <link href="http://antipassion.github.io/atom.xml" rel="self"/>
   
   <link href="http://antipassion.github.io/"/>
-  <updated>2022-01-25T13:35:33.902Z</updated>
+  <updated>2022-01-28T04:35:36.008Z</updated>
   <id>http://antipassion.github.io/</id>
   
   <author>
@@ -21,16 +21,12 @@
     <link href="http://antipassion.github.io/2022/01/09/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/"/>
     <id>http://antipassion.github.io/2022/01/09/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/</id>
     <published>2022-01-09T15:21:05.000Z</published>
-    <updated>2022-01-25T13:35:33.902Z</updated>
+    <updated>2022-01-28T04:35:36.008Z</updated>
     
     
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;约束委派&quot;&gt;&lt;a href=&quot;#约束委派&quot; class=&quot;headerlink&quot;</summary>
-        
-      
+    <summary type="html">&lt;h2 id=&quot;约束委派&quot;&gt;&lt;a href=&quot;#约束委派&quot; class=&quot;headerlink&quot; title=&quot;约束委派&quot;&gt;&lt;/a&gt;约束委派&lt;/h2&gt;&lt;p&gt;接上述的非约束委派，由于非约束委派的不安全性，微软在windows2003中发布了约束委派的功能。约束委派在Kerberos中User不会直接发送TGT给服务，而是对发送给service1的认证信息做了限制，不允许service1代表User使用这个TGT去访问其他服务。这里包括一组名为S4U2Self（Service for User to  Self）和S4U2Proxy（Service for User to Proxy）的Kerberos协议扩展。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;流程:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109233827841.png&quot; alt=&quot;image-20220109233827841&quot;&gt;&lt;/p&gt;</summary>
     
     
     
