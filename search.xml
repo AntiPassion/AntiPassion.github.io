@@ -4,7 +4,7 @@
     <title>PE结构-DOS头</title>
     <url>/2021/11/19/PE%E7%BB%93%E6%9E%84-DOS%E5%A4%B4/</url>
     <content><![CDATA[<p>PE结构-DOS头，本部分为参照吾爱破解论坛lyl610abc师傅<a href="https://www.52pojie.cn/thread-1403011-1-1.html">PE文件笔记</a>所整理的学习笔记。</p>
-<h3 id="DOS部首"><a href="#DOS部首" class="headerlink" title="DOS部首"></a>DOS部首</h3><h4 id="DOS部首结构"><a href="#DOS部首结构" class="headerlink" title="DOS部首结构"></a>DOS部首结构</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="DOS部首"><a href="#DOS部首" class="headerlink" title="DOS部首"></a>DOS部首</h3><h4 id="DOS部首结构"><a href="#DOS部首结构" class="headerlink" title="DOS部首结构"></a>DOS部首结构</h4><span id="more"></span>
 
 <p><strong>其结构分为两部分:</strong></p>
 <ol>
@@ -42,7 +42,7 @@
 <p>​    <strong>Kerberoasting的原理</strong></p>
 <p>​    <strong>Kerberoasting的实现</strong></p>
 <p>​    <strong>Kerberoasting后门利用</strong></p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
 
 <h2 id="0x02-基本概念"><a href="#0x02-基本概念" class="headerlink" title="0x02 基本概念"></a>0x02 基本概念</h2><h3 id="一、SPN是什么"><a href="#一、SPN是什么" class="headerlink" title="一、SPN是什么:"></a>一、<strong>SPN是什么:</strong></h3><p>服务主题名称( SPN: Service Principal Names) 是服务实例， 可以将其理解为一个服务（比如HTTTP、MSSQL）的唯一标识符，服务在加入域中时是自动注册的。</p>
 <p>如果在整个域或林中的计算机上安装多个服务实例，则每个实例都必须有自己的SPN。如果客户端可能使用多个名称进行身份验证，则给定服务实例可以具有多个SPN。SPN始终包含运行服务实例主机的名称，因此服务实例可以为其主机名称或别名注册SPN。如果想使用<strong>Kerberos</strong>协议进行认证服务，那必须正确配置SPN</p>
@@ -164,7 +164,7 @@
 <figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">a</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;a&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">b</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;b&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">c</span>(<span class="params"><span class="variable">$args1</span>,<span class="variable">$args2</span></span>)</span>&#123;</span><br><span class="line">    <span class="variable">$args1</span>(<span class="variable">$args2</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$action</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;action&#x27;</span>];</span><br><span class="line"><span class="variable">$cmd</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;cmd&#x27;</span>];</span><br><span class="line">c(<span class="variable">$action</span>,<span class="variable">$cmd</span>);</span><br><span class="line"><span class="comment">//浏览器获取到的值 b ，现在作为 c() 函数的参数插入到了函数中，并且在函数中作为函数名调用了另外一个函数</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025160512247.png" alt="image-20211025160512247"></p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
 
 <p>利用<code>$action</code>、<code>$cmd</code> 动态传递参数，执行命令</p>
 <h4 id="匿名函数-Anonymous-functions"><a href="#匿名函数-Anonymous-functions" class="headerlink" title="匿名函数(Anonymous functions)"></a>匿名函数(Anonymous functions)</h4><p>也被称之为闭包函数(closures)，允许临时创建一个没有指定名称的函数。最经常用作回调函数(callback)参数的值</p>
@@ -289,7 +289,7 @@
     <url>/2021/10/24/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-1/</url>
     <content><![CDATA[<h4 id="审计时可能会涉及到的超全局变量"><a href="#审计时可能会涉及到的超全局变量" class="headerlink" title="审计时可能会涉及到的超全局变量"></a>审计时可能会涉及到的超全局变量</h4><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$GLOBALS</span>;</span><br><span class="line"><span class="variable">$_SERVER</span>;</span><br><span class="line"><span class="variable">$_REQUEST</span>;</span><br><span class="line"><span class="variable">$_POST</span>;</span><br><span class="line"><span class="variable">$_GET</span>;</span><br><span class="line"><span class="variable">$_FILES</span>;</span><br><span class="line"><span class="variable">$_ENV</span>;</span><br><span class="line"><span class="variable">$_COOKIE</span>;</span><br><span class="line"><span class="variable">$_SESSION</span></span><br><span class="line">    </span><br></pre></td></tr></table></figure>
 
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
 
 <h4 id="各个变量作用说明"><a href="#各个变量作用说明" class="headerlink" title="各个变量作用说明"></a>各个变量作用说明</h4><p>(1) $GLOBALS 引用全局作用域中可用的全部变量</p>
 <p>在一个php脚本的全部作用域全都可以访问到，$GLOBALS是一个包含了全部变量的全局组合数组。变量的名字就是数组的键。</p>
@@ -444,7 +444,7 @@
 <p>模板注入问题主要出现的框架:</p>
 <figure class="highlight html"><table><tr><td class="code"><pre><span class="line">Python :jinja2、mako、tornado、django</span><br><span class="line">php: smarty、twig</span><br><span class="line">java： jade、velocity</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
 
 <h3 id="概念总结"><a href="#概念总结" class="headerlink" title="概念总结:"></a>概念总结:</h3><p>​    模板引擎用于将用户数据结合预先设计好的模板代码结合，生成一套属于用户自己的前端html页面，反馈给客户端浏览器于用户使用。</p>
 <p><img src="/images/SSTI%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0.assets/image-20211112191610984.png" alt="image-20211112191610984"></p>
@@ -646,7 +646,7 @@
     <url>/2021/09/26/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/</url>
     <content><![CDATA[<p><strong>WinRM 用于Windows远程管理，他允许管理员远程执行系统命令。通过HTTP(5985) 或 HTTPS SOAP(5986)进行执行，支持Kerberos以及NTLM身份验证以及基本身份验证。使用此服务需要管理员票据。</strong></p>
 <p>假设我们已经获得一台内网服务器的管理员权限(对端服务器允许此用户登陆即可)，并且开启了WinRM管理服务器，那么我们可以利用凭证进行内网横向移动</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
 
 <p>开放端口5985的主机运行WInRM服务，可利用端口扫描工具进行探测确认。</p>
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">nmap -sS -sV --open -p5985 <span class="number">10.10</span><span class="number">.10</span><span class="number">.10</span><span class="number">-12</span></span><br></pre></td></tr></table></figure>
@@ -727,7 +727,7 @@
 <li>加固阶段</li>
 <li>攻防阶段</li>
 </ol>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
 
 <h3 id="1-加固阶段"><a href="#1-加固阶段" class="headerlink" title="1.加固阶段"></a>1.加固阶段</h3><ol>
 <li><p>修改ssh登陆密码</p>
@@ -776,7 +776,7 @@
 <ul>
 <li><strong>作用</strong></li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
 
 <p>用于访问本地文件系统，在CTF中常用于<strong>读取本地文件</strong>且不受allow_url_fopen与allow_url_include的开关影响</p>
 <p>include()、require()、require_once()、include_once() 参数可控的情况下，如导入非php文件，则仍会按照php的语法进行解析。</p>
@@ -1043,7 +1043,7 @@
     <url>/2021/10/18/dll%E5%8A%AB%E6%8C%81%E5%AD%A6%E4%B9%A0/</url>
     <content><![CDATA[<h2 id="DLL劫持"><a href="#DLL劫持" class="headerlink" title="DLL劫持"></a>DLL劫持</h2><h3 id="什么是dll文件？"><a href="#什么是dll文件？" class="headerlink" title="什么是dll文件？"></a>什么是dll文件？</h3><p>DLL（Dynamic Link Library）被称为动态链接库文件，又被称之为“应用程序拓展”，是软件文件类型。在Windows中，许多应用程序并不是一个完整的可执行文件，它们被分割成一些相对独立的动态链接库，即DLL文件，放置于系统中。当我们执行某一个程序时，相应的DLL文件就会被调用。一个应用程序可使用多个DLL文件，一个DLL文件也可能被不同的应用程序使用，这样的DLL文件被称为共享DLL文件。</p>
 <p>如果在进程尝试加载一个DLL时没有指定DLL的绝对路径，那么Windows会尝试去按照顺序搜索这些特定目录时下查找这个DLL,只要能够将恶意的DLL放在优先于正常DLL所在的目录，就能够欺骗系统优先加载恶意DLL，来实现”劫持”上线</p>
-<h3 id="dll原理利用"><a href="#dll原理利用" class="headerlink" title="dll原理利用"></a>dll原理利用</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="dll原理利用"><a href="#dll原理利用" class="headerlink" title="dll原理利用"></a>dll原理利用</h3><span id="more"></span>
 
 <h4 id="Windows-xp-sp2之前"><a href="#Windows-xp-sp2之前" class="headerlink" title="Windows xp sp2之前"></a>Windows xp sp2之前</h4><p>windows查找DLL的目录以及对应顺序：</p>
 <ol>
@@ -1143,7 +1143,7 @@
 <p>当会话开始后，PHP便会将会话中的数据设置到<code>$_SESSION</code>变量中，下为在一个<code>$_SESSION</code>变量中注册变量的例子</p>
 <figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">session_start();</span><br><span class="line"><span class="keyword">if</span>(!<span class="keyword">isset</span>(<span class="variable">$_SESSION</span>[<span class="string">&#x27;username&#x27;</span>]))&#123;</span><br><span class="line">    <span class="variable">$_SESSION</span>[<span class="string">&#x27;username&#x27;</span>]=<span class="string">&#x27;Nayon&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
 
 <p>当PHP脚本文件运行完成后，PHP会自动读取<code>$_SESSION</code>中的内容，并且将其序列化，然后发送给会话管理器来进行保存。</p>
 <p>默认情况中，PHP来使用内置的文件会话保存管理器来完成对<code>session</code>的保存，也可以通过配置项<code>session.save_header</code>来修改要采用的会话保存管理器。对于文件会话保存管理器，会将会话数据保存到配置项<code>session.save_path</code>所指定的位置</p>
@@ -1239,7 +1239,7 @@
 <p>可以看到，SQL查询在一个类的自定义函数<code>oncitylist</code>之内</p>
 <figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">  PHP version 5</span></span><br><span class="line"><span class="comment">  Copyright (c) 2002-2010 ECISP.CN</span></span><br><span class="line"><span class="comment">  声明：这不是一个免费的软件，请在许可范围内使用</span></span><br><span class="line"><span class="comment">  作者：Bili E-mail:huangqyun@163.com  QQ:6326420</span></span><br><span class="line"><span class="comment">  http://www.ecisp.cn	http://www.easysitepm.com</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">important</span> <span class="keyword">extends</span> <span class="title">connector</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">important</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">		<span class="keyword">$this</span>-&gt;softbase(<span class="literal">true</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">oncitylist</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">		<span class="variable">$parentid</span> = <span class="keyword">$this</span>-&gt;fun-&gt;accept(<span class="string">&#x27;parentid&#x27;</span>, <span class="string">&#x27;R&#x27;</span>);</span><br><span class="line">		<span class="variable">$parentid</span> = <span class="keyword">empty</span>(<span class="variable">$parentid</span>) ? <span class="number">1</span> : <span class="variable">$parentid</span>;</span><br><span class="line">		<span class="variable">$verid</span> = <span class="keyword">$this</span>-&gt;fun-&gt;accept(<span class="string">&#x27;verid&#x27;</span>, <span class="string">&#x27;R&#x27;</span>);</span><br><span class="line">		<span class="variable">$verid</span> = <span class="keyword">empty</span>(<span class="variable">$verid</span>) ? <span class="number">0</span> : <span class="variable">$verid</span>;</span><br><span class="line">		<span class="variable">$db_table</span> = db_prefix . <span class="string">&#x27;city&#x27;</span>;</span><br><span class="line">		<span class="variable">$sql</span> = <span class="string">&quot;select * from <span class="subst">$db_table</span> where parentid=<span class="subst">$parentid</span>&quot;</span>;</span><br><span class="line">		<span class="variable">$rs</span> = <span class="keyword">$this</span>-&gt;db-&gt;query(<span class="variable">$sql</span>);</span><br><span class="line">		<span class="keyword">for</span> (<span class="variable">$i</span> = <span class="number">0</span>; <span class="variable">$rsList</span> = <span class="keyword">$this</span>-&gt;db-&gt;fetch_array(<span class="variable">$rs</span>); <span class="variable">$i</span>++) &#123;</span><br><span class="line">			<span class="keyword">if</span> (<span class="variable">$verid</span> == <span class="variable">$rsList</span>[<span class="string">&#x27;id&#x27;</span>]) &#123;</span><br><span class="line">				<span class="variable">$list</span>.=<span class="string">&#x27;&lt;option selected value=&quot;&#x27;</span> . <span class="variable">$rsList</span>[<span class="string">&#x27;id&#x27;</span>] . <span class="string">&#x27;&quot;&gt;&#x27;</span> . <span class="variable">$rsList</span>[<span class="string">&#x27;cityname&#x27;</span>] . <span class="string">&#x27;&lt;/option&gt;&#x27;</span>;</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				<span class="variable">$list</span>.=<span class="string">&#x27;&lt;option value=&quot;&#x27;</span> . <span class="variable">$rsList</span>[<span class="string">&#x27;id&#x27;</span>] . <span class="string">&#x27;&quot;&gt;&#x27;</span> . <span class="variable">$rsList</span>[<span class="string">&#x27;cityname&#x27;</span>] . <span class="string">&#x27;&lt;/option&gt;&#x27;</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">exit</span>(<span class="variable">$list</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
 
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
 
 <p>其中sql语句中有两个变量，<code>$db_table </code> 这个变量尚未发现可修改点，<code>$parentid</code> 由accept函数进行处理，右键定位函数查看实现。</p>
 <p>选项id2的accept函数，id1为安装cms时所用。</p>
@@ -1326,7 +1326,7 @@
 <figure class="highlight php"><table><tr><td class="code"><pre><span class="line">在Linux php中 session文件默认保存在/tmp/sess_session名中</span><br></pre></td></tr></table></figure>
 
 <p>以及会如何保存</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
 
 <p><img src="/images/%E5%88%A9%E7%94%A8session-upload-progress%E8%BF%9B%E8%A1%8C%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB.assets/image-20211030212042701.png" alt="image-20211030212042701"></p>
 <p>默认<code>session.use_strict_mode</code>为off状态，也就是说，用户可以在浏览器或者Burpsuit中自定义session ID值用于指明sess文件名。</p>
@@ -1467,7 +1467,7 @@
 <p><strong>base64编码绕过</strong></p>
 <p>利用base64编码解码，将exit die解码为乱码，将恶意代码解码还原。</p>
 <p><img src="/images/%E5%88%A9%E7%94%A8php%E4%BC%AA%E5%8D%8F%E8%AE%AE%E7%BB%95%E8%BF%87die.assets/image-20211031110309150.png" alt="image-20211031110309150"></p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
 
 <p><strong>2、rot13编码绕过</strong></p>
 <p>原理与base64解码绕过一致，将die解码为不可识别语句，但此方法需要服务器未开启短标签功能，若开启，就会被解析，后方的代码便会报错失去效果。</p>
@@ -1515,7 +1515,7 @@
 <h4 id="例"><a href="#例" class="headerlink" title="例:"></a>例:</h4><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">User访问主机S2上的HTTP服务，此时要想完整的使用HTTP服务，需再访问S3主机上的SQL数据库，但S2并不知道域用户是否拥有权限访问S3上的数据库服务权限，这时为了验证权限，S2会带着User的访问权限去申请访问SQL数据库，若User拥有权限才可进行访问。</span><br></pre></td></tr></table></figure>
 
 <h3 id="非约束委派"><a href="#非约束委派" class="headerlink" title="非约束委派"></a>非约束委派</h3><p>非约束委派Kerberos中实现时，User会将自KDC拿到的TGT发送给访问的服务机器Service1,Service1再通过拿到手的TGT票据去申请访问其他域内服务，Service1在拿到用户的TGT票据后，会对其留存，以便下次备用，这时，我们便可在拿下的Service1机器中拿到域用户的TGT票据，从而访问域内的可访问服务(域管用户可访问任意服务)</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
 
 <h4 id="非约束委派流程图"><a href="#非约束委派流程图" class="headerlink" title="非约束委派流程图"></a>非约束委派流程图</h4><p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220106233107179.png" alt="image-20220106233107179"></p>
 <p><strong>流程</strong></p>
@@ -1598,7 +1598,7 @@
     <url>/2021/11/16/PE%E7%BB%93%E6%9E%84-PE%E6%96%87%E4%BB%B6%E7%9A%84%E4%B8%A4%E7%A7%8D%E7%8A%B6%E6%80%81/</url>
     <content><![CDATA[<p>本文的是学习复现自吾爱破解dalao <a href="https://www.52pojie.cn/thread-1393291-1-1.html">lyl610abc</a>的PE文件解析系列，非本人原创，属于学习笔记(大佬yyds!)。</p>
 <h3 id="PE文件的两种状态"><a href="#PE文件的两种状态" class="headerlink" title="PE文件的两种状态"></a>PE文件的两种状态</h3><p>PE文件处于磁盘中与处于内存中时，两者的结构会稍微发生改变。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
 
 <p>一个PE文件可以分为两种状态:</p>
 <p>运行态: 当一个PE文件被打开时，PE文件的相关数据将会被<code>装载</code>到内存中，根据文件对齐以及内存对齐中的区别，文件的大小以以及结构会发生相应的改变</p>
@@ -2117,7 +2117,7 @@
 <td>文件偏移地址</td>
 </tr>
 </tbody></table>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
 
 <h3 id="为什么需要学习VA与FOA之间的转换"><a href="#为什么需要学习VA与FOA之间的转换" class="headerlink" title="为什么需要学习VA与FOA之间的转换"></a>为什么需要学习VA与FOA之间的转换</h3><p>此处需要引入一个问题：<strong>如何改变一个全局变量的初始值</strong></p>
 <ul>
@@ -2239,7 +2239,7 @@
 <h3 id="导入表"><a href="#导入表" class="headerlink" title="导入表"></a>导入表</h3><h4 id="导入表的作用"><a href="#导入表的作用" class="headerlink" title="导入表的作用"></a>导入表的作用</h4><p>当程序运行时，需要多个PE文件共同组成</p>
 <p>PE文件提供哪些功能给其他PE文件是导出表的作用</p>
 <p>PE文件需要依赖的模块以及依赖模块中的哪些函数是导出表的作用</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
 
 <h4 id="什么是导出表"><a href="#什么是导出表" class="headerlink" title="什么是导出表"></a>什么是导出表</h4><p>导出表是用于记录该PE文件还需要依赖的模块以及依赖这些模块中的那些函数的一种结构</p>
 <h4 id="如何定位导入表"><a href="#如何定位导入表" class="headerlink" title="如何定位导入表"></a>如何定位导入表</h4><p><strong>定位导入表的原理</strong></p>
@@ -2400,7 +2400,7 @@
     <url>/2021/10/12/PE%E7%BB%93%E6%9E%84-%E7%B3%BB%E7%BB%9F%E8%A7%A3%E5%AF%86%E7%AF%87(1)/</url>
     <content><![CDATA[<p><strong>学习课程-鱼C-小甲鱼【系统篇】《解密系列》单看课程记不住，想着好记性不如烂笔头，特此记录学习加深理解。</strong></p>
 <h2 id="PE结构的概念"><a href="#PE结构的概念" class="headerlink" title="PE结构的概念"></a>PE结构的概念</h2><h3 id="EXE与DLL文件的区别"><a href="#EXE与DLL文件的区别" class="headerlink" title="EXE与DLL文件的区别"></a>EXE与DLL文件的区别</h3><p>EXE与DLL文件之间的区别完全是语意上面的，因为他们使用了完全相同的PE格式。唯一的区别在与是用一个字段标示出这个文件是EXE还是DLL文件格式。 </p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
 
 <h3 id="64位与32位PE文件的区别"><a href="#64位与32位PE文件的区别" class="headerlink" title="64位与32位PE文件的区别"></a>64位与32位PE文件的区别</h3><p>64位的Windows仅仅知识对PE格式做了一些简单的修饰，新格式叫做PE32+ 并没有任何新的结构加进去，改变的只是简单的将32位字段扩展为64位，一般会在名称上表现出来：例如IMAGE_NT_HEADERS32 或 IMAGE_NT_HEADER64 来表示此结构用于32位还是64位PE文件。</p>
 <h3 id="PE格式的定义"><a href="#PE格式的定义" class="headerlink" title="PE格式的定义"></a>PE格式的定义</h3><p>PE格式定义的主要地方位于头文件winnt.h，这个头文件中几乎能找到所有关于PE文件的定义。</p>

@@ -20,18 +20,18 @@
     var CONFIG = {"hostname":"antipassion.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="PE结构-DOS头，本部分为参照吾爱破解论坛lyl610abc师傅PE文件笔记所整理的学习笔记。 DOS部首DOS部首结构1&lt;!--more--&gt;  其结构分为两部分:  DOS ‘MZ’ HEADER 其在c中定义的结构体为_IMAGE_DOS_HEADER DOS sub    DOS MZ头DOS MZ头在C语言中所定义的结构体为: 定义于winnt.h 123456789101">
+  <meta name="description" content="PE结构-DOS头，本部分为参照吾爱破解论坛lyl610abc师傅PE文件笔记所整理的学习笔记。 DOS部首DOS部首结构">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PE结构-DOS头">
 <meta property="og:url" content="http://antipassion.github.io/2021/11/19/PE%E7%BB%93%E6%9E%84-DOS%E5%A4%B4/index.html">
 <meta property="og:site_name" content="林中小屋">
-<meta property="og:description" content="PE结构-DOS头，本部分为参照吾爱破解论坛lyl610abc师傅PE文件笔记所整理的学习笔记。 DOS部首DOS部首结构1&lt;!--more--&gt;  其结构分为两部分:  DOS ‘MZ’ HEADER 其在c中定义的结构体为_IMAGE_DOS_HEADER DOS sub    DOS MZ头DOS MZ头在C语言中所定义的结构体为: 定义于winnt.h 123456789101">
+<meta property="og:description" content="PE结构-DOS头，本部分为参照吾爱破解论坛lyl610abc师傅PE文件笔记所整理的学习笔记。 DOS部首DOS部首结构">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://antipassion.github.io/images/PE%E7%BB%93%E6%9E%84-DOS%E5%A4%B4.assets/image-20211119195942676.png">
 <meta property="og:image" content="http://antipassion.github.io/images/PE%E7%BB%93%E6%9E%84-DOS%E5%A4%B4.assets/image-20211119201606255.png">
 <meta property="og:image" content="http://antipassion.github.io/images/PE%E7%BB%93%E6%9E%84-DOS%E5%A4%B4.assets/image-20211119201720010.png">
 <meta property="article:published_time" content="2021-11-19T11:40:13.000Z">
-<meta property="article:modified_time" content="2022-01-25T09:20:05.338Z">
+<meta property="article:modified_time" content="2022-01-28T04:40:12.523Z">
 <meta property="article:author" content="Nayon">
 <meta property="article:tag" content="PE结构">
 <meta name="twitter:card" content="summary">
@@ -201,7 +201,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-25 17:20:05" itemprop="dateModified" datetime="2022-01-25T17:20:05+08:00">2022-01-25</time>
+                <time title="修改时间：2022-01-28 12:40:12" itemprop="dateModified" datetime="2022-01-28T12:40:12+08:00">2022-01-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -232,7 +232,7 @@
 
       
         <p>PE结构-DOS头，本部分为参照吾爱破解论坛lyl610abc师傅<a target="_blank" rel="noopener" href="https://www.52pojie.cn/thread-1403011-1-1.html">PE文件笔记</a>所整理的学习笔记。</p>
-<h3 id="DOS部首"><a href="#DOS部首" class="headerlink" title="DOS部首"></a>DOS部首</h3><h4 id="DOS部首结构"><a href="#DOS部首结构" class="headerlink" title="DOS部首结构"></a>DOS部首结构</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="DOS部首"><a href="#DOS部首" class="headerlink" title="DOS部首"></a>DOS部首</h3><h4 id="DOS部首结构"><a href="#DOS部首结构" class="headerlink" title="DOS部首结构"></a>DOS部首结构</h4><span id="more"></span>
 
 <p><strong>其结构分为两部分:</strong></p>
 <ol>

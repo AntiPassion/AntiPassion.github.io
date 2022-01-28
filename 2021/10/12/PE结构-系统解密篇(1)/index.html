@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"antipassion.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="学习课程-鱼C-小甲鱼【系统篇】《解密系列》单看课程记不住，想着好记性不如烂笔头，特此记录学习加深理解。 PE结构的概念EXE与DLL文件的区别EXE与DLL文件之间的区别完全是语意上面的，因为他们使用了完全相同的PE格式。唯一的区别在与是用一个字段标示出这个文件是EXE还是DLL文件格式。  1&lt;!--more--&gt;  64位与32位PE文件的区别64位的Windows仅仅知识对PE">
+  <meta name="description" content="学习课程-鱼C-小甲鱼【系统篇】《解密系列》单看课程记不住，想着好记性不如烂笔头，特此记录学习加深理解。 PE结构的概念EXE与DLL文件的区别EXE与DLL文件之间的区别完全是语意上面的，因为他们使用了完全相同的PE格式。唯一的区别在与是用一个字段标示出这个文件是EXE还是DLL文件格式。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PE结构-系统解密篇（1）">
 <meta property="og:url" content="http://antipassion.github.io/2021/10/12/PE%E7%BB%93%E6%9E%84-%E7%B3%BB%E7%BB%9F%E8%A7%A3%E5%AF%86%E7%AF%87(1)/index.html">
 <meta property="og:site_name" content="林中小屋">
-<meta property="og:description" content="学习课程-鱼C-小甲鱼【系统篇】《解密系列》单看课程记不住，想着好记性不如烂笔头，特此记录学习加深理解。 PE结构的概念EXE与DLL文件的区别EXE与DLL文件之间的区别完全是语意上面的，因为他们使用了完全相同的PE格式。唯一的区别在与是用一个字段标示出这个文件是EXE还是DLL文件格式。  1&lt;!--more--&gt;  64位与32位PE文件的区别64位的Windows仅仅知识对PE">
+<meta property="og:description" content="学习课程-鱼C-小甲鱼【系统篇】《解密系列》单看课程记不住，想着好记性不如烂笔头，特此记录学习加深理解。 PE结构的概念EXE与DLL文件的区别EXE与DLL文件之间的区别完全是语意上面的，因为他们使用了完全相同的PE格式。唯一的区别在与是用一个字段标示出这个文件是EXE还是DLL文件格式。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://antipassion.github.io/images/PE%E7%BB%93%E6%9E%84-%E7%B3%BB%E7%BB%9F%E8%A7%A3%E5%AF%86%E7%AF%87.assets/image-20211012105635817.png">
 <meta property="og:image" content="http://antipassion.github.io/images/PE%E7%BB%93%E6%9E%84-%E7%B3%BB%E7%BB%9F%E8%A7%A3%E5%AF%86%E7%AF%87.assets/image-20211012111242647.png">
@@ -42,7 +42,7 @@
 <meta property="og:image" content="http://antipassion.github.io/images/PE%E7%BB%93%E6%9E%84-%E7%B3%BB%E7%BB%9F%E8%A7%A3%E5%AF%86%E7%AF%87.assets/image-20211013095854695.png">
 <meta property="og:image" content="http://antipassion.github.io/images/PE%E7%BB%93%E6%9E%84-%E7%B3%BB%E7%BB%9F%E8%A7%A3%E5%AF%86%E7%AF%87.assets/image-20211013100616071.png">
 <meta property="article:published_time" content="2021-10-12T02:42:01.000Z">
-<meta property="article:modified_time" content="2022-01-25T09:19:19.926Z">
+<meta property="article:modified_time" content="2022-01-28T04:40:08.238Z">
 <meta property="article:author" content="Nayon">
 <meta property="article:tag" content="PE结构">
 <meta name="twitter:card" content="summary">
@@ -212,7 +212,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-25 17:19:19" itemprop="dateModified" datetime="2022-01-25T17:19:19+08:00">2022-01-25</time>
+                <time title="修改时间：2022-01-28 12:40:08" itemprop="dateModified" datetime="2022-01-28T12:40:08+08:00">2022-01-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -244,7 +244,7 @@
       
         <p><strong>学习课程-鱼C-小甲鱼【系统篇】《解密系列》单看课程记不住，想着好记性不如烂笔头，特此记录学习加深理解。</strong></p>
 <h2 id="PE结构的概念"><a href="#PE结构的概念" class="headerlink" title="PE结构的概念"></a>PE结构的概念</h2><h3 id="EXE与DLL文件的区别"><a href="#EXE与DLL文件的区别" class="headerlink" title="EXE与DLL文件的区别"></a>EXE与DLL文件的区别</h3><p>EXE与DLL文件之间的区别完全是语意上面的，因为他们使用了完全相同的PE格式。唯一的区别在与是用一个字段标示出这个文件是EXE还是DLL文件格式。 </p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!--more--&gt;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
 
 <h3 id="64位与32位PE文件的区别"><a href="#64位与32位PE文件的区别" class="headerlink" title="64位与32位PE文件的区别"></a>64位与32位PE文件的区别</h3><p>64位的Windows仅仅知识对PE格式做了一些简单的修饰，新格式叫做PE32+ 并没有任何新的结构加进去，改变的只是简单的将32位字段扩展为64位，一般会在名称上表现出来：例如IMAGE_NT_HEADERS32 或 IMAGE_NT_HEADER64 来表示此结构用于32位还是64位PE文件。</p>
 <h3 id="PE格式的定义"><a href="#PE格式的定义" class="headerlink" title="PE格式的定义"></a>PE格式的定义</h3><p>PE格式定义的主要地方位于头文件winnt.h，这个头文件中几乎能找到所有关于PE文件的定义。</p>
