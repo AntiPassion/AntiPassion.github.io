@@ -52,7 +52,7 @@
 <meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205225930436.png">
 <meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205233803496.png">
 <meta property="article:published_time" content="2022-01-30T04:44:17.000Z">
-<meta property="article:modified_time" content="2022-02-06T06:53:40.583Z">
+<meta property="article:modified_time" content="2022-02-06T08:13:26.584Z">
 <meta property="article:author" content="Nayon">
 <meta property="article:tag" content="域渗透">
 <meta name="twitter:card" content="summary">
@@ -222,7 +222,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-02-06 14:53:40" itemprop="dateModified" datetime="2022-02-06T14:53:40+08:00">2022-02-06</time>
+                <time title="修改时间：2022-02-06 16:13:26" itemprop="dateModified" datetime="2022-02-06T16:13:26+08:00">2022-02-06</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -256,6 +256,8 @@
 <p>在约束委派中，账户A到账户B的约束委派在账户A的 msDS-AllowedToDelegateTo 属性中配置，并且定义了A到B的传出<code>信任</code>,而在基于资源的约束委派当中，委派在账户B的msDS-AllowedToActOnBehalfOfOtherIdentity 属性中配置，并定义了A到B的<code>传入</code>信任</p>
 <p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220204202427514.png" alt="image-20220204202427514"></p>
 <p>如图为在Elad师傅中的文章中所得的导图，通过此图，我们可以看出基于资源的约束委派与传统约束委派的工作方式有何不同。</p>
+<span id="more"></span>
+
 <p>在基于资源的约束委派当中，我们不需要再像传统的约束委派一样，通过域管理员权限，为用户设置相关的属性以便于请求相关服务，另一点就是传统的约束委派S4U2Self返回的票据，一定要是可转发的TGS（forwardableST），如果不可转发，在S4U2Proxy阶段将会代理用户请求服务失败；但在基于资源的约束委派当中，我们无需可转发的TGS票据（TrustedToAuthenticationForDelegation），通过操作S4U2Proxy也会成功执行，返回可转发ST。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">当我们获得用户对该主机的属性具有写权限时，那么这个用户便可以对该主机进行攻击了。</span><br></pre></td></tr></table></figure>
 
