@@ -6,7 +6,7 @@
   <link href="http://antipassion.github.io/atom.xml" rel="self"/>
   
   <link href="http://antipassion.github.io/"/>
-  <updated>2022-02-06T08:13:26.584Z</updated>
+  <updated>2022-02-15T15:39:19.118Z</updated>
   <id>http://antipassion.github.io/</id>
   
   <author>
@@ -17,15 +17,42 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>利用机器账户进行域维权</title>
+    <link href="http://antipassion.github.io/2022/02/15/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83/"/>
+    <id>http://antipassion.github.io/2022/02/15/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83/</id>
+    <published>2022-02-15T14:54:20.000Z</published>
+    <updated>2022-02-15T15:39:19.118Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;机器账户在许多技术中可以用于提权或横向移动，如使用机器账户的委派进行dcsync达到提权、横向移动的目的。&lt;/p&gt;
+&lt;p&gt;除了上述作用，使用机器账户也可进行域维权操作。我们可以将任意计算机账户添加到高权限组(例如Domain Admin、Domain</summary>
+        
+      
+    
+    
+    
+    <category term="域渗透" scheme="http://antipassion.github.io/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/"/>
+    
+    
+    <category term="域渗透" scheme="http://antipassion.github.io/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/"/>
+    
+  </entry>
+  
+  <entry>
     <title>基于资源的约束委派</title>
     <link href="http://antipassion.github.io/2022/01/30/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/"/>
     <id>http://antipassion.github.io/2022/01/30/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/</id>
     <published>2022-01-30T04:44:17.000Z</published>
-    <updated>2022-02-06T08:13:26.584Z</updated>
+    <updated>2022-02-08T04:38:28.658Z</updated>
     
     
     <summary type="html">&lt;h3 id=&quot;基于资源的约束委派利用&quot;&gt;&lt;a href=&quot;#基于资源的约束委派利用&quot; class=&quot;headerlink&quot; title=&quot;基于资源的约束委派利用&quot;&gt;&lt;/a&gt;基于资源的约束委派利用&lt;/h3&gt;&lt;p&gt;基于资源的约束委派，(Resource-based constrained delegation)，与前文提到的约束委派不同，它在信任的传递关系上是不同的，这也是它工作方向相反的一个因素。&lt;/p&gt;
-&lt;p&gt;在约束委派中，账户A到账户B的约束委派在账户A的 msDS-AllowedToDelegateTo 属性中配置，并且定义了A到B的传出&lt;code&gt;信任&lt;/code&gt;,而在基于资源的约束委派当中，委派在账户B的msDS-AllowedToActOnBehalfOfOtherIdentity 属性中配置，并定义了A到B的&lt;code&gt;传入&lt;/code&gt;信任&lt;/p&gt;
+&lt;p&gt;在约束委派中，账户A到账户B的约束委派在账户A的 msDS-AllowedToDelegateTo 属性中配置，并且定义了A到B的传出&lt;code&gt;信任&lt;/code&gt;,而在基于资源的约束委派当中，委派在账户B的msDS-AllowedToActOnBehalfOfOtherIdentity 属性中配置，并定义了A到B的&lt;code&gt;传入&lt;/code&gt;信任。&lt;/p&gt;
+&lt;p&gt;一图概括。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220204202427514.png&quot; alt=&quot;image-20220204202427514&quot;&gt;&lt;/p&gt;
 &lt;p&gt;如图为在Elad师傅中的文章中所得的导图，通过此图，我们可以看出基于资源的约束委派与传统约束委派的工作方式有何不同。&lt;/p&gt;</summary>
     
@@ -472,28 +499,6 @@
     
     
     <category term="PE结构" scheme="http://antipassion.github.io/tags/PE%E7%BB%93%E6%9E%84/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Kerberoasting</title>
-    <link href="http://antipassion.github.io/2021/09/27/Kerberoasting%E6%94%BB%E5%87%BB/"/>
-    <id>http://antipassion.github.io/2021/09/27/Kerberoasting%E6%94%BB%E5%87%BB/</id>
-    <published>2021-09-27T07:22:39.000Z</published>
-    <updated>2022-02-06T08:10:17.707Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;0x01-简介&quot;&gt;&lt;a href=&quot;#0x01-简介&quot; class=&quot;headerlink&quot; title=&quot;0x01 简介&quot;&gt;&lt;/a&gt;0x01 简介&lt;/h2&gt;&lt;p&gt;​    &lt;strong&gt;Kerberoasting的概念&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;​    &lt;strong&gt;Kerberoasting的原理&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;​    &lt;strong&gt;Kerberoasting的实现&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;​    &lt;strong&gt;Kerberoasting后门利用&lt;/strong&gt;&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="域渗透" scheme="http://antipassion.github.io/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/"/>
-    
-    
-    <category term="域渗透" scheme="http://antipassion.github.io/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/"/>
     
   </entry>
   
