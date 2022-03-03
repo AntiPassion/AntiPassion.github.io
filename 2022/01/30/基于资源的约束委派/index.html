@@ -52,7 +52,7 @@
 <meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205225930436.png">
 <meta property="og:image" content="http://antipassion.github.io/images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220205233803496.png">
 <meta property="article:published_time" content="2022-01-30T04:44:17.000Z">
-<meta property="article:modified_time" content="2022-02-08T04:38:28.658Z">
+<meta property="article:modified_time" content="2022-03-02T10:32:23.033Z">
 <meta property="article:author" content="Nayon">
 <meta property="article:tag" content="域渗透">
 <meta name="twitter:card" content="summary">
@@ -222,7 +222,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-02-08 12:38:28" itemprop="dateModified" datetime="2022-02-08T12:38:28+08:00">2022-02-08</time>
+                <time title="修改时间：2022-03-02 18:32:23" itemprop="dateModified" datetime="2022-03-02T18:32:23+08:00">2022-03-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -262,8 +262,7 @@
 <p>在基于资源的约束委派当中，我们不需要再像传统的约束委派一样，通过域管理员权限，为用户设置相关的属性以便于请求相关服务，另一点就是传统的约束委派S4U2Self返回的票据，一定要是可转发的TGS（forwardableST），如果不可转发，在S4U2Proxy阶段将会代理用户请求服务失败；但在基于资源的约束委派当中，我们无需可转发的TGS票据（TrustedToAuthenticationForDelegation），通过操作S4U2Proxy也会成功执行，返回可转发ST。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">当我们获得用户对该主机的属性具有写权限时，那么这个用户便可以对该主机进行攻击了。</span><br></pre></td></tr></table></figure>
 
-<p>复现环境:</p>
-<ul>
+<h4 id="复现环境"><a href="#复现环境" class="headerlink" title="复现环境:"></a>复现环境:</h4><ul>
 <li>域:attack.local</li>
 <li>域控主机:dc.attack.local，Windows Server 2012 R2 10.10.10.165</li>
 <li>目标主机:oa.attack.local，Windows Server 2012 R2 10.10.10.166</li>
@@ -461,7 +460,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E5%88%A9%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">基于资源的约束委派利用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E5%88%A9%E7%94%A8Powerview%E8%84%9A%E6%9C%AC%E4%BF%AE%E6%94%B9%E5%B1%9E%E6%80%A7%E5%80%BC"><span class="nav-number">1.1.</span> <span class="nav-text">1.利用Powerview脚本修改属性值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E9%80%9A%E8%BF%87ActiveDirectory%E6%A8%A1%E5%9D%97%E4%BF%AE%E6%94%B9%E5%85%B6%E5%B1%9E%E6%80%A7%E5%80%BC"><span class="nav-number">1.2.</span> <span class="nav-text">2.通过ActiveDirectory模块修改其属性值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A9%E7%94%A8Rubeus%E8%BF%9B%E8%A1%8C%E6%94%BB%E5%87%BB"><span class="nav-number">1.3.</span> <span class="nav-text">利用Rubeus进行攻击</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%8E%B7%E5%BE%97%E7%A8%B3%E5%AE%9A%E7%9A%84shell"><span class="nav-number">1.3.1.</span> <span class="nav-text">获得稳定的shell</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%8F%E6%84%9F%E8%B4%A6%E6%88%B7%E4%B8%8D%E5%8F%AF%E8%A2%AB%E5%A7%94%E6%B4%BE%E9%97%AE%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">敏感账户不可被委派问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Rebeus%E4%BF%AE%E6%94%B9%E7%A5%A8%E6%8D%AE%E6%89%80%E8%AF%B7%E6%B1%82%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%90%8D%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">使用Rebeus修改票据所请求的服务名：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E8%BF%9B%E8%A1%8C%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81"><span class="nav-number">2.2.</span> <span class="nav-text">利用基于资源的约束委派进行权限维持</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E5%88%B0Krbtgt%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE"><span class="nav-number">2.2.1.</span> <span class="nav-text">机器账户到Krbtgt基于资源的约束委派</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E5%88%A9%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">基于资源的约束委派利用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%8D%E7%8E%B0%E7%8E%AF%E5%A2%83"><span class="nav-number">1.1.</span> <span class="nav-text">复现环境:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E5%88%A9%E7%94%A8Powerview%E8%84%9A%E6%9C%AC%E4%BF%AE%E6%94%B9%E5%B1%9E%E6%80%A7%E5%80%BC"><span class="nav-number">1.2.</span> <span class="nav-text">1.利用Powerview脚本修改属性值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E9%80%9A%E8%BF%87ActiveDirectory%E6%A8%A1%E5%9D%97%E4%BF%AE%E6%94%B9%E5%85%B6%E5%B1%9E%E6%80%A7%E5%80%BC"><span class="nav-number">1.3.</span> <span class="nav-text">2.通过ActiveDirectory模块修改其属性值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A9%E7%94%A8Rubeus%E8%BF%9B%E8%A1%8C%E6%94%BB%E5%87%BB"><span class="nav-number">1.4.</span> <span class="nav-text">利用Rubeus进行攻击</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%8E%B7%E5%BE%97%E7%A8%B3%E5%AE%9A%E7%9A%84shell"><span class="nav-number">1.4.1.</span> <span class="nav-text">获得稳定的shell</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%8F%E6%84%9F%E8%B4%A6%E6%88%B7%E4%B8%8D%E5%8F%AF%E8%A2%AB%E5%A7%94%E6%B4%BE%E9%97%AE%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">敏感账户不可被委派问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Rebeus%E4%BF%AE%E6%94%B9%E7%A5%A8%E6%8D%AE%E6%89%80%E8%AF%B7%E6%B1%82%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%90%8D%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">使用Rebeus修改票据所请求的服务名：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E8%BF%9B%E8%A1%8C%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81"><span class="nav-number">2.2.</span> <span class="nav-text">利用基于资源的约束委派进行权限维持</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E5%88%B0Krbtgt%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE"><span class="nav-number">2.2.1.</span> <span class="nav-text">机器账户到Krbtgt基于资源的约束委派</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -477,7 +476,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
