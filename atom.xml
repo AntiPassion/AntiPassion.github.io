@@ -6,7 +6,7 @@
   <link href="http://antipassion.github.io/atom.xml" rel="self"/>
   
   <link href="http://antipassion.github.io/"/>
-  <updated>2022-11-20T02:47:24.337Z</updated>
+  <updated>2022-11-20T03:20:28.456Z</updated>
   <id>http://antipassion.github.io/</id>
   
   <author>
@@ -21,16 +21,36 @@
     <link href="http://antipassion.github.io/2022/11/19/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8/"/>
     <id>http://antipassion.github.io/2022/11/19/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8/</id>
     <published>2022-11-19T07:42:25.000Z</published>
-    <updated>2022-11-20T02:47:24.337Z</updated>
+    <updated>2022-11-20T03:20:28.456Z</updated>
     
     
-      
-      
-        
-        
-    <summary type="html">&lt;h4 id=&quot;0x1-前置理论&quot;&gt;&lt;a href=&quot;#0x1-前置理论&quot; class=&quot;headerlink&quot; title=&quot;0x1 前置理论&quot;&gt;&lt;/a&gt;0x1 前置理论&lt;/h4&gt;&lt;h5 id=&quot;访问令牌-Access-Token&quot;&gt;&lt;a</summary>
-        
-      
+    <summary type="html">&lt;h4 id=&quot;0x1-前置理论&quot;&gt;&lt;a href=&quot;#0x1-前置理论&quot; class=&quot;headerlink&quot; title=&quot;0x1 前置理论&quot;&gt;&lt;/a&gt;0x1 前置理论&lt;/h4&gt;&lt;h5 id=&quot;访问令牌-Access-Token&quot;&gt;&lt;a href=&quot;#访问令牌-Access-Token&quot; class=&quot;headerlink&quot; title=&quot;访问令牌(Access Token)&quot;&gt;&lt;/a&gt;访问令牌(Access Token)&lt;/h5&gt;&lt;p&gt;​    &lt;code&gt;Access Token&lt;/code&gt;是描述进程或线程的安全上下文的对象。其中包括进程或线程关联的用户账户的身份和权限。&lt;/p&gt;
+&lt;p&gt;​    &lt;code&gt;Access Token&lt;/code&gt;分为授权令牌(Delegation Token)、模拟令牌(Impersonation token)两种。&lt;/p&gt;
+&lt;p&gt;Access Token包含以下信息&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;用户帐户的&lt;a href=&quot;https://learn.microsoft.com/en-us/windows/win32/secauthz/security-identifiers&quot;&gt;安全标识符&lt;/a&gt;(SID)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;用户所属组的 SID&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;标识当前&lt;a href=&quot;https://learn.microsoft.com/en-us/windows/desktop/SecGloss/l-gly&quot;&gt;&lt;em&gt;登录会话&lt;/em&gt;&lt;/a&gt;的&lt;a href=&quot;https://learn.microsoft.com/en-us/windows/desktop/SecGloss/l-gly&quot;&gt;&lt;em&gt;登录 SID&lt;/em&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;用户或用户组拥有的&lt;a href=&quot;https://learn.microsoft.com/en-us/windows/win32/secauthz/privileges&quot;&gt;权限&lt;/a&gt;列表&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;所有者 SID&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;主要组的 SID&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a href=&quot;https://learn.microsoft.com/en-us/windows/desktop/SecGloss/s-gly&quot;&gt;&lt;em&gt;用户在未指定安全描述符&lt;/em&gt;&lt;/a&gt;的情况下创建安全对象时系统使用的默认&lt;a href=&quot;https://learn.microsoft.com/en-us/windows/win32/secauthz/access-control-lists&quot;&gt;DACL&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;访问令牌的来源&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;令牌是&lt;a href=&quot;https://learn.microsoft.com/en-us/windows/desktop/SecGloss/p-gly&quot;&gt;&lt;em&gt;主要&lt;/em&gt;&lt;/a&gt;令牌还是&lt;a href=&quot;https://learn.microsoft.com/en-us/windows/win32/secauthz/client-impersonation&quot;&gt;模拟&lt;/a&gt;令牌&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;可选的&lt;a href=&quot;https://learn.microsoft.com/en-us/windows/win32/secauthz/restricted-tokens&quot;&gt;限制 SID列表&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;当前模拟级别&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;其他统计&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;</summary>
     
     
     
@@ -44,16 +64,11 @@
     <link href="http://antipassion.github.io/2022/10/30/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay/"/>
     <id>http://antipassion.github.io/2022/10/30/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay/</id>
     <published>2022-10-30T02:51:43.000Z</published>
-    <updated>2022-10-30T07:40:21.727Z</updated>
+    <updated>2022-11-20T03:20:41.551Z</updated>
     
     
-      
-      
-        
-        
-    <summary type="html">&lt;h3 id=&quot;前言：&quot;&gt;&lt;a href=&quot;#前言：&quot; class=&quot;headerlink&quot; title=&quot;前言：&quot;&gt;&lt;/a&gt;前言：&lt;/h3&gt;&lt;p&gt;​    NTLM Relay大家已经不再陌生了，很多时候我们通过NTLM</summary>
-        
-      
+    <summary type="html">&lt;h3 id=&quot;前言：&quot;&gt;&lt;a href=&quot;#前言：&quot; class=&quot;headerlink&quot; title=&quot;前言：&quot;&gt;&lt;/a&gt;前言：&lt;/h3&gt;&lt;p&gt;​    NTLM Relay大家已经不再陌生了，很多时候我们通过NTLM Relay进行攻击时，会受到协议签名(ldap/s、smb等协议签名)的影响从而导致攻击失败，并且随着时间的流逝，我们想要遇到忽略签名的smb等服务也变得越来越困难了，我们有哪些方法来忽略服务端验证签名的影响从而达到我们relay攻击的目的呢？&lt;/p&gt;
+&lt;p&gt;​    我们可以寻找不支持签名的服务，来避免服务端的签名校验。若客户端不支持签名验证的话，服务端在与客户端通信时是不会强制要求签名认证的。因此我们可以使用HTTP服务中的WebDav来尝试Relay攻击了。&lt;/p&gt;</summary>
     
     
     

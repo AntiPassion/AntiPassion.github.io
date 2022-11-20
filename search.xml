@@ -2369,18 +2369,30 @@
 <p>​    <code>Access Token</code>分为授权令牌(Delegation Token)、模拟令牌(Impersonation token)两种。</p>
 <p>Access Token包含以下信息</p>
 <ul>
-<li>用户帐户的<a href="https://learn.microsoft.com/en-us/windows/win32/secauthz/security-identifiers">安全标识符</a>(SID)</li>
-<li>用户所属组的 SID</li>
-<li>标识当前<a href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/l-gly"><em>登录会话</em></a>的<a href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/l-gly"><em>登录 SID</em></a></li>
-<li>用户或用户组拥有的<a href="https://learn.microsoft.com/en-us/windows/win32/secauthz/privileges">权限</a>列表</li>
-<li>所有者 SID</li>
-<li>主要组的 SID</li>
-<li><a href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/s-gly"><em>用户在未指定安全描述符</em></a>的情况下创建安全对象时系统使用的默认<a href="https://learn.microsoft.com/en-us/windows/win32/secauthz/access-control-lists">DACL</a></li>
-<li>访问令牌的来源</li>
-<li>令牌是<a href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/p-gly"><em>主要</em></a>令牌还是<a href="https://learn.microsoft.com/en-us/windows/win32/secauthz/client-impersonation">模拟</a>令牌</li>
-<li>可选的<a href="https://learn.microsoft.com/en-us/windows/win32/secauthz/restricted-tokens">限制 SID列表</a></li>
-<li>当前模拟级别</li>
-<li>其他统计</li>
+<li><p>用户帐户的<a href="https://learn.microsoft.com/en-us/windows/win32/secauthz/security-identifiers">安全标识符</a>(SID)</p>
+</li>
+<li><p>用户所属组的 SID</p>
+</li>
+<li><p>标识当前<a href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/l-gly"><em>登录会话</em></a>的<a href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/l-gly"><em>登录 SID</em></a></p>
+</li>
+<li><p>用户或用户组拥有的<a href="https://learn.microsoft.com/en-us/windows/win32/secauthz/privileges">权限</a>列表</p>
+</li>
+<li><p>所有者 SID</p>
+</li>
+<li><p>主要组的 SID</p>
+</li>
+<li><p><a href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/s-gly"><em>用户在未指定安全描述符</em></a>的情况下创建安全对象时系统使用的默认<a href="https://learn.microsoft.com/en-us/windows/win32/secauthz/access-control-lists">DACL</a></p>
+</li>
+<li><p>访问令牌的来源</p>
+</li>
+<li><p>令牌是<a href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/p-gly"><em>主要</em></a>令牌还是<a href="https://learn.microsoft.com/en-us/windows/win32/secauthz/client-impersonation">模拟</a>令牌</p>
+</li>
+<li><p>可选的<a href="https://learn.microsoft.com/en-us/windows/win32/secauthz/restricted-tokens">限制 SID列表</a></p>
+</li>
+<li><p>当前模拟级别</p>
+</li>
+<li><p>其他统计</p>
+<span id="more"></span></li>
 </ul>
 <p>​    <strong>Delegation Token：</strong> 用以交互式会话登陆（本地用户登陆、远程桌面等）</p>
 <p>​    <strong>Impersonation Token：</strong> 用以非交互式登陆(net user、远程共享访问)</p>
@@ -2426,6 +2438,8 @@
     <url>/2022/10/30/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay/</url>
     <content><![CDATA[<h3 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h3><p>​    NTLM Relay大家已经不再陌生了，很多时候我们通过NTLM Relay进行攻击时，会受到协议签名(ldap/s、smb等协议签名)的影响从而导致攻击失败，并且随着时间的流逝，我们想要遇到忽略签名的smb等服务也变得越来越困难了，我们有哪些方法来忽略服务端验证签名的影响从而达到我们relay攻击的目的呢？</p>
 <p>​    我们可以寻找不支持签名的服务，来避免服务端的签名校验。若客户端不支持签名验证的话，服务端在与客户端通信时是不会强制要求签名认证的。因此我们可以使用HTTP服务中的WebDav来尝试Relay攻击了。</p>
+<span id="more"></span>
+
 <h3 id="什么是WebDav"><a href="#什么是WebDav" class="headerlink" title="什么是WebDav:"></a>什么是WebDav:</h3><p>​    WebDAV是一组基于超文本传输协议的技术集合，有利于用户间协同编辑和管理存储在万维网服务器文档。通俗一点儿来说，WebDAV  就是一种互联网方法，应用此方法可以在服务器上划出一块存储空间，可以使用用户名和密码来控制访问，让用户可以直接存储、下载、编辑文件。</p>
 <p>​    Windows通过WebClient服务实现WebDav，允许Windows程序通过WebDav来创建、读取以及写入服务器上的文件，并通过HTTP服务进行通信，在客户端访问WebDav时，若开启Windows身份验证机制，我们便可以通过域内凭证进行访问服务。</p>
 <h3 id="攻击步骤"><a href="#攻击步骤" class="headerlink" title="攻击步骤:"></a>攻击步骤:</h3><ul>
