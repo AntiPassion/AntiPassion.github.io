@@ -161,7 +161,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/30/%E5%88%A9%E7%94%A8session-upload-progress%E8%BF%9B%E8%A1%8C%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/">
+    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/11/16/PE%E7%BB%93%E6%9E%84-PE%E6%96%87%E4%BB%B6%E7%9A%84%E4%B8%A4%E7%A7%8D%E7%8A%B6%E6%80%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/Nayon.png">
@@ -175,7 +175,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/10/30/%E5%88%A9%E7%94%A8session-upload-progress%E8%BF%9B%E8%A1%8C%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/" class="post-title-link" itemprop="url">利用session.upload_progress进行文件包含</a>
+            <a href="/2021/11/16/PE%E7%BB%93%E6%9E%84-PE%E6%96%87%E4%BB%B6%E7%9A%84%E4%B8%A4%E7%A7%8D%E7%8A%B6%E6%80%81/" class="post-title-link" itemprop="url">PE结构-PE文件的两种状态</a>
         </h2>
 
         <div class="post-meta">
@@ -185,604 +185,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-10-30 21:08:14" itemprop="dateCreated datePublished" datetime="2021-10-30T21:08:14+08:00">2021-10-30</time>
+              <time title="创建时间：2021-11-16 14:50:09" itemprop="dateCreated datePublished" datetime="2021-11-16T14:50:09+08:00">2021-11-16</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-28 12:39:42" itemprop="dateModified" datetime="2022-01-28T12:39:42+08:00">2022-01-28</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ctf/" itemprop="url" rel="index"><span itemprop="name">ctf</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="Session-上传进度"><a href="#Session-上传进度" class="headerlink" title="Session 上传进度"></a>Session 上传进度</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">此特性自PHP <span class="number">5.4</span>.<span class="number">0</span>后启用</span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/%E5%88%A9%E7%94%A8session-upload-progress%E8%BF%9B%E8%A1%8C%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB.assets/image-20211030211326157.png" alt="image-20211030211326157"></p>
-<p>我们可以利用<code>session.upload_progress</code> 将木马写入session文件，然后包含这个文件。但是首先我们需要知道session文件将会保存在何处</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">在Linux php中 session文件默认保存在/tmp/sess_session名中</span><br></pre></td></tr></table></figure>
-
-<p>以及会如何保存</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/10/30/%E5%88%A9%E7%94%A8session-upload-progress%E8%BF%9B%E8%A1%8C%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/29/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Nayon.png">
-      <meta itemprop="name" content="Nayon">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="林中小屋">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/10/29/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5/" class="post-title-link" itemprop="url">php代码审计学习-5</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-10-29 10:32:50" itemprop="dateCreated datePublished" datetime="2021-10-29T10:32:50+08:00">2021-10-29</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-28 12:40:41" itemprop="dateModified" datetime="2022-01-28T12:40:41+08:00">2022-01-28</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">代码审计</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="PHP-session反序列化"><a href="#PHP-session反序列化" class="headerlink" title="PHP session反序列化"></a>PHP session反序列化</h3><p>本文转自先知社区的panda师傅所写文章<a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/6640#toc-1">带你走进PHP session反序列化漏洞</a></p>
-<h4 id="PHP-Session的工作流程"><a href="#PHP-Session的工作流程" class="headerlink" title="PHP Session的工作流程"></a>PHP Session的工作流程</h4><p>当开始一个会话时，php会尝试在请求中查找<code>SessionID</code> （通常通过会话cookie），如果发现请求的Cookies，Get、Post中并不存在<code>session id</code>时，php便会自动调用<code>php_session_create_id</code>函数创建一个新的会话，并且通过http response的set-cookie头发送给客户端进行保存。</p>
-<p><img src="/images/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5.assets/image-20211029103800930.png" alt="image-20211029103800930"></p>
-<p>当会话开始后，PHP便会将会话中的数据设置到<code>$_SESSION</code>变量中，下为在一个<code>$_SESSION</code>变量中注册变量的例子</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">session_start();</span><br><span class="line"><span class="keyword">if</span>(!<span class="keyword">isset</span>(<span class="variable">$_SESSION</span>[<span class="string">&#x27;username&#x27;</span>]))&#123;</span><br><span class="line">    <span class="variable">$_SESSION</span>[<span class="string">&#x27;username&#x27;</span>]=<span class="string">&#x27;Nayon&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/10/29/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-5/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/26/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Nayon.png">
-      <meta itemprop="name" content="Nayon">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="林中小屋">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/10/26/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-4/" class="post-title-link" itemprop="url">php代码审计学习-4</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-10-26 14:45:24" itemprop="dateCreated datePublished" datetime="2021-10-26T14:45:24+08:00">2021-10-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-28 12:40:37" itemprop="dateModified" datetime="2022-01-28T12:40:37+08:00">2022-01-28</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">代码审计</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>​    </p>
-<h3 id="espcms-审计"><a href="#espcms-审计" class="headerlink" title="espcms 审计"></a>espcms 审计</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">资源下载:http:<span class="comment">//down.chinaz.com/soft/27695.htm</span></span><br></pre></td></tr></table></figure>
-
-<p>解压安装后，利用esay审计系统进行自动化审计，筛选可疑语句。</p>
-<p>看到一处普通的sql查询语句，右键跟进打开文件</p>
-<p>可以看到，SQL查询在一个类的自定义函数<code>oncitylist</code>之内</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">  PHP version 5</span></span><br><span class="line"><span class="comment">  Copyright (c) 2002-2010 ECISP.CN</span></span><br><span class="line"><span class="comment">  声明：这不是一个免费的软件，请在许可范围内使用</span></span><br><span class="line"><span class="comment">  作者：Bili E-mail:huangqyun@163.com  QQ:6326420</span></span><br><span class="line"><span class="comment">  http://www.ecisp.cn	http://www.easysitepm.com</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">important</span> <span class="keyword">extends</span> <span class="title">connector</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">important</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">		<span class="keyword">$this</span>-&gt;softbase(<span class="literal">true</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">oncitylist</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">		<span class="variable">$parentid</span> = <span class="keyword">$this</span>-&gt;fun-&gt;accept(<span class="string">&#x27;parentid&#x27;</span>, <span class="string">&#x27;R&#x27;</span>);</span><br><span class="line">		<span class="variable">$parentid</span> = <span class="keyword">empty</span>(<span class="variable">$parentid</span>) ? <span class="number">1</span> : <span class="variable">$parentid</span>;</span><br><span class="line">		<span class="variable">$verid</span> = <span class="keyword">$this</span>-&gt;fun-&gt;accept(<span class="string">&#x27;verid&#x27;</span>, <span class="string">&#x27;R&#x27;</span>);</span><br><span class="line">		<span class="variable">$verid</span> = <span class="keyword">empty</span>(<span class="variable">$verid</span>) ? <span class="number">0</span> : <span class="variable">$verid</span>;</span><br><span class="line">		<span class="variable">$db_table</span> = db_prefix . <span class="string">&#x27;city&#x27;</span>;</span><br><span class="line">		<span class="variable">$sql</span> = <span class="string">&quot;select * from <span class="subst">$db_table</span> where parentid=<span class="subst">$parentid</span>&quot;</span>;</span><br><span class="line">		<span class="variable">$rs</span> = <span class="keyword">$this</span>-&gt;db-&gt;query(<span class="variable">$sql</span>);</span><br><span class="line">		<span class="keyword">for</span> (<span class="variable">$i</span> = <span class="number">0</span>; <span class="variable">$rsList</span> = <span class="keyword">$this</span>-&gt;db-&gt;fetch_array(<span class="variable">$rs</span>); <span class="variable">$i</span>++) &#123;</span><br><span class="line">			<span class="keyword">if</span> (<span class="variable">$verid</span> == <span class="variable">$rsList</span>[<span class="string">&#x27;id&#x27;</span>]) &#123;</span><br><span class="line">				<span class="variable">$list</span>.=<span class="string">&#x27;&lt;option selected value=&quot;&#x27;</span> . <span class="variable">$rsList</span>[<span class="string">&#x27;id&#x27;</span>] . <span class="string">&#x27;&quot;&gt;&#x27;</span> . <span class="variable">$rsList</span>[<span class="string">&#x27;cityname&#x27;</span>] . <span class="string">&#x27;&lt;/option&gt;&#x27;</span>;</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				<span class="variable">$list</span>.=<span class="string">&#x27;&lt;option value=&quot;&#x27;</span> . <span class="variable">$rsList</span>[<span class="string">&#x27;id&#x27;</span>] . <span class="string">&#x27;&quot;&gt;&#x27;</span> . <span class="variable">$rsList</span>[<span class="string">&#x27;cityname&#x27;</span>] . <span class="string">&#x27;&lt;/option&gt;&#x27;</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">exit</span>(<span class="variable">$list</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/10/26/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-4/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/25/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Nayon.png">
-      <meta itemprop="name" content="Nayon">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="林中小屋">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/10/25/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3/" class="post-title-link" itemprop="url">PHP代码审计学习-3</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-10-25 12:37:09" itemprop="dateCreated datePublished" datetime="2021-10-25T12:37:09+08:00">2021-10-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-28 12:40:31" itemprop="dateModified" datetime="2022-01-28T12:40:31+08:00">2022-01-28</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">代码审计</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="动态函数执行和匿名函数执行"><a href="#动态函数执行和匿名函数执行" class="headerlink" title="动态函数执行和匿名函数执行"></a>动态函数执行和匿名函数执行</h3><h4 id="动态函数执行"><a href="#动态函数执行" class="headerlink" title="动态函数执行"></a>动态函数执行</h4><p>函数与函数之间的调用，可能会产生漏洞。</p>
-<p>测试demo</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">a</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;a&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">b</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;b&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">c</span>(<span class="params"><span class="variable">$args1</span>,<span class="variable">$args2</span></span>)</span>&#123;</span><br><span class="line">    <span class="variable">$args1</span>(<span class="variable">$args2</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$action</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;action&#x27;</span>];</span><br><span class="line"><span class="variable">$cmd</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;cmd&#x27;</span>];</span><br><span class="line">c(<span class="variable">$action</span>,<span class="variable">$cmd</span>);</span><br><span class="line"><span class="comment">//浏览器获取到的值 b ，现在作为 c() 函数的参数插入到了函数中，并且在函数中作为函数名调用了另外一个函数</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/images/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3.assets/image-20211025160512247.png" alt="image-20211025160512247"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/10/25/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-3/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/24/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Nayon.png">
-      <meta itemprop="name" content="Nayon">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="林中小屋">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/10/24/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2/" class="post-title-link" itemprop="url">php代码审计学习(2)</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-10-24 19:25:29" itemprop="dateCreated datePublished" datetime="2021-10-24T19:25:29+08:00">2021-10-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-28 12:40:25" itemprop="dateModified" datetime="2022-01-28T12:40:25+08:00">2022-01-28</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">代码审计</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="PHP伪协议学习"><a href="#PHP伪协议学习" class="headerlink" title="PHP伪协议学习"></a>PHP伪协议学习</h3><p>参考自 <a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000018991087">PHP伪协议总结</a>、 <a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000018991087">php伪协议实现命令执行的七种姿势</a>两篇文章进行复现学习。</p>
-<h4 id="file-协议"><a href="#file-协议" class="headerlink" title="file:// 协议"></a>file:// 协议</h4><ul>
-<li><strong>条件</strong></li>
-</ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">allow_url_fopen:off/on </span><br><span class="line">allow_url_include:off/on</span><br><span class="line"><span class="comment">#翻译一下就是file://协议的使用，不受这两个属性的开关的影响</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>作用</strong></li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/10/24/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-2/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/24/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Nayon.png">
-      <meta itemprop="name" content="Nayon">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="林中小屋">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/10/24/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-1/" class="post-title-link" itemprop="url">PHP代码审计学习-1</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-10-24 10:26:22" itemprop="dateCreated datePublished" datetime="2021-10-24T10:26:22+08:00">2021-10-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-28 12:40:20" itemprop="dateModified" datetime="2022-01-28T12:40:20+08:00">2022-01-28</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">代码审计</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h4 id="审计时可能会涉及到的超全局变量"><a href="#审计时可能会涉及到的超全局变量" class="headerlink" title="审计时可能会涉及到的超全局变量"></a>审计时可能会涉及到的超全局变量</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$GLOBALS</span>;</span><br><span class="line"><span class="variable">$_SERVER</span>;</span><br><span class="line"><span class="variable">$_REQUEST</span>;</span><br><span class="line"><span class="variable">$_POST</span>;</span><br><span class="line"><span class="variable">$_GET</span>;</span><br><span class="line"><span class="variable">$_FILES</span>;</span><br><span class="line"><span class="variable">$_ENV</span>;</span><br><span class="line"><span class="variable">$_COOKIE</span>;</span><br><span class="line"><span class="variable">$_SESSION</span></span><br><span class="line">    </span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/10/24/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%AD%A6%E4%B9%A0-1/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/22/awd%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Nayon.png">
-      <meta itemprop="name" content="Nayon">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="林中小屋">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/10/22/awd%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/" class="post-title-link" itemprop="url">awd知识梳理</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-10-22 17:02:01" itemprop="dateCreated datePublished" datetime="2021-10-22T17:02:01+08:00">2021-10-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-28 12:39:55" itemprop="dateModified" datetime="2022-01-28T12:39:55+08:00">2022-01-28</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>由于一个月后需要参加一项awd比赛，为了防止过去之后什么也不懂的情况发生，写下这篇笔记用于记录整理awd比赛可能会用到的一些零零碎碎的知识点。</p>
-<h2 id="0X01-目录索引"><a href="#0X01-目录索引" class="headerlink" title="0X01 目录索引"></a>0X01 目录索引</h2><ol>
-<li>加固阶段</li>
-<li>攻防阶段</li>
-</ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/10/22/awd%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/18/dll%E5%8A%AB%E6%8C%81%E5%AD%A6%E4%B9%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Nayon.png">
-      <meta itemprop="name" content="Nayon">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="林中小屋">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/10/18/dll%E5%8A%AB%E6%8C%81%E5%AD%A6%E4%B9%A0/" class="post-title-link" itemprop="url">DLL劫持学习</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-10-18 08:28:13" itemprop="dateCreated datePublished" datetime="2021-10-18T08:28:13+08:00">2021-10-18</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-28 12:39:50" itemprop="dateModified" datetime="2022-01-28T12:39:50+08:00">2022-01-28</time>
+                <time title="修改时间：2022-01-28 12:40:15" itemprop="dateModified" datetime="2022-01-28T12:40:15+08:00">2022-01-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -805,12 +215,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="DLL劫持"><a href="#DLL劫持" class="headerlink" title="DLL劫持"></a>DLL劫持</h2><h3 id="什么是dll文件？"><a href="#什么是dll文件？" class="headerlink" title="什么是dll文件？"></a>什么是dll文件？</h3><p>DLL（Dynamic Link Library）被称为动态链接库文件，又被称之为“应用程序拓展”，是软件文件类型。在Windows中，许多应用程序并不是一个完整的可执行文件，它们被分割成一些相对独立的动态链接库，即DLL文件，放置于系统中。当我们执行某一个程序时，相应的DLL文件就会被调用。一个应用程序可使用多个DLL文件，一个DLL文件也可能被不同的应用程序使用，这样的DLL文件被称为共享DLL文件。</p>
-<p>如果在进程尝试加载一个DLL时没有指定DLL的绝对路径，那么Windows会尝试去按照顺序搜索这些特定目录时下查找这个DLL,只要能够将恶意的DLL放在优先于正常DLL所在的目录，就能够欺骗系统优先加载恶意DLL，来实现”劫持”上线</p>
-<h3 id="dll原理利用"><a href="#dll原理利用" class="headerlink" title="dll原理利用"></a>dll原理利用</h3>
+          <p>本文的是学习复现自吾爱破解dalao <a target="_blank" rel="noopener" href="https://www.52pojie.cn/thread-1393291-1-1.html">lyl610abc</a>的PE文件解析系列，非本人原创，属于学习笔记(大佬yyds!)。</p>
+<h3 id="PE文件的两种状态"><a href="#PE文件的两种状态" class="headerlink" title="PE文件的两种状态"></a>PE文件的两种状态</h3><p>PE文件处于磁盘中与处于内存中时，两者的结构会稍微发生改变。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/10/18/dll%E5%8A%AB%E6%8C%81%E5%AD%A6%E4%B9%A0/#more" rel="contents">
+              <a class="btn" href="/2021/11/16/PE%E7%BB%93%E6%9E%84-PE%E6%96%87%E4%BB%B6%E7%9A%84%E4%B8%A4%E7%A7%8D%E7%8A%B6%E6%80%81/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -974,7 +383,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-25 17:19:34" itemprop="dateModified" datetime="2022-01-25T17:19:34+08:00">2022-01-25</time>
+                <time title="修改时间：2022-08-07 18:03:27" itemprop="dateModified" datetime="2022-08-07T18:03:27+08:00">2022-08-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1030,7 +439,7 @@
 
 <p>可以看到数组成员的结构为IMAGE_DATA_DIRECTORY</p>
 <p><strong>IMAGE_DATA_DIRECTORY</strong></p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_DATA_DIRECTORY</span> &#123;</span></span><br><span class="line">    DWORD   VirtualAddress;</span><br><span class="line">    DWORD   Size;</span><br><span class="line">&#125; IMAGE_DATA_DIRECTORY, *PIMAGE_DATA_DIRECTORY;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_DATA_DIRECTORY</span> &#123;</span></span><br><span class="line">    DWORD   VirtualAddress;</span><br><span class="line">    DWORD   Size;</span><br><span class="line">&#125; IMAGE_DATA_DIRECTORYAddressOfFunctions</span><br></pre></td></tr></table></figure>
 
 <p>这样的结构于扩展PE头内有15个</p>
 <table>
@@ -1536,10 +945,343 @@
   
   
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/13/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Nayon.png">
+      <meta itemprop="name" content="Nayon">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林中小屋">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/10/13/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2)/" class="post-title-link" itemprop="url">PE结构-导入表（2）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-13 14:45:18" itemprop="dateCreated datePublished" datetime="2021-10-13T14:45:18+08:00">2021-10-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-28 12:40:04" itemprop="dateModified" datetime="2022-01-28T12:40:04+08:00">2022-01-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">PE结构</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>首先，PE文件中的数据被载入内存后根据不同页面属性被划分成很多区块(节)，并有区块表（节表）的数据来描述这些区块，这里我们需要注意一点：<strong>一个区块中的数据仅仅知识由于属性相同而放一起，并不一定是同一种用途的内容。例如输入表、输出表等就有可能和只读常量一起被放在同一个区块中。因为他们的属性都是可读不可写的。</strong></p>
+<p>其次，由于不同用途的数据有可能被放入同一个区块中，因此仅仅依靠区块表是无法确定和定位的。因此还需要通过PE文件头中的IMAGE_OPTIONAL_READER32结构的数据目录表来指出他们的位置，我们可以由数据目录表来定位他们的位置，我们可以由数据目录表来定位的数据包括输入表、输出表、资源、重定位表和TLS等15种数据。</p>
+<h3 id="导入表"><a href="#导入表" class="headerlink" title="导入表"></a>导入表</h3><h4 id="导入表的作用"><a href="#导入表的作用" class="headerlink" title="导入表的作用"></a>导入表的作用</h4><p>当程序运行时，需要多个PE文件共同组成</p>
+<p>PE文件提供哪些功能给其他PE文件是导出表的作用</p>
+<p>PE文件需要依赖的模块以及依赖模块中的哪些函数是导出表的作用</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/10/13/PE%E7%BB%93%E6%9E%84-%E5%AF%BC%E5%85%A5%E8%A1%A8(2)/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/10/12/PE%E7%BB%93%E6%9E%84-%E7%B3%BB%E7%BB%9F%E8%A7%A3%E5%AF%86%E7%AF%87(1)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Nayon.png">
+      <meta itemprop="name" content="Nayon">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林中小屋">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/10/12/PE%E7%BB%93%E6%9E%84-%E7%B3%BB%E7%BB%9F%E8%A7%A3%E5%AF%86%E7%AF%87(1)/" class="post-title-link" itemprop="url">PE结构-系统解密篇（1）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-12 10:42:01" itemprop="dateCreated datePublished" datetime="2021-10-12T10:42:01+08:00">2021-10-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-28 12:40:08" itemprop="dateModified" datetime="2022-01-28T12:40:08+08:00">2022-01-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">PE结构</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><strong>学习课程-鱼C-小甲鱼【系统篇】《解密系列》单看课程记不住，想着好记性不如烂笔头，特此记录学习加深理解。</strong></p>
+<h2 id="PE结构的概念"><a href="#PE结构的概念" class="headerlink" title="PE结构的概念"></a>PE结构的概念</h2><h3 id="EXE与DLL文件的区别"><a href="#EXE与DLL文件的区别" class="headerlink" title="EXE与DLL文件的区别"></a>EXE与DLL文件的区别</h3><p>EXE与DLL文件之间的区别完全是语意上面的，因为他们使用了完全相同的PE格式。唯一的区别在与是用一个字段标示出这个文件是EXE还是DLL文件格式。 </p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/10/12/PE%E7%BB%93%E6%9E%84-%E7%B3%BB%E7%BB%9F%E8%A7%A3%E5%AF%86%E7%AF%87(1)/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/09/27/Kerberoasting%E6%94%BB%E5%87%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Nayon.png">
+      <meta itemprop="name" content="Nayon">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林中小屋">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/09/27/Kerberoasting%E6%94%BB%E5%87%BB/" class="post-title-link" itemprop="url">Kerberoasting</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-09-27 15:22:39" itemprop="dateCreated datePublished" datetime="2021-09-27T15:22:39+08:00">2021-09-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-02-06 16:10:17" itemprop="dateModified" datetime="2022-02-06T16:10:17+08:00">2022-02-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/" itemprop="url" rel="index"><span itemprop="name">域渗透</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h2><p>​    <strong>Kerberoasting的概念</strong></p>
+<p>​    <strong>Kerberoasting的原理</strong></p>
+<p>​    <strong>Kerberoasting的实现</strong></p>
+<p>​    <strong>Kerberoasting后门利用</strong></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/09/27/Kerberoasting%E6%94%BB%E5%87%BB/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2021/09/26/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Nayon.png">
+      <meta itemprop="name" content="Nayon">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林中小屋">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/09/26/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/" class="post-title-link" itemprop="url">WinRM-横向移动</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-09-26 15:08:44" itemprop="dateCreated datePublished" datetime="2021-09-26T15:08:44+08:00">2021-09-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-28 12:40:47" itemprop="dateModified" datetime="2022-01-28T12:40:47+08:00">2022-01-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/" itemprop="url" rel="index"><span itemprop="name">域渗透</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><strong>WinRM 用于Windows远程管理，他允许管理员远程执行系统命令。通过HTTP(5985) 或 HTTPS SOAP(5986)进行执行，支持Kerberos以及NTLM身份验证以及基本身份验证。使用此服务需要管理员票据。</strong></p>
+<p>假设我们已经获得一台内网服务器的管理员权限(对端服务器允许此用户登陆即可)，并且开启了WinRM管理服务器，那么我们可以利用凭证进行内网横向移动</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/09/26/WinRM-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
   </nav>
 
 
@@ -1607,14 +1349,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">24</span>
+          <span class="site-state-item-count">17</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
