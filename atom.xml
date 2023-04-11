@@ -6,7 +6,7 @@
   <link href="http://antipassion.github.io/atom.xml" rel="self"/>
   
   <link href="http://antipassion.github.io/"/>
-  <updated>2022-11-20T03:20:28.456Z</updated>
+  <updated>2023-04-11T09:34:08.133Z</updated>
   <id>http://antipassion.github.io/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Windows安全学习随笔</title>
+    <link href="http://antipassion.github.io/2023/03/07/Windows%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E9%9A%8F%E7%AC%94/"/>
+    <id>http://antipassion.github.io/2023/03/07/Windows%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E9%9A%8F%E7%AC%94/</id>
+    <published>2023-03-07T02:45:16.000Z</published>
+    <updated>2023-04-11T09:34:08.133Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h3 id=&quot;0x1-前言&quot;&gt;&lt;a href=&quot;#0x1-前言&quot; class=&quot;headerlink&quot; title=&quot;0x1 前言&quot;&gt;&lt;/a&gt;0x1 前言&lt;/h3&gt;&lt;p&gt;​   </summary>
+        
+      
+    
+    
+    
+    <category term="Windows安全" scheme="http://antipassion.github.io/categories/Windows%E5%AE%89%E5%85%A8/"/>
+    
+    
+    <category term="Windows安全" scheme="http://antipassion.github.io/tags/Windows%E5%AE%89%E5%85%A8/"/>
+    
+  </entry>
   
   <entry>
     <title>从转储lsass学习Windows安全</title>
@@ -64,10 +89,10 @@
     <link href="http://antipassion.github.io/2022/10/30/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay/"/>
     <id>http://antipassion.github.io/2022/10/30/%E9%80%9A%E8%BF%87WebDav%E8%BF%9B%E8%A1%8CNTLM-Relay/</id>
     <published>2022-10-30T02:51:43.000Z</published>
-    <updated>2022-11-20T03:20:41.551Z</updated>
+    <updated>2023-04-11T09:32:53.002Z</updated>
     
     
-    <summary type="html">&lt;h3 id=&quot;前言：&quot;&gt;&lt;a href=&quot;#前言：&quot; class=&quot;headerlink&quot; title=&quot;前言：&quot;&gt;&lt;/a&gt;前言：&lt;/h3&gt;&lt;p&gt;​    NTLM Relay大家已经不再陌生了，很多时候我们通过NTLM Relay进行攻击时，会受到协议签名(ldap/s、smb等协议签名)的影响从而导致攻击失败，并且随着时间的流逝，我们想要遇到忽略签名的smb等服务也变得越来越困难了，我们有哪些方法来忽略服务端验证签名的影响从而达到我们relay攻击的目的呢？&lt;/p&gt;
+    <summary type="html">&lt;h3 id=&quot;0x1-前言&quot;&gt;&lt;a href=&quot;#0x1-前言&quot; class=&quot;headerlink&quot; title=&quot;0x1 前言&quot;&gt;&lt;/a&gt;0x1 前言&lt;/h3&gt;&lt;p&gt;​    NTLM Relay大家已经不再陌生了，很多时候我们通过NTLM Relay进行攻击时，会受到协议签名(ldap/s、smb等协议签名)的影响从而导致攻击失败，并且随着时间的流逝，我们想要遇到忽略签名的smb等服务也变得越来越困难了，我们有哪些方法来忽略服务端验证签名的影响从而达到我们relay攻击的目的呢？&lt;/p&gt;
 &lt;p&gt;​    我们可以寻找不支持签名的服务，来避免服务端的签名校验。若客户端不支持签名验证的话，服务端在与客户端通信时是不会强制要求签名认证的。因此我们可以使用HTTP服务中的WebDav来尝试Relay攻击了。&lt;/p&gt;</summary>
     
     
@@ -222,7 +247,7 @@
     <link href="http://antipassion.github.io/2022/01/06/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/"/>
     <id>http://antipassion.github.io/2022/01/06/%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E6%94%BB%E5%87%BB/</id>
     <published>2022-01-06T15:18:28.000Z</published>
-    <updated>2022-02-06T06:14:03.665Z</updated>
+    <updated>2022-11-13T06:08:01.613Z</updated>
     
     
     <summary type="html">&lt;h3 id=&quot;简介&quot;&gt;&lt;a href=&quot;#简介&quot; class=&quot;headerlink&quot; title=&quot;简介&quot;&gt;&lt;/a&gt;&lt;strong&gt;简介&lt;/strong&gt;&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;委派&lt;/strong&gt;&lt;/p&gt;
